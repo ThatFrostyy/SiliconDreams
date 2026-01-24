@@ -1,10 +1,13 @@
 // src/App.jsx
 import React, { useState, useEffect } from 'react';
-import { CheckCircle2, AlertTriangle, ClipboardList, Wrench, ShoppingBag, Box, Settings, Volume2, VolumeX, Music, Moon, Sun, X, TrendingUp } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, ClipboardList, Wrench, ShoppingBag, Box, Settings, Volume2, VolumeX, Music, Moon, Sun, X, TrendingUp, Globe, Trash2 } from 'lucide-react';
 import { generateOrder } from './utils/helpers';
 import { PART_TYPES, REQUEST_TEMPLATES } from './data/constants';
 import { playSound, musicPlayer } from './utils/sound';
 import { SpeedInsights } from "@vercel/speed-insights/react"
+import { signInAnonymously } from "firebase/auth";
+import { auth, db } from "./utils/firebase";
+import { doc, getDoc, updateDoc, onSnapshot } from 'firebase/firestore';
 
 // Import Components
 import Header from './components/Header';
@@ -13,6 +16,7 @@ import Shop from './components/Shop';
 import Inventory from './components/Inventory.jsx';
 import JobBoard from './components/JobBoard';
 import Upgrades from './components/Upgrades';
+import Trading from './components/Trading';
 
 const generateRequest = () => {
   const template = REQUEST_TEMPLATES[Math.floor(Math.random() * REQUEST_TEMPLATES.length)];
@@ -42,10 +46,11 @@ export default function App() {
   const [activeOrders, setActiveOrders] = useState(() => loadState('activeOrders', [generateOrder(), generateOrder()]));
   const [activeRequests, setActiveRequests] = useState(() => loadState('activeRequests', [generateRequest(), generateRequest()]));
   const [currentBuild, setCurrentBuild] = useState(() => loadState('currentBuild', {}));
-  const [view, setView] = useState('workshop'); 
+  const [view, setView] = useState(() => loadState('view', 'workshop')); 
   const [inventoryCategory, setInventoryCategory] = useState('ALL');
-  const [orderTab, setOrderTab] = useState('STANDARD');
+  const [orderTab, setOrderTab] = useState(() => loadState('orderTab', 'STANDARD'));
   const [message, setMessage] = useState({ text: 'Welcome to Silicon Dreams!', type: 'info' });
+  const [user, setUser] = useState(null);
   
   // Save State Effects
   useEffect(() => { localStorage.setItem('money', JSON.stringify(money)); }, [money]);
@@ -54,6 +59,8 @@ export default function App() {
   useEffect(() => { localStorage.setItem('activeOrders', JSON.stringify(activeOrders)); }, [activeOrders]);
   useEffect(() => { localStorage.setItem('activeRequests', JSON.stringify(activeRequests)); }, [activeRequests]);
   useEffect(() => { localStorage.setItem('currentBuild', JSON.stringify(currentBuild)); }, [currentBuild]);
+  useEffect(() => { localStorage.setItem('view', JSON.stringify(view)); }, [view]);
+  useEffect(() => { localStorage.setItem('orderTab', JSON.stringify(orderTab)); }, [orderTab]);
 
   // Notifications
   useEffect(() => {
@@ -75,6 +82,63 @@ export default function App() {
     else playSound('click', settings.sfx);
   };
 
+  const resetGame = () => {
+    if (window.confirm("Are you sure you want to reset your game? All progress will be lost.")) {
+      setMoney(1200);
+      setInventory([]);
+      setSettings({ music: false, sfx: true, darkMode: true });
+      setActiveOrders([generateOrder(), generateOrder()]);
+      setActiveRequests([generateRequest(), generateRequest()]);
+      setCurrentBuild({});
+      setView('workshop');
+      setOrderTab('STANDARD');
+      setShowSettings(false);
+      notify("Game Reset Successfully", "success");
+    }
+  };
+
+    useEffect(() => {
+    console.log("🔌 Testing Firebase connection...");
+    signInAnonymously(auth)
+      .then((userCredential) => {
+        console.log("✅ Firebase Connected! User ID:", userCredential.user.uid);
+        setUser(userCredential.user);
+      })
+      .catch((error) => console.error("❌ Firebase Connection Failed:", error));
+  }, []);
+
+  // Check for earnings from Trading
+  useEffect(() => {
+    if (!user) return;
+    const unsub = onSnapshot(doc(db, 'users', user.uid), (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        const updates = {};
+        let hasUpdates = false;
+
+        if (data.earnings > 0) {
+          setMoney(prev => prev + data.earnings);
+          notify(`You sold items on the market! Earned $${data.earnings}`, 'success');
+          updates.earnings = 0;
+          hasUpdates = true;
+        }
+
+        if (data.incomingItems && data.incomingItems.length > 0) {
+           const newItems = data.incomingItems.map(item => ({ ...item, invId: Math.random().toString(36).substr(2, 5) }));
+           setInventory(prev => [...prev, ...newItems]);
+           notify(`Trade complete! Received ${newItems.length} new items.`, 'success');
+           updates.incomingItems = [];
+           hasUpdates = true;
+        }
+
+        if (hasUpdates) {
+          updateDoc(snapshot.ref, updates);
+        }
+      }
+    });
+    return () => unsub();
+  }, [user]);
+
   // Shop Logic
   const buyPart = (part) => {
     if (money >= part.price) {
@@ -84,6 +148,33 @@ export default function App() {
     } else {
       notify('Not enough cash!', 'error');
     }
+  };
+
+  // Sell Logic (Half Price)
+  const sellPart = (part) => {
+    const sellPrice = Math.floor(part.price / 2);
+    setMoney(prev => prev + sellPrice);
+    setInventory(prev => prev.filter(p => p.invId !== part.invId));
+    notify(`Sold ${part.name} for $${sellPrice}`, 'success');
+    playSound('click', settings.sfx);
+  };
+
+  // Trading Logic
+  const handlePostTrade = (invId) => {
+    setInventory(prev => prev.filter(p => p.invId !== invId));
+    notify("Item listed on market", "success");
+  };
+
+  const handleBuyTrade = (part, price) => {
+    setMoney(prev => prev - price);
+    setInventory(prev => [...prev, { ...part, invId: Math.random().toString(36).substr(2, 5) }]);
+    notify(`Bought ${part.name} from market`, "success");
+  };
+
+  const handleItemTrade = (incomingPart, outgoingPartInvId) => {
+    setInventory(prev => prev.filter(p => p.invId !== outgoingPartInvId));
+    setInventory(prev => [...prev, { ...incomingPart, invId: Math.random().toString(36).substr(2, 5) }]);
+    notify(`Traded for ${incomingPart.name}`, "success");
   };
 
   // Workshop Logic
@@ -348,6 +439,15 @@ export default function App() {
                   <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${settings.darkMode ? 'left-7' : 'left-1'}`} />
                 </button>
               </div>
+
+              <div className="pt-4 border-t border-slate-700/50">
+                <button 
+                  onClick={resetGame}
+                  className="w-full py-3 rounded-xl font-bold bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center gap-2 transition-colors shadow-lg shadow-rose-900/20"
+                >
+                  <Trash2 size={20} /> Reset Game Progress
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -366,8 +466,9 @@ export default function App() {
             />
           )}
           {view === 'shop' && <Shop buyPart={buyPart} money={money} darkMode={settings.darkMode} />}
-          {view === 'inventory' && <Inventory inventory={inventory} addToBuild={addToBuild} category={inventoryCategory} setCategory={setInventoryCategory} darkMode={settings.darkMode} />}
+          {view === 'inventory' && <Inventory inventory={inventory} addToBuild={addToBuild} sellPart={sellPart} category={inventoryCategory} setCategory={setInventoryCategory} darkMode={settings.darkMode} />}
           {view === 'upgrades' && <Upgrades darkMode={settings.darkMode} />}
+          {view === 'trading' && <Trading inventory={inventory} onPostTrade={handlePostTrade} money={money} onBuyTrade={handleBuyTrade} onItemTrade={handleItemTrade} user={user} darkMode={settings.darkMode} />}
         </div>
 
         {/* RIGHT COLUMN: ORDERS */}
@@ -396,6 +497,9 @@ export default function App() {
         </button>
         <button onClick={() => setView('inventory')} className={`flex flex-col items-center gap-1 p-2 ${view === 'inventory' ? 'text-blue-400' : 'text-slate-500'}`}>
           <Box size={20} /> <span className="text-[10px] font-bold uppercase">Inv</span>
+        </button>
+        <button onClick={() => setView('trading')} className={`flex flex-col items-center gap-1 p-2 ${view === 'trading' ? 'text-blue-400' : 'text-slate-500'}`}>
+          <Globe size={20} /> <span className="text-[10px] font-bold uppercase">Trade</span>
         </button>
         <button onClick={() => setView('upgrades')} className={`flex flex-col items-center gap-1 p-2 ${view === 'upgrades' ? 'text-blue-400' : 'text-slate-500'}`}>
           <TrendingUp size={20} /> <span className="text-[10px] font-bold uppercase">Upgrades</span>

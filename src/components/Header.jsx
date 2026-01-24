@@ -1,6 +1,6 @@
 // src/components/Header.jsx
 import React from 'react';
-import { Monitor, DollarSign, Wrench, ShoppingBag, Box, Settings, TrendingUp } from 'lucide-react';
+import { Monitor, DollarSign, Wrench, ShoppingBag, Box, Settings, TrendingUp, Globe } from 'lucide-react';
 
 export default function Header({ money, view, setView, inventoryCount, toggleSettings, darkMode }) {
   return (
@@ -25,7 +25,10 @@ export default function Header({ money, view, setView, inventoryCount, toggleSet
           <ShoppingBag size={16} /> Shop
         </button>
         <button onClick={() => setView('inventory')} className={`px-4 py-2 rounded-full flex items-center gap-2 text-sm font-bold transition-all ${view === 'inventory' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'text-slate-400 hover:bg-slate-800/50'}`}>
-          <Box size={16} /> Inventory <span className="bg-slate-900 px-1.5 py-0.5 rounded text-[10px] text-slate-300">{inventoryCount}</span>
+          <Box size={16} /> Inventory
+        </button>
+        <button onClick={() => setView('trading')} className={`px-4 py-2 rounded-full flex items-center gap-2 text-sm font-bold transition-all ${view === 'trading' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'text-slate-400 hover:bg-slate-800/50'}`}>
+          <Globe size={16} /> Trading
         </button>
         <button onClick={() => setView('upgrades')} className={`px-4 py-2 rounded-full flex items-center gap-2 text-sm font-bold transition-all ${view === 'upgrades' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'text-slate-400 hover:bg-slate-800/50'}`}>
           <TrendingUp size={16} /> Upgrades

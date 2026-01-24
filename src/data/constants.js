@@ -74,7 +74,7 @@ export const PARTS_CATALOG = [
   { id: 'gpu_750ti', type: PART_TYPES.GPU, name: 'GTX 750 Ti', price: 45, power: 60, perf: 25, interface: GPU_INTERFACES.PCIE },
   { id: 'gpu_970', type: PART_TYPES.GPU, name: 'GTX 970', price: 80, power: 145, perf: 45, interface: GPU_INTERFACES.PCIE },
   { id: 'gpu_1660s', type: PART_TYPES.GPU, name: 'GTX 1660 Super', price: 160, power: 125, perf: 55, interface: GPU_INTERFACES.PCIE },
-  { id: 'gpu2', type: PART_TYPES.GPU, name: 'RTX 3060 Mid', price: 290, power: 170, perf: 75, interface: GPU_INTERFACES.PCIE },
+  { id: 'gpu2', type: PART_TYPES.GPU, name: 'RTX 3060', price: 290, power: 170, perf: 75, interface: GPU_INTERFACES.PCIE },
   { id: 'gpu_3080', type: PART_TYPES.GPU, name: 'RTX 3080', price: 550, power: 320, perf: 110, interface: GPU_INTERFACES.PCIE },
   { id: 'gpu_4080', type: PART_TYPES.GPU, name: 'RTX 4080 Super', price: 1050, power: 320, perf: 140, interface: GPU_INTERFACES.PCIE },
   { id: 'gpu3', type: PART_TYPES.GPU, name: 'RTX 4090', price: 1850, power: 450, perf: 180, interface: GPU_INTERFACES.PCIE },
@@ -95,18 +95,105 @@ export const PARTS_CATALOG = [
 ];
 
 export const ORDER_TEMPLATES = [
-  { title: "Budget Office PC", minPerf: 20, budget: 350, description: "Just need to run Excel. Don't overspend." },
+  { title: "Office PC", minPerf: 20, budget: 350, description: "Just need to run Excel. Don't overspend." },
   { title: "Retro Station", minPerf: 40, budget: 600, description: "I only play games from 2004. Keep it simple." },
-  { title: "The 1080p Gamer", minPerf: 80, budget: 1100, description: "Fortnite and Minecraft player here." },
-  { title: "Content Creator Rig", minPerf: 150, budget: 2200, description: "Editing 4K video is a nightmare on my current laptop." },
+  { title: "Mid Gaming PC", minPerf: 80, budget: 1100, description: "Fortnite and Minecraft player here." },
+  { title: "Content Creator", minPerf: 150, budget: 2200, description: "Editing 4K video is a nightmare on my current laptop." },
   { title: "Crypto Miner", minPerf: 180, budget: 3200, description: "I need raw GPU power and a PSU that won't melt." },
   { id: "workstation_01", title: "AI Training Station", minPerf: 350, budget: 6500, description: "I'm training local LLMs. Give me all the VRAM and threads you can find." },
-  { id: "overkill_01", title: "The Overkill King", minPerf: 450, budget: 9500, description: "Price is a social construct. I want the absolute best parts in existence." },
+  { id: "overkill_01", title: "The Overkill Rig", minPerf: 450, budget: 9500, description: "Price is a social construct. I want the absolute best parts in existence." },
 ];
 
 export const REQUEST_TEMPLATES = [
-  { title: "Video Editor", budget: 1500, description: "I need at least 32GB RAM for my timeline.", req: { minRam: 32 } },
-  { title: "Data Hoarder", budget: 600, description: "I need 4TB of storage space minimum.", req: { minStorage: 4000 } },
-  { title: "NVIDIA Fanboy", budget: 800, description: "Must have a GTX 970. Don't ask why.", req: { partId: 'gpu_970' } },
-  { title: "Server Node", budget: 1200, description: "I need 64GB RAM for virtualization.", req: { minRam: 64 } },
+  // --- LOW TIER / BUDGET CHALLENGES ---
+  { 
+    title: "The 'My Son's First PC' Mom", 
+    budget: 300, 
+    description: "My son wants to play 'The Minecraft'. I have very little money. Make it work!", 
+    req: { minPerf: 15 } 
+  },
+  { 
+    title: "Retro XP Battlestation", 
+    budget: 450, 
+    description: "I need to run Windows XP and my old AGP capture card. Must have an AGP slot!", 
+    req: { gpuInterface: GPU_INTERFACES.AGP } 
+  },
+  { 
+    title: "Office Fleet Manager", 
+    budget: 400, 
+    description: "I need a basic machine for the accounting department. 8GB RAM is plenty.", 
+    req: { minRam: 8, minPerf: 20 } 
+  },
+
+  // --- MID TIER / SPECIALIZED ---
+  { 
+    title: "Aspiring Streamer", 
+    budget: 1200, 
+    description: "I want to stream 1080p. I've heard the GTX 1660 Super is the sweet spot!", 
+    req: { partId: 'gpu_1660s', minRam: 16 } 
+  },
+  { 
+    title: "The 'Silent' Accountant", 
+    budget: 900, 
+    description: "I hate fan noise. Give me a high-efficiency PSU so the fans barely spin.", 
+    req: { partId: 'psu2' } // Requires the 750W Gold
+  },
+  { 
+    title: "4K Movie Box", 
+    budget: 1100, 
+    description: "This is for my home theater. I need at least 1TB of NVMe storage for my 'legal' movies.", 
+    req: { minStorage: 1000, interface: INTERFACES.M2 } 
+  },
+  { 
+    title: "NVIDIA Fanboy", 
+    budget: 800, 
+    description: "Must have a GTX 970. Don't ask why.", 
+    req: { partId: 'gpu_970' } 
+  },
+
+  // --- HIGH TIER / BIG PROFIT JOBS ---
+  { 
+    title: "4K Video Editor", 
+    budget: 2800, 
+    description: "My 4K timelines are lagging. I need 64GB of RAM and at least a Ryzen 9 or i9 class chip.", 
+    req: { minRam: 64, minPerf: 110 } 
+  },
+  { 
+    title: "Deep Learning Researcher", 
+    budget: 5500, 
+    description: "I'm training neural networks. I need the absolute maximum VRAM possible.", 
+    req: { partId: 'gpu_a6000' } 
+  },
+  { 
+    title: "The 'Price is No Object' Gamer", 
+    budget: 4500, 
+    description: "I just won the lottery. Give me an RTX 4090 and don't care about the bill.", 
+    req: { partId: 'gpu3' } 
+  },
+  { 
+    title: "Virtualization Architect", 
+    budget: 7500, 
+    description: "I run 20 virtual machines at once. I need a Threadripper and 128GB of RAM. Do not fail me.", 
+    req: { partId: 'cpu_tr_5995wx', minRam: 128 } 
+  },
+  { 
+    title: "CGI Render Farm Node", 
+    budget: 9000, 
+    description: "We are rendering a feature film. We need the highest performance score possible (400+).", 
+    req: { minPerf: 400 } 
+  },
+
+  // --- WEIRD / SPECIFIC CHALLENGES ---
+  { 
+    title: "The Sleeper Build", 
+    budget: 1500, 
+    description: "I want a modern PC, but it must use an old-school 250GB HDD as the boot drive for the 'aesthetic' noise.", 
+    req: { partId: 'hdd_250', minPerf: 80 } 
+  },
+  { 
+    title: "Data Hoarder", 
+    budget: 1200, 
+    description: "I need 4TB of storage space minimum. I don't care if it's slow, just big.", 
+    req: { minStorage: 4000 } 
+  }
 ];

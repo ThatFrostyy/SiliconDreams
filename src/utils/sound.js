@@ -66,6 +66,7 @@ class MusicPlayer {
     this.source = null;
     this.gainNode = null;
     this.sessionToken = 0;
+    this.customMusicChecked = false;
   }
 
   init() {
@@ -74,13 +75,15 @@ class MusicPlayer {
 
   async loadCustomMusic() {
     if (this.buffer) return true;
+    if (this.customMusicChecked) return false;
     try {
       const response = await fetch('/music.mp3');
-      if (!response.ok) return false;
+      if (!response.ok) { this.customMusicChecked = true; return false; }
       const arrayBuffer = await response.arrayBuffer();
       this.buffer = await this.audioCtx.decodeAudioData(arrayBuffer);
       return true;
     } catch (e) {
+      this.customMusicChecked = true;
       return false;
     }
   }
@@ -158,16 +161,30 @@ class MusicPlayer {
         this.sessionToken++;
         const currentToken = this.sessionToken;
 
+        // Start ambient immediately to avoid silence while checking for custom music
+        let startedAmbient = false;
+        if (!this.buffer) {
+          this.playAmbientNote();
+          this.interval = setInterval(() => this.playAmbientNote(), 2500);
+          startedAmbient = true;
+        }
+
         // Try to load custom music first
         this.loadCustomMusic().then(hasCustom => {
           if (!this.isPlaying || this.sessionToken !== currentToken) return;
 
           if (hasCustom) {
+            if (startedAmbient) {
+              clearInterval(this.interval);
+              this.interval = null;
+            }
             this.playCustomTrack();
           } else {
             // Fallback to ambient
-            this.playAmbientNote();
-            this.interval = setInterval(() => this.playAmbientNote(), 2500);
+            if (!startedAmbient) {
+              this.playAmbientNote();
+              this.interval = setInterval(() => this.playAmbientNote(), 2500);
+            }
           }
         });
       }

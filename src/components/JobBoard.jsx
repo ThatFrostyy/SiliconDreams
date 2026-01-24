@@ -43,17 +43,6 @@ export default function JobBoard({ activeOrders, fulfillOrder, view, inventoryCo
           ))}
         </div>
       </section>
-
-      {/* Quick Stats Summary */}
-      <div className={`border rounded-2xl p-5 text-[10px] ${darkMode ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200'}`}>
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-slate-500 uppercase font-black">Storage Capacity</span>
-            <span className={`font-bold ${darkMode ? 'text-white' : 'text-slate-800'}`}>{inventoryCount} / 50</span>
-          </div>
-          <div className={`w-full h-1.5 rounded-full overflow-hidden ${darkMode ? 'bg-slate-800' : 'bg-slate-200'}`}>
-            <div className="bg-blue-600 h-full" style={{ width: `${(inventoryCount / 50) * 100}%` }}></div>
-          </div>
-      </div>
     </div>
   );
 }

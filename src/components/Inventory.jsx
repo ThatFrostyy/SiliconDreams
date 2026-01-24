@@ -1,16 +1,21 @@
 // src/components/Inventory.jsx
 import React from 'react';
-import { Box } from 'lucide-react';
+import { Box, DollarSign } from 'lucide-react';
 import { PART_TYPES } from '../data/constants';
 import { CategoryTabs, PartIcon } from './Shared';
 
-export default function Inventory({ inventory, addToBuild, category = 'ALL', setCategory, darkMode }) {
+export default function Inventory({ inventory, addToBuild, sellPart, category = 'ALL', setCategory, darkMode }) {
   return (
     <section className={`rounded-2xl border overflow-hidden shadow-2xl transition-colors ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
       <div className={`p-6 ${darkMode ? 'bg-slate-800/50' : 'bg-slate-50'}`}>
-        <h2 className="text-xl font-bold flex items-center gap-2 italic text-blue-400 mb-4">
-          <Box /> Local Storage
-        </h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold flex items-center gap-2 italic text-blue-400">
+            <Box /> Local Storage
+          </h2>
+          <span className={`text-xs font-bold ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+            Capacity: {inventory.length} / 50
+          </span>
+        </div>
         <CategoryTabs current={category} set={setCategory} types={PART_TYPES} darkMode={darkMode} />
       </div>
       <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[600px] overflow-y-auto">
@@ -45,12 +50,21 @@ export default function Inventory({ inventory, addToBuild, category = 'ALL', set
                   )}
                 </div>
               </div>
-              <button 
-                onClick={() => addToBuild(part)}
-                className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-black transition-all"
-              >
-                INSTALL
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => sellPart(part)}
+                  className="p-2 rounded-lg bg-rose-900/30 text-rose-500 hover:bg-rose-600 hover:text-white transition-colors"
+                  title={`Sell for $${Math.floor(part.price / 2)}`}
+                >
+                  <DollarSign size={16} />
+                </button>
+                <button 
+                  onClick={() => addToBuild(part)}
+                  className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-black transition-all"
+                >
+                  INSTALL
+                </button>
+              </div>
             </div>
           ))
         )}

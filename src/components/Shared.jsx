@@ -16,7 +16,28 @@ export const PartIcon = ({ type, size = 20 }) => {
 };
 
 export const CategoryTabs = ({ current, set, types, darkMode }) => (
-  <div className="flex gap-2 overflow-x-auto pb-4 no-scrollbar">
+  <>
+    <style>{`
+      .custom-scrollbar {
+        scrollbar-width: thin;
+        scrollbar-color: ${darkMode ? '#475569 #1e293b' : '#cbd5e1 #f1f5f9'};
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        height: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: ${darkMode ? '#1e293b' : '#f1f5f9'};
+        border-radius: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: ${darkMode ? '#475569' : '#cbd5e1'};
+        border-radius: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: ${darkMode ? '#64748b' : '#94a3b8'};
+      }
+    `}</style>
+    <div className="flex gap-2 overflow-x-auto pb-4 custom-scrollbar">
     <button 
       onClick={() => set('ALL')}
       className={`px-3 py-1 rounded-full text-[10px] font-bold transition-all whitespace-nowrap
@@ -34,5 +55,6 @@ export const CategoryTabs = ({ current, set, types, darkMode }) => (
         {type.toUpperCase()}
       </button>
     ))}
-  </div>
+    </div>
+  </>
 );

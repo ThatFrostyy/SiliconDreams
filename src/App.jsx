@@ -1,8 +1,7 @@
 // src/App.jsx
 import React, { useState, useEffect } from 'react';
 import { CheckCircle2, AlertTriangle, ClipboardList, Wrench, ShoppingBag, Box, Settings, Volume2, VolumeX, Music, Moon, Sun, X, TrendingUp, Globe, Trash2 } from 'lucide-react';
-import { generateOrder } from './utils/helpers';
-import { PART_TYPES, REQUEST_TEMPLATES } from './data/constants';
+import { PART_TYPES, REQUEST_TEMPLATES, ORDER_TEMPLATES } from './data/constants';
 import { playSound, musicPlayer } from './utils/sound';
 import { SpeedInsights } from "@vercel/speed-insights/react"
 import { signInAnonymously } from "firebase/auth";
@@ -28,6 +27,20 @@ const generateRequest = () => {
   };
 };
 
+const generateOrderLocal = (activeOrders = [], excludeTitle = null) => {
+  const activeTitles = activeOrders.map(o => o.title);
+  if (excludeTitle) activeTitles.push(excludeTitle);
+  const available = ORDER_TEMPLATES.filter(t => !activeTitles.includes(t.title));
+  const template = available.length > 0 
+    ? available[Math.floor(Math.random() * available.length)]
+    : ORDER_TEMPLATES[Math.floor(Math.random() * ORDER_TEMPLATES.length)];
+  return {
+    ...template,
+    id: `ord_${Math.random().toString(36).substr(2, 5)}`,
+    type: 'STANDARD'
+  };
+};
+
 // Helper to load state from localStorage
 const loadState = (key, defaultValue) => {
   try {
@@ -43,7 +56,11 @@ export default function App() {
   const [inventory, setInventory] = useState(() => loadState('inventory', []));
   const [settings, setSettings] = useState(() => loadState('settings', { music: false, sfx: true, darkMode: true }));
   const [showSettings, setShowSettings] = useState(false);
-  const [activeOrders, setActiveOrders] = useState(() => loadState('activeOrders', [generateOrder(), generateOrder()]));
+  const [activeOrders, setActiveOrders] = useState(() => loadState('activeOrders', (() => {
+    const o1 = generateOrderLocal([]);
+    const o2 = generateOrderLocal([o1]);
+    return [o1, o2];
+  })()));
   const [activeRequests, setActiveRequests] = useState(() => loadState('activeRequests', [generateRequest(), generateRequest()]));
   const [currentBuild, setCurrentBuild] = useState(() => loadState('currentBuild', {}));
   const [view, setView] = useState(() => loadState('view', 'workshop')); 
@@ -87,7 +104,9 @@ export default function App() {
       setMoney(1200);
       setInventory([]);
       setSettings({ music: false, sfx: true, darkMode: true });
-      setActiveOrders([generateOrder(), generateOrder()]);
+      const o1 = generateOrderLocal([]);
+      const o2 = generateOrderLocal([o1]);
+      setActiveOrders([o1, o2]);
       setActiveRequests([generateRequest(), generateRequest()]);
       setCurrentBuild({});
       setView('workshop');
@@ -332,7 +351,24 @@ export default function App() {
       perfMultiplier = 1 + ((avgSpeed - 2133) / 10000); // Small bonus for faster RAM
       if (ramParts.length >= 2) perfMultiplier += 0.05; // Dual channel bonus
     }
-    const totalPerf = Math.floor(parts.reduce((acc, p) => acc + (p.perf || 0), 0) * perfMultiplier);
+
+    let rawPerf = parts.reduce((acc, p) => acc + (p.perf || 0), 0);
+    
+    // Bottleneck Check
+    const cpu = parts.find(p => p.type === PART_TYPES.CPU);
+    const gpu = parts.find(p => p.type === PART_TYPES.GPU);
+    if (cpu && gpu) {
+        const cpuPerf = cpu.perf || 0;
+        const gpuPerf = gpu.perf || 0;
+        // If GPU is significantly faster than CPU (e.g. > 1.5x), cap effective GPU perf
+        if (gpuPerf > cpuPerf * 1.5) {
+             const penalty = gpuPerf - (cpuPerf * 1.5);
+             rawPerf -= penalty;
+             notify("Bottleneck! CPU is limiting GPU performance.", "error");
+        }
+    }
+
+    const totalPerf = Math.floor(rawPerf * perfMultiplier);
     
     const totalCost = parts.reduce((acc, p) => acc + (p.price || 0), 0);
     const supplyPower = currentBuild[PART_TYPES.PSU]?.wattage || 0;
@@ -369,19 +405,27 @@ export default function App() {
       }
     }
 
-    const profit = order.budget - totalCost;
-    const reward = order.budget + (profit > 0 ? profit * 0.2 : 0);
+    // Reward Logic: Cover parts cost + 25% profit margin, capped at the customer's budget.
+    // This prevents players from spending very little to get a huge fixed reward,
+    // and encourages building quality PCs up to the budget limit.
+    let calculatedReward = Math.floor(totalCost * 1.25);
+    if (calculatedReward > order.budget) calculatedReward = order.budget;
     
-    setMoney(prev => prev + reward);
+    const profit = calculatedReward - totalCost;
+    
+    setMoney(prev => prev + calculatedReward);
     setCurrentBuild({});
-    notify(`Order Delivered! Earned $${reward.toFixed(0)}`, 'success');
+    notify(`Order Delivered! Earned $${calculatedReward} (Profit: $${profit})`, 'success');
     
     if (order.type === 'REQUEST') {
       setActiveRequests(prev => prev.filter(o => o.id !== order.id));
       setTimeout(() => setActiveRequests(prev => [...prev, generateRequest()]), 2000);
     } else {
       setActiveOrders(prev => prev.filter(o => o.id !== order.id));
-      setTimeout(() => setActiveOrders(prev => [...prev, generateOrder()]), 2000);
+      setTimeout(() => setActiveOrders(prev => {
+        const newOrder = generateOrderLocal(prev, order.title);
+        return [...prev, newOrder];
+      }), 2000);
     }
   };
 

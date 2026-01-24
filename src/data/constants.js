@@ -35,13 +35,21 @@ export const PARTS_CATALOG = [
   // --- CPUs (Chronological) ---
   { id: 'cpu_q9550', type: PART_TYPES.CPU, name: 'Core 2 Quad Q9550', price: 15, socket: SOCKETS.LGA775, power: 95, perf: 12 },
   { id: 'cpu_i3_2100', type: PART_TYPES.CPU, name: 'Intel i3-2100', price: 20, socket: SOCKETS.LGA1155, power: 65, perf: 15 },
+  { id: 'cpu_i5_2400', type: PART_TYPES.CPU, name: 'Intel i5-2400', price: 30, socket: SOCKETS.LGA1155, power: 95, perf: 20 },
   { id: 'cpu_fx6300', type: PART_TYPES.CPU, name: 'AMD FX-6300', price: 35, socket: SOCKETS.AM3, power: 95, perf: 22 },
   { id: 'cpu_i7_2600k', type: PART_TYPES.CPU, name: 'Intel i7-2600K', price: 45, socket: SOCKETS.LGA1155, power: 95, perf: 30 },
+  { id: 'cpu_r5_1600', type: PART_TYPES.CPU, name: 'Ryzen 5 1600', price: 65, socket: SOCKETS.AM4, power: 65, perf: 45 },
   { id: 'cpu1', type: PART_TYPES.CPU, name: 'Ryzen 3 3100', price: 85, socket: SOCKETS.AM4, power: 65, perf: 40 },
+  { id: 'cpu_r5_3600', type: PART_TYPES.CPU, name: 'Ryzen 5 3600', price: 95, socket: SOCKETS.AM4, power: 65, perf: 55 },
   { id: 'cpu2', type: PART_TYPES.CPU, name: 'Intel i5-10400', price: 130, socket: SOCKETS.LGA1200, power: 65, perf: 60 },
   { id: 'cpu3', type: PART_TYPES.CPU, name: 'Ryzen 7 5800X', price: 280, socket: SOCKETS.AM4, power: 105, perf: 85 },
   { id: 'cpu_i5_12600k', type: PART_TYPES.CPU, name: 'Intel i5-12600K', price: 240, socket: SOCKETS.LGA1700, power: 125, perf: 75 },
+  { id: 'cpu_r5_5600', type: PART_TYPES.CPU, name: 'Ryzen 5 5600', price: 140, socket: SOCKETS.AM4, power: 65, perf: 70 },
+  { id: 'cpu_r5_7600', type: PART_TYPES.CPU, name: 'Ryzen 5 7600', price: 200, socket: SOCKETS.AM5, power: 65, perf: 90 },
+  { id: 'cpu_r7_7700', type: PART_TYPES.CPU, name: 'Ryzen 7 7700', price: 290, socket: SOCKETS.AM5, power: 65, perf: 105 },
+  { id: 'cpu_r7_7800x3d', type: PART_TYPES.CPU, name: 'Ryzen 7 7800X3D', price: 400, socket: SOCKETS.AM5, power: 120, perf: 140 },
   { id: 'cpu4', type: PART_TYPES.CPU, name: 'Ryzen 9 7950X', price: 520, socket: SOCKETS.AM5, power: 170, perf: 115 },
+  { id: 'cpu_r7_9800x3d', type: PART_TYPES.CPU, name: 'Ryzen 7 9800X3D', price: 550, socket: SOCKETS.AM5, power: 120, perf: 165 },
   { id: 'cpu_i9_14900k', type: PART_TYPES.CPU, name: 'Intel i9-14900K', price: 580, socket: SOCKETS.LGA1700, power: 253, perf: 110 },
   { id: 'cpu_tr_5995wx', type: PART_TYPES.CPU, name: 'Threadripper 5995WX', price: 4200, socket: SOCKETS.TR4, power: 280, perf: 250 },
 
@@ -50,9 +58,12 @@ export const PARTS_CATALOG = [
   { id: 'mobo_p45', type: PART_TYPES.MOTHERBOARD, name: 'Gigabyte GA-EP45-UD3P', price: 25, socket: SOCKETS.LGA775, ramSlots: 4, maxRam: 16, memoryType: 'DDR2', sataSlots: 6, pataSlots: 2, m2Slots: 0, gpuInterface: GPU_INTERFACES.PCIE },
   { id: 'mobo_d2991', type: PART_TYPES.MOTHERBOARD, name: 'Fujitsu D2991-A1 (OEM)', price: 30, socket: SOCKETS.LGA1155, ramSlots: 2, maxRam: 16, memoryType: 'DDR3', sataSlots: 4, pataSlots: 0, m2Slots: 0, gpuInterface: GPU_INTERFACES.PCIE },
   { id: 'mobo_970', type: PART_TYPES.MOTHERBOARD, name: '970A Chipset', price: 45, socket: SOCKETS.AM3, ramSlots: 4, maxRam: 32, memoryType: 'DDR3', sataSlots: 6, pataSlots: 0, m2Slots: 0, gpuInterface: GPU_INTERFACES.PCIE },
+  { id: 'mobo_a320', type: PART_TYPES.MOTHERBOARD, name: 'A320M-K', price: 50, socket: SOCKETS.AM4, ramSlots: 2, maxRam: 32, memoryType: 'DDR4', sataSlots: 4, pataSlots: 0, m2Slots: 1, gpuInterface: GPU_INTERFACES.PCIE },
   { id: 'mobo_z77', type: PART_TYPES.MOTHERBOARD, name: 'Z77 Extreme', price: 70, socket: SOCKETS.LGA1155, ramSlots: 4, maxRam: 32, memoryType: 'DDR3', sataSlots: 4, pataSlots: 0, m2Slots: 0, gpuInterface: GPU_INTERFACES.PCIE },
   { id: 'mobo1', type: PART_TYPES.MOTHERBOARD, name: 'B450 Budget Board', price: 75, socket: SOCKETS.AM4, ramSlots: 4, maxRam: 64, memoryType: 'DDR4', sataSlots: 4, pataSlots: 0, m2Slots: 1, gpuInterface: GPU_INTERFACES.PCIE },
   { id: 'mobo2', type: PART_TYPES.MOTHERBOARD, name: 'H410M Entry', price: 85, socket: SOCKETS.LGA1200, ramSlots: 2, maxRam: 32, memoryType: 'DDR4', sataSlots: 4, pataSlots: 0, m2Slots: 0, gpuInterface: GPU_INTERFACES.PCIE },
+  { id: 'mobo_b660', type: PART_TYPES.MOTHERBOARD, name: 'B660M Pro', price: 120, socket: SOCKETS.LGA1700, ramSlots: 4, maxRam: 128, memoryType: 'DDR4', sataSlots: 4, pataSlots: 0, m2Slots: 2, gpuInterface: GPU_INTERFACES.PCIE },
+  { id: 'mobo_b650', type: PART_TYPES.MOTHERBOARD, name: 'B650 Gaming', price: 180, socket: SOCKETS.AM5, ramSlots: 4, maxRam: 128, memoryType: 'DDR5', sataSlots: 4, pataSlots: 0, m2Slots: 3, gpuInterface: GPU_INTERFACES.PCIE },
   { id: 'mobo3', type: PART_TYPES.MOTHERBOARD, name: 'X570 Gaming Pro', price: 190, socket: SOCKETS.AM4, ramSlots: 4, maxRam: 128, memoryType: 'DDR4', sataSlots: 6, pataSlots: 0, m2Slots: 2, gpuInterface: GPU_INTERFACES.PCIE },
   { id: 'mobo_z690', type: PART_TYPES.MOTHERBOARD, name: 'Z690 Aorus Elite', price: 210, socket: SOCKETS.LGA1700, ramSlots: 4, maxRam: 128, memoryType: 'DDR5', sataSlots: 6, pataSlots: 0, m2Slots: 3, gpuInterface: GPU_INTERFACES.PCIE },
   { id: 'mobo4', type: PART_TYPES.MOTHERBOARD, name: 'X670E High-End', price: 400, socket: SOCKETS.AM5, ramSlots: 4, maxRam: 128, memoryType: 'DDR5', sataSlots: 6, pataSlots: 0, m2Slots: 4, gpuInterface: GPU_INTERFACES.PCIE },
@@ -71,10 +82,17 @@ export const PARTS_CATALOG = [
   // --- GPUs (Chronological) ---
   { id: 'gpu_fx5200', type: PART_TYPES.GPU, name: 'GeForce FX 5200', price: 15, power: 20, perf: 4, interface: GPU_INTERFACES.AGP },
   { id: 'gpu_730', type: PART_TYPES.GPU, name: 'GT 730 1GB GDDR5', price: 25, power: 38, perf: 8, interface: GPU_INTERFACES.PCIE },
+  { id: 'gpu_gt1030', type: PART_TYPES.GPU, name: 'GT 1030', price: 60, power: 30, perf: 12, interface: GPU_INTERFACES.PCIE },
   { id: 'gpu_750ti', type: PART_TYPES.GPU, name: 'GTX 750 Ti', price: 45, power: 60, perf: 25, interface: GPU_INTERFACES.PCIE },
+  { id: 'gpu_1050ti', type: PART_TYPES.GPU, name: 'GTX 1050 Ti', price: 70, power: 75, perf: 30, interface: GPU_INTERFACES.PCIE },
   { id: 'gpu_970', type: PART_TYPES.GPU, name: 'GTX 970', price: 80, power: 145, perf: 45, interface: GPU_INTERFACES.PCIE },
+  { id: 'gpu_rx580', type: PART_TYPES.GPU, name: 'RX 580 8GB', price: 100, power: 185, perf: 35, interface: GPU_INTERFACES.PCIE },
+  { id: 'gpu_rx6600', type: PART_TYPES.GPU, name: 'Radeon RX 6600', price: 210, power: 132, perf: 68, interface: GPU_INTERFACES.PCIE },
   { id: 'gpu_1660s', type: PART_TYPES.GPU, name: 'GTX 1660 Super', price: 160, power: 125, perf: 55, interface: GPU_INTERFACES.PCIE },
+  { id: 'gpu_rtx2060', type: PART_TYPES.GPU, name: 'RTX 2060', price: 200, power: 160, perf: 60, interface: GPU_INTERFACES.PCIE },
+  { id: 'gpu_1080ti', type: PART_TYPES.GPU, name: 'GTX 1080 Ti', price: 250, power: 250, perf: 95, interface: GPU_INTERFACES.PCIE },
   { id: 'gpu2', type: PART_TYPES.GPU, name: 'RTX 3060', price: 290, power: 170, perf: 75, interface: GPU_INTERFACES.PCIE },
+  { id: 'gpu_rx7800xt', type: PART_TYPES.GPU, name: 'RX 7800 XT', price: 500, power: 263, perf: 120, interface: GPU_INTERFACES.PCIE },
   { id: 'gpu_3080', type: PART_TYPES.GPU, name: 'RTX 3080', price: 550, power: 320, perf: 110, interface: GPU_INTERFACES.PCIE },
   { id: 'gpu_4080', type: PART_TYPES.GPU, name: 'RTX 4080 Super', price: 1050, power: 320, perf: 140, interface: GPU_INTERFACES.PCIE },
   { id: 'gpu3', type: PART_TYPES.GPU, name: 'RTX 4090', price: 1850, power: 450, perf: 180, interface: GPU_INTERFACES.PCIE },
@@ -95,13 +113,17 @@ export const PARTS_CATALOG = [
 ];
 
 export const ORDER_TEMPLATES = [
-  { title: "Office PC", minPerf: 20, budget: 350, description: "Just need to run Excel. Don't overspend." },
-  { title: "Retro Station", minPerf: 40, budget: 600, description: "I only play games from 2004. Keep it simple." },
-  { title: "Mid Gaming PC", minPerf: 80, budget: 1100, description: "Fortnite and Minecraft player here." },
-  { title: "Content Creator", minPerf: 150, budget: 2200, description: "Editing 4K video is a nightmare on my current laptop." },
-  { title: "Crypto Miner", minPerf: 180, budget: 3200, description: "I need raw GPU power and a PSU that won't melt." },
-  { id: "workstation_01", title: "AI Training Station", minPerf: 350, budget: 6500, description: "I'm training local LLMs. Give me all the VRAM and threads you can find." },
-  { id: "overkill_01", title: "The Overkill Rig", minPerf: 450, budget: 9500, description: "Price is a social construct. I want the absolute best parts in existence." },
+  { title: "Office PC", minPerf: 20, budget: 300, description: "Just need to run Excel. Don't overspend." },
+  { title: "Retro Station", minPerf: 40, budget: 500, description: "I only play games from 2004. Keep it simple." },
+  { title: "Budget Gamer", minPerf: 60, budget: 750, description: "I want to play Valorant and CS2 on a budget." },
+  { title: "Mid Gaming PC", minPerf: 90, budget: 1200, description: "Fortnite and Minecraft player here. 1080p High settings." },
+  { title: "Esports Pro", minPerf: 120, budget: 1600, description: "I need 240Hz in competitive shooters. Performance over graphics." },
+  { title: "Content Creator", minPerf: 160, budget: 2400, description: "Editing 4K video is a nightmare on my current laptop." },
+  { title: "Streaming Setup", minPerf: 200, budget: 3000, description: "Single PC setup for streaming and gaming at the same time." },
+  { title: "Crypto Miner", minPerf: 220, budget: 3500, description: "I need raw GPU power and a PSU that won't melt." },
+  { title: "Enthusiast Grade", minPerf: 300, budget: 4500, description: "High refresh rate 1440p/4K gaming is my life." },
+  { id: "workstation_01", title: "AI Training Station", minPerf: 400, budget: 13000, description: "I'm training local LLMs. Give me all the VRAM and threads you can find." },
+  { id: "overkill_01", title: "The Overkill Rig", minPerf: 550, budget: 16000, description: "Price is a social construct. I want the absolute best parts in existence." },
 ];
 
 export const REQUEST_TEMPLATES = [
@@ -113,7 +135,7 @@ export const REQUEST_TEMPLATES = [
     req: { minPerf: 15 } 
   },
   { 
-    title: "Retro XP Battlestation", 
+    title: "Retro XP", 
     budget: 450, 
     description: "I need to run Windows XP and my old AGP capture card. Must have an AGP slot!", 
     req: { gpuInterface: GPU_INTERFACES.AGP } 
@@ -178,7 +200,7 @@ export const REQUEST_TEMPLATES = [
   },
   { 
     title: "CGI Render Farm Node", 
-    budget: 9000, 
+    budget: 15000, 
     description: "We are rendering a feature film. We need the highest performance score possible (400+).", 
     req: { minPerf: 400 } 
   },

@@ -4,6 +4,7 @@ import { CheckCircle2, AlertTriangle, ClipboardList, Wrench, ShoppingBag, Box, S
 import { generateOrder } from './utils/helpers';
 import { PART_TYPES, REQUEST_TEMPLATES } from './data/constants';
 import { playSound, musicPlayer } from './utils/sound';
+import { SpeedInsights } from "@vercel/speed-insights/react"
 
 // Import Components
 import Header from './components/Header';
@@ -295,6 +296,7 @@ export default function App() {
 
   return (
     <div className={`min-h-screen font-sans pb-20 md:pb-0 transition-colors duration-300 ${settings.darkMode ? 'bg-slate-950 text-slate-200' : 'bg-slate-100 text-slate-800'}`}>
+      <SpeedInsights />
       <Header money={money} view={view} setView={handleViewChange} inventoryCount={inventory.length} toggleSettings={() => setShowSettings(true)} darkMode={settings.darkMode} />
 
       {message.text && (

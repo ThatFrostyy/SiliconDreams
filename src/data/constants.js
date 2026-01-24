@@ -42,9 +42,9 @@ export const PARTS_CATALOG = [
   { id: 'cpu1', type: PART_TYPES.CPU, name: 'Ryzen 3 3100', price: 85, socket: SOCKETS.AM4, power: 65, perf: 40 },
   { id: 'cpu_r5_3600', type: PART_TYPES.CPU, name: 'Ryzen 5 3600', price: 95, socket: SOCKETS.AM4, power: 65, perf: 55 },
   { id: 'cpu2', type: PART_TYPES.CPU, name: 'Intel i5-10400', price: 130, socket: SOCKETS.LGA1200, power: 65, perf: 60 },
-  { id: 'cpu3', type: PART_TYPES.CPU, name: 'Ryzen 7 5800X', price: 280, socket: SOCKETS.AM4, power: 105, perf: 85 },
-  { id: 'cpu_i5_12600k', type: PART_TYPES.CPU, name: 'Intel i5-12600K', price: 240, socket: SOCKETS.LGA1700, power: 125, perf: 75 },
-  { id: 'cpu_r5_5600', type: PART_TYPES.CPU, name: 'Ryzen 5 5600', price: 140, socket: SOCKETS.AM4, power: 65, perf: 70 },
+  { id: 'cpu3', type: PART_TYPES.CPU, name: 'Ryzen 7 5800X', price: 230, socket: SOCKETS.AM4, power: 105, perf: 85 },
+  { id: 'cpu_i5_12600k', type: PART_TYPES.CPU, name: 'Intel i5-12600K', price: 240, socket: SOCKETS.LGA1700, power: 125, perf: 82 },
+  { id: 'cpu_r5_5600', type: PART_TYPES.CPU, name: 'Ryzen 5 5600', price: 125, socket: SOCKETS.AM4, power: 65, perf: 70 },
   { id: 'cpu_r5_7600', type: PART_TYPES.CPU, name: 'Ryzen 5 7600', price: 200, socket: SOCKETS.AM5, power: 65, perf: 90 },
   { id: 'cpu_r7_7700', type: PART_TYPES.CPU, name: 'Ryzen 7 7700', price: 290, socket: SOCKETS.AM5, power: 65, perf: 105 },
   { id: 'cpu_r7_7800x3d', type: PART_TYPES.CPU, name: 'Ryzen 7 7800X3D', price: 400, socket: SOCKETS.AM5, power: 120, perf: 140 },
@@ -82,9 +82,9 @@ export const PARTS_CATALOG = [
   // --- GPUs (Chronological) ---
   { id: 'gpu_fx5200', type: PART_TYPES.GPU, name: 'GeForce FX 5200', price: 15, power: 20, perf: 4, interface: GPU_INTERFACES.AGP },
   { id: 'gpu_730', type: PART_TYPES.GPU, name: 'GT 730 1GB GDDR5', price: 25, power: 38, perf: 8, interface: GPU_INTERFACES.PCIE },
-  { id: 'gpu_gt1030', type: PART_TYPES.GPU, name: 'GT 1030', price: 60, power: 30, perf: 12, interface: GPU_INTERFACES.PCIE },
-  { id: 'gpu_750ti', type: PART_TYPES.GPU, name: 'GTX 750 Ti', price: 45, power: 60, perf: 25, interface: GPU_INTERFACES.PCIE },
-  { id: 'gpu_1050ti', type: PART_TYPES.GPU, name: 'GTX 1050 Ti', price: 70, power: 75, perf: 30, interface: GPU_INTERFACES.PCIE },
+  { id: 'gpu_gt1030', type: PART_TYPES.GPU, name: 'GT 1030', price: 40, power: 30, perf: 12, interface: GPU_INTERFACES.PCIE },
+  { id: 'gpu_750ti', type: PART_TYPES.GPU, name: 'GTX 750 Ti', price: 50, power: 60, perf: 25, interface: GPU_INTERFACES.PCIE },
+  { id: 'gpu_1050ti', type: PART_TYPES.GPU, name: 'GTX 1050 Ti', price: 75, power: 75, perf: 30, interface: GPU_INTERFACES.PCIE },
   { id: 'gpu_970', type: PART_TYPES.GPU, name: 'GTX 970', price: 80, power: 145, perf: 45, interface: GPU_INTERFACES.PCIE },
   { id: 'gpu_rx580', type: PART_TYPES.GPU, name: 'RX 580 8GB', price: 100, power: 185, perf: 35, interface: GPU_INTERFACES.PCIE },
   { id: 'gpu_rx6600', type: PART_TYPES.GPU, name: 'Radeon RX 6600', price: 210, power: 132, perf: 68, interface: GPU_INTERFACES.PCIE },
@@ -113,17 +113,17 @@ export const PARTS_CATALOG = [
 ];
 
 export const ORDER_TEMPLATES = [
-  { title: "Office PC", minPerf: 20, budget: 300, description: "Just need to run Excel. Don't overspend." },
-  { title: "Retro Station", minPerf: 40, budget: 500, description: "I only play games from 2004. Keep it simple." },
-  { title: "Budget Gamer", minPerf: 60, budget: 750, description: "I want to play Valorant and CS2 on a budget." },
-  { title: "Mid Gaming PC", minPerf: 90, budget: 1200, description: "Fortnite and Minecraft player here. 1080p High settings." },
-  { title: "Esports Pro", minPerf: 120, budget: 1600, description: "I need 240Hz in competitive shooters. Performance over graphics." },
-  { title: "Content Creator", minPerf: 160, budget: 2400, description: "Editing 4K video is a nightmare on my current laptop." },
-  { title: "Streaming Setup", minPerf: 200, budget: 3000, description: "Single PC setup for streaming and gaming at the same time." },
-  { title: "Crypto Miner", minPerf: 220, budget: 3500, description: "I need raw GPU power and a PSU that won't melt." },
-  { title: "Enthusiast Grade", minPerf: 300, budget: 4500, description: "High refresh rate 1440p/4K gaming is my life." },
-  { id: "workstation_01", title: "AI Training Station", minPerf: 400, budget: 13000, description: "I'm training local LLMs. Give me all the VRAM and threads you can find." },
-  { id: "overkill_01", title: "The Overkill Rig", minPerf: 550, budget: 16000, description: "Price is a social construct. I want the absolute best parts in existence." },
+  { title: "Office PC", minPerf: 20, budget: 250, description: "Just need to run Excel. Don't overspend." },
+  { title: "Retro Station", minPerf: 40, budget: 450, description: "I only play games from 2004. Keep it simple." },
+  { title: "Budget Gamer", minPerf: 60, budget: 650, description: "I want to play Valorant and CS2 on a budget." },
+  { title: "Mid Gaming PC", minPerf: 90, budget: 1000, description: "Fortnite and Minecraft player here. 1080p High settings." },
+  { title: "Esports Pro", minPerf: 120, budget: 1400, description: "I need 240Hz in competitive shooters. Performance over graphics." },
+  { title: "Content Creator", minPerf: 160, budget: 2000, description: "Editing 4K video is a nightmare on my current laptop." },
+  { title: "Streaming Setup", minPerf: 200, budget: 2500, description: "Single PC setup for streaming and gaming at the same time." },
+  { title: "Crypto Miner", minPerf: 220, budget: 3000, description: "I need raw GPU power and a PSU that won't melt." },
+  { title: "Enthusiast Grade", minPerf: 300, budget: 4000, description: "High refresh rate 1440p/4K gaming is my life." },
+  { id: "workstation_01", title: "AI Training Station", minPerf: 400, budget: 11000, description: "I'm training local LLMs. Give me all the VRAM and threads you can find." },
+  { id: "overkill_01", title: "The Overkill Rig", minPerf: 550, budget: 13000, description: "Price is a social construct. I want the absolute best parts in existence." },
 ];
 
 export const REQUEST_TEMPLATES = [
@@ -136,7 +136,7 @@ export const REQUEST_TEMPLATES = [
   },
   { 
     title: "Retro XP", 
-    budget: 450, 
+    budget: 350, 
     description: "I need to run Windows XP and my old AGP capture card. Must have an AGP slot!", 
     req: { gpuInterface: GPU_INTERFACES.AGP } 
   },
@@ -150,33 +150,39 @@ export const REQUEST_TEMPLATES = [
   // --- MID TIER / SPECIALIZED ---
   { 
     title: "Aspiring Streamer", 
-    budget: 1200, 
+    budget: 900, 
     description: "I want to stream 1080p. I've heard the GTX 1660 Super is the sweet spot!", 
     req: { partId: 'gpu_1660s', minRam: 16 } 
   },
   { 
     title: "The 'Silent' Accountant", 
-    budget: 900, 
+    budget: 600, 
     description: "I hate fan noise. Give me a high-efficiency PSU so the fans barely spin.", 
     req: { partId: 'psu2' } // Requires the 750W Gold
   },
   { 
     title: "4K Movie Box", 
-    budget: 1100, 
+    budget: 800, 
     description: "This is for my home theater. I need at least 1TB of NVMe storage for my 'legal' movies.", 
     req: { minStorage: 1000, interface: INTERFACES.M2 } 
   },
   { 
     title: "NVIDIA Fanboy", 
-    budget: 800, 
+    budget: 650, 
     description: "Must have a GTX 970. Don't ask why.", 
     req: { partId: 'gpu_970' } 
+  },
+  { 
+    title: "X3D Gaming", 
+    budget: 2000, 
+    description: "I heard the X3D chips are the best for gaming. I want one!", 
+    req: { partId: 'cpu_r7_7800x3d', minPerf: 200 } 
   },
 
   // --- HIGH TIER / BIG PROFIT JOBS ---
   { 
     title: "4K Video Editor", 
-    budget: 2800, 
+    budget: 1800, 
     description: "My 4K timelines are lagging. I need 64GB of RAM and at least a Ryzen 9 or i9 class chip.", 
     req: { minRam: 64, minPerf: 110 } 
   },
@@ -193,6 +199,12 @@ export const REQUEST_TEMPLATES = [
     req: { partId: 'gpu3' } 
   },
   { 
+    title: "Next Gen Upgrade",
+    budget: 3500,
+    description: "I want the new 9000 series Ryzen. Make it happen.",
+    req: { partId: 'cpu_r7_9800x3d' }
+  },
+  { 
     title: "Virtualization Architect", 
     budget: 7500, 
     description: "I run 20 virtual machines at once. I need a Threadripper and 128GB of RAM. Do not fail me.", 
@@ -200,7 +212,7 @@ export const REQUEST_TEMPLATES = [
   },
   { 
     title: "CGI Render Farm Node", 
-    budget: 15000, 
+    budget: 12000, 
     description: "We are rendering a feature film. We need the highest performance score possible (400+).", 
     req: { minPerf: 400 } 
   },
@@ -208,7 +220,7 @@ export const REQUEST_TEMPLATES = [
   // --- WEIRD / SPECIFIC CHALLENGES ---
   { 
     title: "The Sleeper Build", 
-    budget: 1500, 
+    budget: 1000, 
     description: "I want a modern PC, but it must use an old-school 250GB HDD as the boot drive for the 'aesthetic' noise.", 
     req: { partId: 'hdd_250', minPerf: 80 } 
   },

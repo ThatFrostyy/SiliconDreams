@@ -364,7 +364,7 @@ export default function App() {
         if (gpuPerf > cpuPerf * 1.5) {
              const penalty = gpuPerf - (cpuPerf * 1.5);
              rawPerf -= penalty;
-             notify("Bottleneck! CPU is limiting GPU performance.", "error");
+             notify(`Bottleneck! CPU limits GPU. Performance reduced by ${Math.floor(penalty)}.`, "error");
         }
     }
 

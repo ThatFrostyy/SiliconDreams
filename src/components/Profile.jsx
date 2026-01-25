@@ -60,7 +60,7 @@ export default function Profile({ user, money, reputation, jobsCompleted, darkMo
           />
         </div>
         <p className="text-xs mt-4 opacity-60 leading-relaxed">
-          Complete jobs successfully to increase your reputation. Higher reputation will unlock VIP clients and special requests in future updates.
+          Complete jobs successfully to increase your reputation. Higher reputation will unlock VIP clients and special requests.
         </p>
       </div>
 

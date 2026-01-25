@@ -34,7 +34,7 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet }) {
                         <div className="p-3 rounded-lg bg-amber-500/10 text-amber-500"><Package size={32} /></div>
                         <div className="text-right">
                             <h3 className="font-bold text-lg">Standard Pallet</h3>
-                            <p className="text-xs opacity-60">Contains 3-5 Random Parts</p>
+                            <p className="text-xs opacity-60">3-5 Parts. Mixed Condition.</p>
                         </div>
                     </div>
                     <button onClick={() => buyPallet('STANDARD')} className="w-full py-3 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-bold text-sm shadow-lg shadow-amber-500/20">
@@ -46,7 +46,7 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet }) {
                         <div className="p-3 rounded-lg bg-emerald-500/10 text-emerald-500"><Package size={32} /></div>
                         <div className="text-right">
                             <h3 className="font-bold text-lg">Medium Pallet</h3>
-                            <p className="text-xs opacity-60">Better Odds, Mid-Tier Parts</p>
+                            <p className="text-xs opacity-60">Better Odds. Mostly Stable Parts.</p>
                         </div>
                     </div>
                     <button onClick={() => buyPallet('MEDIUM')} className="w-full py-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-lg shadow-emerald-500/20">
@@ -58,7 +58,7 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet }) {
                         <div className="p-3 rounded-lg bg-purple-500/10 text-purple-500"><HelpCircle size={32} /></div>
                         <div className="text-right">
                             <h3 className="font-bold text-lg">Premium Pallet</h3>
-                            <p className="text-xs opacity-60">High-End Parts Guaranteed</p>
+                            <p className="text-xs opacity-60">High-End. Chance for Legendary.</p>
                         </div>
                     </div>
                     <button onClick={() => buyPallet('PREMIUM')} className="w-full py-3 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm shadow-lg shadow-purple-500/20">

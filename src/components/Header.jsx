@@ -1,6 +1,6 @@
 // src/components/Header.jsx
 import React from 'react';
-import { Monitor, DollarSign, Wrench, ShoppingBag, Box, Settings, TrendingUp, Globe, User } from 'lucide-react';
+import { Monitor, DollarSign, Wrench, ShoppingBag, Box, Settings, TrendingUp, Globe, User, BookOpen } from 'lucide-react';
 
 export default function Header({ money, view, setView, toggleSettings, darkMode }) {
   return (
@@ -32,6 +32,9 @@ export default function Header({ money, view, setView, toggleSettings, darkMode 
         </button>
         <button onClick={() => setView('upgrades')} className={`px-4 py-2 rounded-full flex items-center gap-2 text-sm font-bold transition-all ${view === 'upgrades' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'text-slate-400 hover:bg-slate-800/50'}`}>
           <TrendingUp size={16} /> Upgrades
+        </button>
+        <button onClick={() => setView('devlogs')} className={`px-4 py-2 rounded-full flex items-center gap-2 text-sm font-bold transition-all ${view === 'devlogs' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'text-slate-400 hover:bg-slate-800/50'}`}>
+          <BookOpen size={16} /> Devlogs
         </button>
       </div>
 

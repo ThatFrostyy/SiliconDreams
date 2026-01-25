@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 import { generateOrderLocal, generateRequest, calculateBuildStats } from '../utils/gameLogic';
 import { PART_TYPES, PARTS_CATALOG, REVIEW_TEMPLATES, SKILLS } from '../data/constants';
 import { playSound } from '../utils/sound';
+import { getRandomModifier, applyModifier } from '../utils/modifiers';
 
 export const useGameStore = create(
   persist(
@@ -120,7 +121,9 @@ export const useGameStore = create(
           
           const part = pool[Math.floor(Math.random() * pool.length)];
           if (part) {
-            newItems.push({ ...part, invId: Math.random().toString(36).substr(2, 5) });
+            const modifier = getRandomModifier();
+            const modifiedPart = applyModifier(part, modifier);
+            newItems.push({ ...modifiedPart, invId: Math.random().toString(36).substr(2, 5) });
           }
         }
 

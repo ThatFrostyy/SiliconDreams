@@ -1,6 +1,6 @@
 // src/App.jsx
 import React, { useState, useEffect } from 'react';
-import { CheckCircle2, AlertTriangle, ClipboardList, Wrench, ShoppingBag, Box, Settings, Volume2, VolumeX, Music, Moon, Sun, X, TrendingUp, Globe, Trash2, RefreshCw, Monitor, DollarSign } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, ClipboardList, Wrench, ShoppingBag, Box, Settings, Volume2, VolumeX, Music, Moon, Sun, X, TrendingUp, Globe, Trash2, RefreshCw, Monitor, DollarSign, BookOpen } from 'lucide-react';
 import { musicPlayer } from './utils/sound';
 import { SpeedInsights } from "@vercel/speed-insights/react"
 import { signInAnonymously } from "firebase/auth";
@@ -19,6 +19,7 @@ import JobBoard from './components/JobBoard';
 import Upgrades from './components/Upgrades';
 import Trading from './components/Trading';
 import Profile from './components/Profile';
+import Devlogs from './components/Devlogs';
 
 export default function App() {
   // --- STORE SELECTORS ---
@@ -291,6 +292,7 @@ export default function App() {
           {view === 'upgrades' && <Upgrades darkMode={settings.darkMode} skills={skills} unlockSkill={unlockSkill} money={money} ownedUpgrades={ownedUpgrades} buyUpgrade={buyUpgrade} />}
           {view === 'trading' && <Trading inventory={inventory} onPostTrade={handlePostTrade} money={money} onBuyTrade={handleBuyTrade} onItemTrade={handleItemTrade} user={user} darkMode={settings.darkMode} netWorth={netWorth} />}
           {view === 'profile' && <Profile user={user} money={money} reputation={reputation} jobsCompleted={jobsCompleted} darkMode={settings.darkMode} skills={skills} achievements={achievements} netWorth={netWorth} jobHistory={jobHistory} />}
+          {view === 'devlogs' && <Devlogs darkMode={settings.darkMode} setView={setView} />}
         </div>
 
         {/* RIGHT COLUMN: ORDERS */}
@@ -343,12 +345,19 @@ export default function App() {
         </div>
       </main>
 
-      <footer className="text-center pb-24 md:pb-8 text-xs opacity-50">
+      <footer className="text-center pb-24 md:pb-8 text-xs opacity-50 flex flex-col md:flex-row justify-center gap-4">
+        <button 
+          onClick={() => setView('devlogs')}
+          className="hover:underline hover:text-blue-500 transition-colors inline-flex items-center justify-center gap-1"
+        >
+          <BookOpen size={12} /> Devlogs
+        </button>
+        <span className="hidden md:inline">•</span>
         <a 
           href="https://docs.google.com/document/d/1221bM02jpfA6YKCZuM6xBSmHvGQMGH0yS8hxCkSmDxM/edit?usp=sharing" 
           target="_blank" 
           rel="noreferrer" 
-          className="hover:underline hover:text-blue-500 transition-colors inline-flex items-center gap-1"
+          className="hover:underline hover:text-blue-500 transition-colors inline-flex items-center justify-center gap-1"
         >
           <ClipboardList size={12} /> Read the Official Game Guide
         </a>

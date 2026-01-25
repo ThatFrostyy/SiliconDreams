@@ -6,8 +6,11 @@ import { CategoryTabs, PartIcon } from './Shared';
 import { getModifierById, isUnreliable, MODIFIERS } from '../utils/modifiers';
 import { useGameStore } from '../store/gameStore';
 import { playSound } from '../utils/sound';
+import { calculateSellPrice } from '../utils/gameLogic';
 
 export default function Inventory({ inventory, addToBuild, sellPart, binPart, money, category = 'ALL', setCategory, darkMode, maxCapacity = 50 }) {
+  const skills = useGameStore(state => state.skills);
+  const ownedUpgrades = useGameStore(state => state.ownedUpgrades);
 
   const filteredInventory = useMemo(() => {
     if (category === 'ALL') return inventory;
@@ -143,7 +146,7 @@ export default function Inventory({ inventory, addToBuild, sellPart, binPart, mo
                 <button
                   onClick={() => sellPart(part)}
                   className="p-2 rounded-lg bg-rose-900/30 text-rose-500 hover:bg-rose-600 hover:text-white transition-colors"
-                  title={`Sell for $${Math.floor(part.price / 2)}`}
+                  title={`Sell for $${calculateSellPrice(part, skills, ownedUpgrades)}`}
                 >
                   <DollarSign size={16} />
                 </button>
@@ -188,7 +191,9 @@ export default function Inventory({ inventory, addToBuild, sellPart, binPart, mo
                             {/* Strip */}
                             <div 
                                 className="flex items-center h-full transition-transform duration-[4000ms] ease-[cubic-bezier(0.1,0,0.2,1)]"
-                                style={{ transform: spinState === 'SPINNING' || spinState === 'RESULT' ? `translateX(calc(50% - ${50 * 136 + 68}px))` : 'translateX(0)' }}
+                                // Each item is 128px wide + 8px margin = 136px. We land on item 50.
+                                // 68px is to center the item, +4px is a manual alignment tweak.
+                                style={{ transform: spinState === 'SPINNING' || spinState === 'RESULT' ? `translateX(calc(50% - ${50 * 136 + 72}px))` : 'translateX(0)' }} // 50 * item width (136px) + half item width (68px) + 4px alignment offset
                             >
                                 {spinItems.map((item, i) => (
                                     <div key={i} className={`flex-shrink-0 w-32 h-24 mx-1 rounded-lg flex flex-col items-center justify-center text-center p-2 border border-slate-800 ${darkMode ? 'bg-slate-900' : 'bg-slate-100'}`}>

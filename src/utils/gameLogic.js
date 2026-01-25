@@ -107,3 +107,9 @@ export const calculateBuildStats = (build, skills = {}) => {
   
   return { totalPower, totalPerf: finalPerf, bottleneckPenalty, ramBonus };
 };
+
+export const calculateSellPrice = (part, skills = {}, ownedUpgrades = []) => {
+  const dealmakerBonus = 1 + ((skills.dealmaker || 0) * 0.05);
+  const showroomBonus = (part.type === 'PC' && ownedUpgrades.includes('showroom')) ? 1.05 : 1;
+  return Math.floor(part.price * (part.type === 'PC' ? 0.8 : 0.5) * dealmakerBonus * showroomBonus);
+};

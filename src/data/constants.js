@@ -68,6 +68,18 @@ export const ACHIEVEMENTS = [
   { id: 'perf_500', title: "Power User", description: "Build a PC with 500+ Performance", reward: "Master Builder Title" }
 ];
 
+export const RIVAL_COMPANIES = [
+  { id: 'rival_1', name: "Pear Inc.", netWorth: 5000000, color: "text-slate-400" },
+  { id: 'rival_2', name: "Macrohard", netWorth: 2000000, color: "text-blue-400" },
+  { id: 'rival_3', name: "Star Industries", netWorth: 1000000, color: "text-purple-400" },
+  { id: 'rival_4', name: "Tech Tips Ltd", netWorth: 500000, color: "text-orange-400" },
+  { id: 'rival_5', name: "Nexus Gamers", netWorth: 250000, color: "text-slate-500" },
+  { id: 'rival_6', name: "The Verge PC", netWorth: 100000, color: "text-rose-400" },
+  { id: 'rival_7', name: "Bitwit Builds", netWorth: 50000, color: "text-emerald-400" },
+  { id: 'rival_8', name: "Jayz Two Cents", netWorth: 25000, color: "text-cyan-400" },
+  { id: 'rival_9', name: "Garage Fixer", netWorth: 5000, color: "text-amber-700" }
+];
+
 export const PARTS_CATALOG = [
   // --- CPUs (Chronological) ---
   { id: 'cpu_q9550', type: PART_TYPES.CPU, name: 'Core 2 Quad Q9550', price: 15, socket: SOCKETS.LGA775, power: 95, perf: 12 },

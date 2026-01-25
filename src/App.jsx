@@ -1,7 +1,7 @@
 // src/App.jsx
 import React, { useState, useEffect } from 'react';
 import { CheckCircle2, AlertTriangle, ClipboardList, Wrench, ShoppingBag, Box, Settings, Volume2, VolumeX, Music, Moon, Sun, X, TrendingUp, Globe, Trash2, RefreshCw, Monitor, DollarSign, Crown } from 'lucide-react';
-import { PART_TYPES, REQUEST_TEMPLATES, ORDER_TEMPLATES, SKILLS, OFFICE_UPGRADES } from './data/constants';
+import { PART_TYPES, REQUEST_TEMPLATES, ORDER_TEMPLATES, SKILLS, OFFICE_UPGRADES, PARTS_CATALOG } from './data/constants';
 import { playSound, musicPlayer } from './utils/sound';
 import { SpeedInsights } from "@vercel/speed-insights/react"
 import { signInAnonymously } from "firebase/auth";
@@ -180,6 +180,7 @@ export default function App() {
   useEffect(() => { localStorage.setItem('skills', JSON.stringify(skills)); }, [skills]);
 
   const buildStats = calculateBuildStats(currentBuild, skills);
+  const netWorth = money + inventory.reduce((acc, item) => acc + (item.price || 0), 0);
 
   // Notifications
   useEffect(() => {
@@ -296,6 +297,33 @@ export default function App() {
     } else {
       notify('Not enough cash!', 'error');
     }
+  };
+
+  const buyPallet = (type) => {
+    const cost = type === 'PREMIUM' ? 2500 : 500;
+    if (money < cost) {
+      notify("Not enough money for this pallet!", "error");
+      return;
+    }
+
+    setMoney(m => m - cost);
+    
+    // Generate Loot
+    const itemCount = Math.floor(Math.random() * 3) + 3; // 3 to 5 items
+    const newItems = [];
+    
+    for (let i = 0; i < itemCount; i++) {
+      // Filter parts based on tier roughly by price
+      const pool = PARTS_CATALOG.filter(p => type === 'PREMIUM' ? p.price > 150 : p.price <= 200);
+      const part = pool[Math.floor(Math.random() * pool.length)];
+      if (part) {
+        newItems.push({ ...part, invId: Math.random().toString(36).substr(2, 5) });
+      }
+    }
+
+    setInventory(prev => [...prev, ...newItems]);
+    notify(`Opened Pallet! Received ${newItems.length} items.`, "success");
+    playSound('success', settings.sfx);
   };
 
   // Sell Logic (Half Price)
@@ -728,11 +756,11 @@ export default function App() {
               onSellBuild={sellBuildInstant}
             />
           )}
-          {view === 'shop' && <Shop buyPart={buyPart} money={money} darkMode={settings.darkMode} skills={skills} />}
+          {view === 'shop' && <Shop buyPart={buyPart} money={money} darkMode={settings.darkMode} skills={skills} buyPallet={buyPallet} />}
           {view === 'inventory' && <Inventory inventory={inventory} addToBuild={addToBuild} sellPart={sellPart} category={inventoryCategory} setCategory={setInventoryCategory} darkMode={settings.darkMode} maxCapacity={50 + (skills.logistics * 5) + (ownedUpgrades.includes('storage_1') ? 50 : 0) + (ownedUpgrades.includes('storage_2') ? 100 : 0)} />}
           {view === 'upgrades' && <Upgrades darkMode={settings.darkMode} skills={skills} unlockSkill={unlockSkill} money={money} ownedUpgrades={ownedUpgrades} buyUpgrade={buyUpgrade} />}
           {view === 'trading' && <Trading inventory={inventory} onPostTrade={handlePostTrade} money={money} onBuyTrade={handleBuyTrade} onItemTrade={handleItemTrade} user={user} darkMode={settings.darkMode} />}
-          {view === 'profile' && <Profile user={user} money={money} reputation={reputation} jobsCompleted={jobsCompleted} darkMode={settings.darkMode} skills={skills} achievements={achievements} />}
+          {view === 'profile' && <Profile user={user} money={money} reputation={reputation} jobsCompleted={jobsCompleted} darkMode={settings.darkMode} skills={skills} achievements={achievements} netWorth={netWorth} />}
         </div>
 
         {/* RIGHT COLUMN: ORDERS */}

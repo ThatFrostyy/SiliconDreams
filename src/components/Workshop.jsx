@@ -108,7 +108,7 @@ export default function Workshop({ currentBuild, removeFromBuild, clearBuild, ha
       )}
       <section className={`rounded-2xl border overflow-hidden shadow-2xl transition-colors ${darkMode ? 'bg-slate-950 border-slate-800' : 'bg-white border-slate-200'}`}>
         <div className={`p-6 border-b flex justify-between items-center ${darkMode ? 'border-slate-800 bg-slate-900' : 'border-slate-200 bg-slate-50'}`}>
-          <h2 className={`text-xl font-bold flex items-center gap-2 italic ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
+          <h2 className={`text-xl font-bold flex items-center gap-2 italic ${isGold ? 'text-amber-400' : (darkMode ? 'text-slate-100' : 'text-slate-800')}`}>
             <Wrench className="text-blue-500" /> Assembly Station
           </h2>
           <div className="flex gap-3">
@@ -121,7 +121,10 @@ export default function Workshop({ currentBuild, removeFromBuild, clearBuild, ha
           </div>
         </div>
 
-        <div className={`p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 ${isGold ? 'bg-gradient-to-br from-amber-500/5 to-yellow-500/5' : ''}`}>
+        <div className={`p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 ${isGold ? 'bg-gradient-to-br from-amber-900/20 to-yellow-900/10' : ''}`}>
+            {isGold && (
+                <div className="col-span-full text-center text-[10px] font-black text-amber-500 uppercase tracking-widest bg-amber-500/10 py-2 rounded-lg border border-amber-500/20">✨ Gold Workbench Active: +25% PC Value ✨</div>
+            )}
             
             {/* Left Column: Core Components */}
             <div className="lg:col-span-8 space-y-6">

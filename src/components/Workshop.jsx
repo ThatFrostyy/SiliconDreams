@@ -170,7 +170,10 @@ export default function Workshop({ currentBuild, removeFromBuild, clearBuild, ha
             <p className="text-[10px] text-slate-500 uppercase font-black mb-1">System Performance</p>
             <div className="flex items-center gap-3">
               <div className={`p-2 rounded-lg ${darkMode ? 'bg-blue-500/10' : 'bg-blue-100'}`}><TrendingUp size={20} className="text-blue-400" /></div>
-              <span className={`text-3xl font-black tracking-tight ${darkMode ? 'text-white' : 'text-slate-800'}`}>{buildStats.totalPerf}</span>
+              <div>
+                <div className={`text-3xl font-black tracking-tight leading-none ${darkMode ? 'text-white' : 'text-slate-800'}`}>{buildStats.totalPerf}</div>
+                {buildStats.ramBonus && <div className="text-[9px] text-emerald-500 font-bold uppercase mt-1">+5% Dual Channel</div>}
+              </div>
             </div>
           </div>
           <div className="flex-1 min-w-[120px]">

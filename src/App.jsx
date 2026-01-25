@@ -48,10 +48,15 @@ const calculateBuildStats = (build) => {
   
   const ramParts = parts.filter(p => p.type === PART_TYPES.RAM);
   let perfMultiplier = 1;
+  let ramBonus = false;
+
   if (ramParts.length > 0) {
     const avgSpeed = ramParts.reduce((acc, r) => acc + (r.speed || 2133), 0) / ramParts.length;
     perfMultiplier = 1 + ((avgSpeed - 2133) / 10000); 
-    if (ramParts.length >= 2) perfMultiplier += 0.05; 
+    if (ramParts.length >= 2) {
+      perfMultiplier += 0.05; 
+      ramBonus = true;
+    }
   }
 
   let rawPerf = parts.reduce((acc, p) => acc + (p.perf || 0), 0);
@@ -71,7 +76,7 @@ const calculateBuildStats = (build) => {
 
   const totalPerf = Math.floor(rawPerf * perfMultiplier);
   
-  return { totalPower, totalPerf, bottleneckPenalty };
+  return { totalPower, totalPerf, bottleneckPenalty, ramBonus };
 };
 
 // Helper to load state from localStorage
@@ -406,11 +411,11 @@ export default function App() {
       if (order.req.partId) {
         if (!parts.find(p => p.id === order.req.partId)) { notify(`Missing required part!`, 'error'); return; }
       }
-    } else {
-      if (totalPerf < order.minPerf) {
-        notify("Performance too low. The customer refuses to pay.", "error");
-        return;
-      }
+    }
+
+    if (totalPerf < order.minPerf) {
+      notify(`Performance too low (${totalPerf}/${order.minPerf}). The customer refuses to pay.`, "error");
+      return;
     }
 
     // Reward Logic: Cover parts cost + 25% profit margin, capped at the customer's budget.

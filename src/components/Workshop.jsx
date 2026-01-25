@@ -79,13 +79,15 @@ export default function Workshop({ currentBuild, removeFromBuild, clearBuild, ha
     );
     const isComplete = missingParts.length === 0;
     
-    if (propStats) {
-        const powerOk = supplyPower >= propStats.totalPower && supplyPower > 0;
-        return { ...propStats, supplyPower, isComplete, powerOk, missingParts };
-    }
+    const powerOk = supplyPower >= (propStats?.totalPower || 0) && supplyPower > 0;
 
-    // Fallback if prop not provided
-    return { ...calculateBuildStats(currentBuild), supplyPower, isComplete, powerOk: supplyPower >= calculateBuildStats(currentBuild).totalPower && supplyPower > 0, missingParts };
+    return {
+      ...(propStats || { totalPerf: 0, totalPower: 0, ramBonus: false, bottleneckPenalty: 0 }),
+      supplyPower,
+      isComplete,
+      powerOk,
+      missingParts
+    };
   }, [currentBuild, propStats]);
 
   const isGold = achievements && achievements.includes('wealth_100k');

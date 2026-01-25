@@ -1,11 +1,17 @@
 // src/components/Inventory.jsx
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box, DollarSign, AlertTriangle, Microscope } from 'lucide-react';
 import { PART_TYPES } from '../data/constants';
 import { CategoryTabs, PartIcon } from './Shared';
 import { getModifierById, isUnreliable } from '../utils/modifiers';
 
 export default function Inventory({ inventory, addToBuild, sellPart, binPart, money, category = 'ALL', setCategory, darkMode, maxCapacity = 50, binningHistory = [] }) {
+
+  const filteredInventory = useMemo(() => {
+    if (category === 'ALL') return inventory;
+    return inventory.filter(p => p.type === category);
+  }, [inventory, category]);
+
   return (
     <section className={`rounded-2xl border overflow-hidden shadow-2xl transition-colors ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
       <div className={`p-6 ${darkMode ? 'bg-slate-800/50' : 'bg-slate-50'}`}>
@@ -35,14 +41,14 @@ export default function Inventory({ inventory, addToBuild, sellPart, binPart, mo
         <CategoryTabs current={category} set={setCategory} types={{ PC: 'PC', ...PART_TYPES }} darkMode={darkMode} />
       </div>
       <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[600px] overflow-y-auto">
-        {inventory.filter(p => category === 'ALL' || p.type === category).length === 0 ? (
+        {filteredInventory.length === 0 ? (
           <div className="col-span-full py-20 text-center text-slate-600">
             <Box size={48} className="mx-auto mb-4 opacity-10" />
             <p className="uppercase text-xs font-black tracking-widest">No matching parts</p>
             <button onClick={() => setCategory('ALL')} className="text-blue-500 text-[10px] mt-2 underline">Show All</button>
           </div>
         ) : (
-          inventory.filter(p => category === 'ALL' || p.type === category).map(part => {
+          filteredInventory.map(part => {
             const modifier = getModifierById(part.modifierId);
             
             return (

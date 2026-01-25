@@ -8,6 +8,8 @@ import { signInAnonymously } from "firebase/auth";
 import { auth, db } from "./utils/firebase";
 import { Analytics } from "@vercel/analytics/react"
 import { doc, getDoc, updateDoc, onSnapshot, collection, query, deleteDoc } from 'firebase/firestore';
+import { useGameStore } from './store/gameStore';
+import { generateRequest, generateOrderLocal, calculateBuildStats } from './utils/gameLogic';
 
 // Import Components
 import Header from './components/Header';
@@ -19,140 +21,46 @@ import Upgrades from './components/Upgrades';
 import Trading from './components/Trading';
 import Profile from './components/Profile';
 
-const generateRequest = (reputation = 0, marketingLevel = 0) => {
-  const vipChanceThreshold = 0.85 - (marketingLevel * 0.05); // Base 15% + 5% per level
-  const isVip = Math.random() > vipChanceThreshold;
-  
-  // Filter templates based on reputation to balance progression
-  const availableTemplates = REQUEST_TEMPLATES.filter(t => {
-    if (reputation < 25) return t.budget <= 1500; // Novice: Low budget only
-    if (reputation < 50) return t.budget <= 5000; // Trusted: Mid budget
-    if (reputation < 75) return t.budget <= 10000; // Expert: High budget
-    return true; // Tycoon: All jobs
-  });
-
-  const templates = availableTemplates.length > 0 ? availableTemplates : REQUEST_TEMPLATES;
-  const template = templates[Math.floor(Math.random() * templates.length)];
-  const budgetMultiplier = isVip ? 1.5 : 1;
-  
-  let targetPerf = 0;
-  // Use template's minPerf if specified, otherwise derive from budget
-  if (template.req && template.req.minPerf) {
-    targetPerf = Math.floor(template.req.minPerf * budgetMultiplier);
-  } else {
-    targetPerf = Math.floor((template.budget * budgetMultiplier) / 12);
-  }
-
-  // Cap performance requirement to achievable limits (max possible is ~650)
-  if (targetPerf > 600) targetPerf = 600;
-
-  return {
-    ...template,
-    id: `req_${Math.random().toString(36).substr(2, 5)}`,
-    type: 'REQUEST',
-    minPerf: targetPerf,
-    budget: Math.floor(template.budget * budgetMultiplier),
-    isVip,
-    title: isVip ? `VIP: ${template.title}` : template.title,
-    description: isVip ? `(VIP CLIENT) ${template.description}` : template.description
-  };
-};
-
-const generateOrderLocal = (activeOrders = [], excludeTitle = null) => {
-  const activeTitles = activeOrders.map(o => o.title);
-  if (excludeTitle) activeTitles.push(excludeTitle);
-  const available = ORDER_TEMPLATES.filter(t => !activeTitles.includes(t.title));
-  const template = available.length > 0 
-    ? available[Math.floor(Math.random() * available.length)]
-    : ORDER_TEMPLATES[Math.floor(Math.random() * ORDER_TEMPLATES.length)];
-  return {
-    ...template,
-    id: `ord_${Math.random().toString(36).substr(2, 5)}`,
-    type: 'STANDARD'
-  };
-};
-
-const calculateBuildStats = (build, skills = {}) => {
-  const parts = Object.values(build);
-  let totalPower = parts.reduce((acc, p) => acc + (p.power || 0), 0);
-  
-  // Optimization Skill Bonus
-  const powerReduction = 1 - ((skills.optimization || 0) * 0.02);
-  totalPower = Math.floor(totalPower * powerReduction);
-  
-  const ramParts = parts.filter(p => p.type === PART_TYPES.RAM);
-  let perfMultiplier = 1;
-  let ramBonus = false;
-
-  if (ramParts.length > 0) {
-    const avgSpeed = ramParts.reduce((acc, r) => acc + (r.speed || 2133), 0) / ramParts.length;
-    perfMultiplier = 1 + ((avgSpeed - 2133) / 10000); 
-    if (ramParts.length >= 2) {
-      perfMultiplier += 0.05; 
-      ramBonus = true;
-    }
-  }
-
-  let rawPerf = parts.reduce((acc, p) => acc + (p.perf || 0), 0);
-  
-  const cpu = parts.find(p => p.type === PART_TYPES.CPU);
-  const gpu = parts.find(p => p.type === PART_TYPES.GPU);
-  let bottleneckPenalty = 0;
-  
-  if (cpu && gpu) {
-      const cpuPerf = cpu.perf || 0;
-      const gpuPerf = gpu.perf || 0;
-      if (gpuPerf > cpuPerf * 1.5) {
-           bottleneckPenalty = gpuPerf - (cpuPerf * 1.5);
-           rawPerf -= bottleneckPenalty;
-      }
-  }
-
-  const totalPerf = Math.floor(rawPerf * perfMultiplier);
-
-  // Overclocking Skill Bonus
-  const ocBonus = 1 + ((skills.overclocking || 0) * 0.01);
-  const finalPerf = Math.floor(totalPerf * ocBonus);
-  
-  return { totalPower, totalPerf: finalPerf, bottleneckPenalty, ramBonus };
-};
-
-// Helper to load state from localStorage
-const loadState = (key, defaultValue) => {
-  try {
-    const saved = localStorage.getItem(key);
-    return saved ? JSON.parse(saved) : defaultValue;
-  } catch (e) {
-    return defaultValue;
-  }
-};
-
 export default function App() {
-  const [money, setMoney] = useState(() => loadState('money', 1200));
-  const [inventory, setInventory] = useState(() => loadState('inventory', []));
-  const [settings, setSettings] = useState(() => loadState('settings', { music: false, sfx: true, darkMode: true }));
+  // Store State
+  const money = useGameStore(state => state.money);
+  const inventory = useGameStore(state => state.inventory);
+  const settings = useGameStore(state => state.settings);
+  const activeOrders = useGameStore(state => state.activeOrders);
+  const activeRequests = useGameStore(state => state.activeRequests);
+  const skills = useGameStore(state => state.skills);
+  const builds = useGameStore(state => state.builds);
+  const activeBench = useGameStore(state => state.activeBench);
+  const ownedUpgrades = useGameStore(state => state.ownedUpgrades);
+  const achievements = useGameStore(state => state.achievements);
+  const jobHistory = useGameStore(state => state.jobHistory);
+  const view = useGameStore(state => state.view);
+  const reputation = useGameStore(state => state.reputation);
+  const jobsCompleted = useGameStore(state => state.jobsCompleted);
+  const orderTab = useGameStore(state => state.orderTab);
+  
+  // Store Actions
+  const setMoney = useGameStore(state => state.setMoney);
+  const setInventory = useGameStore(state => state.setInventory);
+  const setSettings = useGameStore(state => state.setSettings);
+  const setActiveOrders = useGameStore(state => state.setActiveOrders);
+  const setActiveRequests = useGameStore(state => state.setActiveRequests);
+  const setSkills = useGameStore(state => state.setSkills);
+  const setBuilds = useGameStore(state => state.setBuilds);
+  const setActiveBench = useGameStore(state => state.setActiveBench);
+  const setOwnedUpgrades = useGameStore(state => state.setOwnedUpgrades);
+  const setAchievements = useGameStore(state => state.setAchievements);
+  const setJobHistory = useGameStore(state => state.setJobHistory);
+  const setView = useGameStore(state => state.setView);
+  const setReputation = useGameStore(state => state.setReputation);
+  const setJobsCompleted = useGameStore(state => state.setJobsCompleted);
+  const setOrderTab = useGameStore(state => state.setOrderTab);
+  const initOrders = useGameStore(state => state.initOrders);
+  const resetGameStore = useGameStore(state => state.resetGame);
+
+  // Local UI State
   const [showSettings, setShowSettings] = useState(false);
-  const [activeOrders, setActiveOrders] = useState(() => loadState('activeOrders', (() => {
-    const o1 = generateOrderLocal([]);
-    const o2 = generateOrderLocal([o1]);
-    return [o1, o2];
-  })()));
-  const [skills, setSkills] = useState(() => {
-    const saved = loadState('skills', {});
-    const defaults = { negotiation: 0, barter: 0, marketing: 0, efficiency: 0, dealmaker: 0, overclocking: 0, logistics: 0, optimization: 0, connections: 0 };
-    return { ...defaults, ...saved };
-  });
-  const [activeRequests, setActiveRequests] = useState(() => loadState('activeRequests', [generateRequest(loadState('reputation', 50), (loadState('skills', {})).marketing || 0), generateRequest(loadState('reputation', 50), (loadState('skills', {})).marketing || 0)]));
-  const [builds, setBuilds] = useState(() => loadState('builds', { 0: {} }));
-  const [activeBench, setActiveBench] = useState(0);
-  const [ownedUpgrades, setOwnedUpgrades] = useState(() => loadState('ownedUpgrades', []));
-  const [achievements, setAchievements] = useState(() => loadState('achievements', []));
-  const [jobHistory, setJobHistory] = useState(() => loadState('jobHistory', []));
-  const [view, setView] = useState(() => loadState('view', 'workshop')); 
-  const [reputation, setReputation] = useState(() => loadState('reputation', 50));
-  const [jobsCompleted, setJobsCompleted] = useState(() => loadState('jobsCompleted', 0));
   const [inventoryCategory, setInventoryCategory] = useState('ALL');
-  const [orderTab, setOrderTab] = useState(() => loadState('orderTab', 'STANDARD'));
   const [message, setMessage] = useState({ text: 'Welcome to Silicon Dreams!', type: 'info' });
   const [user, setUser] = useState(null);
 
@@ -165,21 +73,10 @@ export default function App() {
     });
   };
   
-  // Save State Effects
-  useEffect(() => { localStorage.setItem('money', JSON.stringify(money)); }, [money]);
-  useEffect(() => { localStorage.setItem('inventory', JSON.stringify(inventory)); }, [inventory]);
-  useEffect(() => { localStorage.setItem('settings', JSON.stringify(settings)); }, [settings]);
-  useEffect(() => { localStorage.setItem('activeOrders', JSON.stringify(activeOrders)); }, [activeOrders]);
-  useEffect(() => { localStorage.setItem('activeRequests', JSON.stringify(activeRequests)); }, [activeRequests]);
-  useEffect(() => { localStorage.setItem('builds', JSON.stringify(builds)); }, [builds]);
-  useEffect(() => { localStorage.setItem('ownedUpgrades', JSON.stringify(ownedUpgrades)); }, [ownedUpgrades]);
-  useEffect(() => { localStorage.setItem('achievements', JSON.stringify(achievements)); }, [achievements]);
-  useEffect(() => { localStorage.setItem('jobHistory', JSON.stringify(jobHistory)); }, [jobHistory]);
-  useEffect(() => { localStorage.setItem('view', JSON.stringify(view)); }, [view]);
-  useEffect(() => { localStorage.setItem('orderTab', JSON.stringify(orderTab)); }, [orderTab]);
-  useEffect(() => { localStorage.setItem('reputation', JSON.stringify(reputation)); }, [reputation]);
-  useEffect(() => { localStorage.setItem('jobsCompleted', JSON.stringify(jobsCompleted)); }, [jobsCompleted]);
-  useEffect(() => { localStorage.setItem('skills', JSON.stringify(skills)); }, [skills]);
+  // Init Orders on load
+  useEffect(() => {
+    initOrders();
+  }, []);
 
   const buildStats = calculateBuildStats(currentBuild, skills);
   const netWorth = money + inventory.reduce((acc, item) => acc + (item.price || 0), 0);
@@ -233,17 +130,7 @@ export default function App() {
 
   const resetGame = () => {
     if (window.confirm("Are you sure you want to reset your game? All progress will be lost.")) {
-      setMoney(1200);
-      setInventory([]);
-      setSettings({ music: false, sfx: true, darkMode: true });
-      const o1 = generateOrderLocal([]);
-      const o2 = generateOrderLocal([o1]);
-      setActiveOrders([o1, o2]);
-      setActiveRequests([generateRequest(0, 0), generateRequest(0, 0)]);
-      setSkills({ negotiation: 0, barter: 0, marketing: 0, efficiency: 0, dealmaker: 0, overclocking: 0, logistics: 0, optimization: 0, connections: 0 });
-      setCurrentBuild({});
-      setView('workshop');
-      setOrderTab('STANDARD');
+      resetGameStore();
       setShowSettings(false);
       notify("Game Reset Successfully", "success");
     }

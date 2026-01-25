@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 import { Wrench, XCircle, ChevronRight, TrendingUp, Zap, ClipboardList, CheckCircle2, AlertTriangle, Cpu, Disc, Monitor, HardDrive, Save, Trash2, DollarSign } from 'lucide-react';
 import { PART_TYPES } from '../data/constants';
 import { PartIcon } from './Shared';
+import { calculateBuildStats } from '../utils/gameLogic';
 
 export default function Workshop({ currentBuild, removeFromBuild, clearBuild, handleSlotClick, darkMode, buildStats: propStats, inventory, onSaveBuild, onDisassemble, onSellBuild, activeBench, setActiveBench, ownedUpgrades, achievements }) {
   
@@ -42,12 +43,7 @@ export default function Workshop({ currentBuild, removeFromBuild, clearBuild, ha
     }
 
     // Fallback if prop not provided
-    const parts = Object.values(currentBuild);
-    const totalPower = parts.reduce((acc, p) => acc + (p.power || 0), 0);
-    const totalPerf = parts.reduce((acc, p) => acc + (p.perf || 0), 0);
-    const powerOk = supplyPower >= totalPower && supplyPower > 0;
-    
-    return { totalPower, totalPerf, supplyPower, isComplete, powerOk, missingParts };
+    return { ...calculateBuildStats(currentBuild), supplyPower, isComplete, powerOk: supplyPower >= calculateBuildStats(currentBuild).totalPower && supplyPower > 0, missingParts };
   }, [currentBuild, propStats]);
 
   const Slot = ({ type, label, slotKey, className = "" }) => {

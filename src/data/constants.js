@@ -151,13 +151,13 @@ export const REQUEST_TEMPLATES = [
   { 
     title: "Aspiring Streamer", 
     budget: 900, 
-    description: "I want to stream 1080p. I've heard the GTX 1660 Super is the sweet spot!", 
+    description: "I want to stream 1080p. I've heard the GTX 1660 Super and 16GB of RAM is the sweet spot!", 
     req: { partId: 'gpu_1660s', minRam: 16 } 
   },
   { 
     title: "The 'Silent' Accountant", 
     budget: 600, 
-    description: "I hate fan noise. Give me a high-efficiency PSU so the fans barely spin.", 
+    description: "I hate fan noise. Give me the 720W PSU so the fans barely spin.", 
     req: { partId: 'psu2' } // Requires the 750W Gold
   },
   { 
@@ -175,7 +175,7 @@ export const REQUEST_TEMPLATES = [
   { 
     title: "X3D Gaming", 
     budget: 2000, 
-    description: "I heard the X3D chips are the best for gaming. I want one!", 
+    description: "I heard the Ryzen 7 7800X3D cpu is the best for gaming. I want one!", 
     req: { partId: 'cpu_r7_7800x3d', minPerf: 200 } 
   },
 

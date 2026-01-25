@@ -4,10 +4,9 @@ import { Box, DollarSign, AlertTriangle, Microscope, X } from 'lucide-react';
 import { PART_TYPES } from '../data/constants';
 import { CategoryTabs, PartIcon } from './Shared';
 import { getModifierById, isUnreliable, MODIFIERS } from '../utils/modifiers';
-import { useGameStore } from '../store/gameStore';
 import { playSound } from '../utils/sound';
 
-export default function Inventory({ inventory, addToBuild, sellPart, binPart, money, category = 'ALL', setCategory, darkMode, maxCapacity = 50 }) {
+export default function Inventory({ inventory, addToBuild, sellPart, binPart, money, category = 'ALL', setCategory, darkMode, maxCapacity = 50, notify, settings, setCelebration }) {
 
   const filteredInventory = useMemo(() => {
     if (category === 'ALL') return inventory;
@@ -19,10 +18,6 @@ export default function Inventory({ inventory, addToBuild, sellPart, binPart, mo
   const [spinState, setSpinState] = useState('IDLE'); // IDLE, SPINNING, RESULT
   const [spinItems, setSpinItems] = useState([]);
   const [spinResult, setSpinResult] = useState(null);
-  
-  const notify = useGameStore(state => state.notify);
-  const settings = useGameStore(state => state.settings);
-  const setCelebration = useGameStore(state => state.setCelebration);
 
   const handleBinClick = (part) => {
     setBinningItem(part);

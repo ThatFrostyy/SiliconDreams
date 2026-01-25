@@ -20,7 +20,6 @@ export default function Inventory({ inventory, addToBuild, sellPart, binPart, mo
   const [spinItems, setSpinItems] = useState([]);
   const [spinResult, setSpinResult] = useState(null);
   
-  const notify = useGameStore(state => state.notify);
   const settings = useGameStore(state => state.settings);
   const setCelebration = useGameStore(state => state.setCelebration);
   const skills = useGameStore(state => state.skills);
@@ -41,7 +40,7 @@ export default function Inventory({ inventory, addToBuild, sellPart, binPart, mo
   };
 
   const startSpin = () => {
-    const result = binPart(binningItem, true); // Silent binning
+    const result = binPart(binningItem);
     if (!result) return; // Failed (money etc)
     
     setSpinResult(result);
@@ -77,7 +76,6 @@ export default function Inventory({ inventory, addToBuild, sellPart, binPart, mo
         } else {
              playSound('success', settings?.sfx);
         }
-        notify(`Binning Result: ${result.label}`, "success");
     }, 4000);
   };
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { BookOpen, ChevronLeft, Calendar, FileText } from 'lucide-react';
 import { DEVLOGS } from '../devlogs';
 
-export default function Devlogs({ darkMode, setView }) {
+export default function Devlogs({ darkMode }) {
   const [selectedLog, setSelectedLog] = useState(null);
 
   const renderContent = (text) => {

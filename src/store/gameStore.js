@@ -153,7 +153,7 @@ export const useGameStore = create(
       },
 
       // Binning / Testing
-      binPart: (part, silent = false) => {
+      binPart: (part) => {
         const { money, notify, settings, skills } = get();
         const COST = 50;
         
@@ -177,15 +177,13 @@ export const useGameStore = create(
             resultLabel = modifier.label;
             resultColor = modifier.color;
             
-            if (modifier.id === 'golden_chip' && !silent) {
+            if (modifier.id === 'golden_chip') {
                 set({ celebration: 'GOLDEN' });
             }
+            notify(`Binning Result: ${modifier.label}`, "success");
+            playSound('success', settings.sfx);
 
-            if (!silent) {
-                notify(`Binning Result: ${modifier.label}`, "success");
-                playSound('success', settings.sfx);
-            }
-        } else if (!silent) {
+        } else {
             notify("Binning Result: Average Chip (No change)", "info");
             playSound('click', settings.sfx);
         }

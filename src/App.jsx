@@ -288,7 +288,7 @@ export default function App() {
               onSellBuild={sellBuildInstant}
             />
           )}
-          {view === 'shop' && <Shop buyPart={buyPart} money={money} darkMode={settings.darkMode} skills={skills} buyPallet={buyPallet} />}
+          {view === 'shop' && <Shop buyPart={buyPart} money={money} darkMode={settings.darkMode} settings={settings} skills={skills} buyPallet={buyPallet} />}
           {view === 'inventory' && <Inventory inventory={inventory} addToBuild={addToBuild} sellPart={sellPart} category={inventoryCategory} setCategory={setInventoryCategory} darkMode={settings.darkMode} maxCapacity={50 + (skills.logistics * 5) + (ownedUpgrades.includes('storage_1') ? 50 : 0) + (ownedUpgrades.includes('storage_2') ? 100 : 0)} />}
           {view === 'upgrades' && <Upgrades darkMode={settings.darkMode} skills={skills} unlockSkill={unlockSkill} money={money} ownedUpgrades={ownedUpgrades} buyUpgrade={buyUpgrade} />}
           {view === 'trading' && <Trading inventory={inventory} onPostTrade={handlePostTrade} money={money} onBuyTrade={handleBuyTrade} onItemTrade={handleItemTrade} user={user} darkMode={settings.darkMode} netWorth={netWorth} />}

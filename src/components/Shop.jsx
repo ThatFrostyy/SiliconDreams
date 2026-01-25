@@ -4,8 +4,9 @@ import { ShoppingBag, Package, HelpCircle, X, PackageOpen } from 'lucide-react';
 import { PARTS_CATALOG, PART_TYPES } from '../data/constants';
 import { CategoryTabs, PartIcon } from './Shared';
 import { getModifierById } from '../utils/modifiers';
+import { playSound } from '../utils/sound';
 
-export default function Shop({ buyPart, money, darkMode, skills, buyPallet }) {
+export default function Shop({ buyPart, money, darkMode, skills, buyPallet, settings }) {
   const [shopCategory, setShopCategory] = useState('ALL');
   const [opening, setOpening] = useState(false);
   const [openedItems, setOpenedItems] = useState([]);
@@ -16,14 +17,23 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet }) {
   const handleBuyPallet = (type) => {
     const items = buyPallet(type);
     if (items) {
+      playSound('click', settings?.sfx);
       setOpenedItems(items);
       setOpening(true);
       setRevealStage('closed');
       
       // Animation Sequence
-      setTimeout(() => setRevealStage('shaking'), 100);
-      setTimeout(() => setRevealStage('opening'), 1000);
-      setTimeout(() => setRevealStage('revealed'), 1500);
+      setTimeout(() => {
+        setRevealStage('shaking');
+      }, 100);
+      setTimeout(() => {
+        setRevealStage('opening');
+        playSound('install', settings?.sfx); // Whoosh sound
+      }, 1200);
+      setTimeout(() => {
+        setRevealStage('revealed');
+        playSound('success', settings?.sfx); // Tada sound
+      }, 1600);
     }
   };
 
@@ -147,11 +157,12 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet }) {
 
       {/* Case Opener Modal */}
       {opening && (
-        <div className="fixed inset-0 z-[80] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className={`relative w-full max-w-2xl p-8 rounded-2xl flex flex-col items-center justify-center min-h-[400px] transition-all duration-500 ${darkMode ? 'bg-slate-900 border border-slate-700' : 'bg-white'}`}>
+        <div className="fixed inset-0 z-[80] bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+          <div className={`relative w-full max-w-3xl p-12 rounded-3xl flex flex-col items-center justify-center min-h-[500px] transition-all duration-500 shadow-2xl ${darkMode ? 'bg-slate-900 border border-slate-700' : 'bg-white'}`}>
             
             {revealStage !== 'revealed' ? (
               <div className={`transition-all duration-500 ${revealStage === 'shaking' ? 'animate-bounce' : ''} ${revealStage === 'opening' ? 'scale-150 opacity-0' : 'scale-100'}`}>
+                <div className="absolute inset-0 bg-blue-500/30 blur-[100px] rounded-full animate-pulse" />
                 <Package size={120} className="text-blue-500" />
               </div>
             ) : (
@@ -161,12 +172,12 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet }) {
                   {openedItems.map((item, idx) => {
                     const modifier = getModifierById(item.modifierId);
                     return (
-                      <div key={idx} className={`p-4 rounded-xl border bg-slate-800/50 border-slate-700 flex flex-col items-center gap-2 animate-in slide-in-from-bottom-4 fade-in duration-500`} style={{animationDelay: `${idx * 100}ms`}}>
-                        <div className={`p-3 rounded-lg bg-slate-700/50`}><PartIcon type={item.type} /></div>
+                      <div key={idx} className={`p-6 rounded-2xl border bg-slate-800/80 border-slate-600 flex flex-col items-center gap-3 animate-in slide-in-from-bottom-8 fade-in duration-700 hover:scale-105 transition-transform shadow-xl`} style={{animationDelay: `${idx * 150}ms`}}>
+                        <div className={`p-4 rounded-xl bg-slate-700/50 shadow-inner`}><PartIcon type={item.type} size={32} /></div>
                         <div className="text-center">
-                          <div className={`text-xs font-bold uppercase mb-1 ${modifier.color}`}>{modifier.label}</div>
-                          <div className="font-bold text-sm text-white leading-tight">{item.originalName || item.name}</div>
-                          <div className="text-[10px] text-slate-400 mt-1">${item.price}</div>
+                          <div className={`text-xs font-black uppercase mb-1 tracking-wider ${modifier.color}`}>{modifier.label}</div>
+                          <div className="font-bold text-base text-white leading-tight mb-1">{item.originalName || item.name}</div>
+                          <div className="text-xs text-slate-400 font-mono bg-black/20 px-2 py-1 rounded-full inline-block">${item.price}</div>
                         </div>
                       </div>
                     );
@@ -181,7 +192,7 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet }) {
               </div>
             )}
 
-            {revealStage === 'opening' && <div className="absolute inset-0 flex items-center justify-center"><div className="w-full h-1 bg-white animate-ping" /></div>}
+            {revealStage === 'opening' && <div className="absolute inset-0 flex items-center justify-center"><div className="w-full h-1 bg-white animate-ping opacity-50" /></div>}
           </div>
         </div>
       )}

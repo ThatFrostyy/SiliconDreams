@@ -258,7 +258,7 @@ export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onI
         <div className="flex justify-between items-end">
             <h2 className="text-xl font-bold flex items-center gap-2"><ShoppingCart className="text-blue-500" /> Global Market</h2>
             <div className="w-1/2">
-                <CategoryTabs current={marketFilter} set={setMarketFilter} types={PART_TYPES} darkMode={darkMode} />
+                <CategoryTabs current={marketFilter} set={setMarketFilter} types={{ PC: 'PC', ...PART_TYPES }} darkMode={darkMode} />
             </div>
         </div>
 

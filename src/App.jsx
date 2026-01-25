@@ -639,12 +639,6 @@ export default function App() {
 
         {/* RIGHT COLUMN: ORDERS */}
         <div className="lg:col-span-4 space-y-4">
-          <div className="flex justify-end">
-            <button onClick={reshuffleJobs} className="text-[10px] flex items-center gap-1 bg-slate-200 hover:bg-slate-300 text-slate-600 px-2 py-1 rounded transition-colors dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700">
-              <RefreshCw size={12} /> Reshuffle ($50)
-            </button>
-          </div>
-
           <div className={`flex p-1 rounded-lg border ${settings.darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
             <button onClick={() => setOrderTab('STANDARD')} className={`flex-1 py-2 text-xs font-bold rounded uppercase tracking-wider transition-all ${orderTab === 'STANDARD' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}>Standard</button>
             <button onClick={() => setOrderTab('REQUESTS')} className={`flex-1 py-2 text-xs font-bold rounded uppercase tracking-wider transition-all ${orderTab === 'REQUESTS' ? 'bg-purple-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}>Requests</button>
@@ -656,6 +650,12 @@ export default function App() {
             inventoryCount={inventory.length} 
             darkMode={settings.darkMode}
           />
+
+          <div className="flex justify-end">
+            <button onClick={reshuffleJobs} className="text-[10px] flex items-center gap-1 bg-slate-200 hover:bg-slate-300 text-slate-600 px-2 py-1 rounded transition-colors dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700">
+              <RefreshCw size={12} /> Reshuffle ($50)
+            </button>
+          </div>
 
           {/* Saved Builds Section (Moved from Workshop) */}
           {inventory && inventory.some(i => i.type === 'PC') && (

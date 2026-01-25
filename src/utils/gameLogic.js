@@ -42,10 +42,19 @@ export const generateRequest = (reputation = 0, marketingLevel = 0) => {
 export const generateOrderLocal = (activeOrders = [], excludeTitle = null) => {
   const activeTitles = activeOrders.map(o => o.title);
   if (excludeTitle) activeTitles.push(excludeTitle);
-  const available = ORDER_TEMPLATES.filter(t => !activeTitles.includes(t.title));
-  const template = available.length > 0 
-    ? available[Math.floor(Math.random() * available.length)]
-    : ORDER_TEMPLATES[Math.floor(Math.random() * ORDER_TEMPLATES.length)];
+
+  let available = ORDER_TEMPLATES.filter(t => !activeTitles.includes(t.title));
+
+  // If all orders are active, fallback to the full list *minus* the one we're excluding
+  if (available.length === 0 && excludeTitle) {
+    available = ORDER_TEMPLATES.filter(t => t.title !== excludeTitle);
+  } else if (available.length === 0) {
+    // If still no options (i.e., all orders are active and none to exclude), use the full list
+    available = ORDER_TEMPLATES;
+  }
+
+  const template = available[Math.floor(Math.random() * available.length)];
+
   return {
     ...template,
     id: `ord_${Math.random().toString(36).substr(2, 5)}`,

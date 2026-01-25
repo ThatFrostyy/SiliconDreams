@@ -172,11 +172,50 @@ export const useGameStore = create(
             return;
         }
 
-        // Validation Logic (Simplified for brevity, but robust)
-        if (part.type === PART_TYPES.RAM && !currentBuild[PART_TYPES.MOTHERBOARD]) {
-            notify("Install a motherboard first.", "error"); return;
+        // --- VALIDATION LOGIC ---
+        
+        // 1. Motherboard Dependency
+        if (part.type !== PART_TYPES.MOTHERBOARD && !currentBuild[PART_TYPES.MOTHERBOARD]) {
+             notify("Install a motherboard first.", "error"); return;
         }
-        // ... (Add other validations here if needed, or rely on UI to prevent clicks)
+
+        // 2. Socket Compatibility
+        if (part.type === PART_TYPES.CPU) {
+            if (part.socket !== currentBuild[PART_TYPES.MOTHERBOARD].socket) {
+                notify(`Socket mismatch! CPU is ${part.socket} but Board is ${currentBuild[PART_TYPES.MOTHERBOARD].socket}.`, 'error');
+                return;
+            }
+        }
+        if (part.type === PART_TYPES.MOTHERBOARD && currentBuild[PART_TYPES.CPU]) {
+            if (part.socket !== currentBuild[PART_TYPES.CPU].socket) {
+                notify(`Socket mismatch! Board is ${part.socket} but CPU is ${currentBuild[PART_TYPES.CPU].socket}.`, 'error');
+                return;
+            }
+        }
+
+        // 3. RAM Validation
+        if (part.type === PART_TYPES.RAM) {
+            const mobo = currentBuild[PART_TYPES.MOTHERBOARD];
+            if (part.memoryType !== mobo.memoryType) { notify(`Incompatible RAM! Board requires ${mobo.memoryType}.`, "error"); return; }
+            
+            const installedRamCount = Object.keys(currentBuild).filter(k => k.startsWith(PART_TYPES.RAM)).length;
+            if (installedRamCount >= mobo.ramSlots) { notify(`All ${mobo.ramSlots} RAM slots are full!`, "error"); return; }
+        }
+
+        // 4. Storage Validation
+        if (part.type === PART_TYPES.STORAGE) {
+            const mobo = currentBuild[PART_TYPES.MOTHERBOARD];
+            const interfaceType = part.interface === 'M.2' ? 'm2' : (part.interface === 'PATA' ? 'pata' : 'sata');
+            const maxSlots = mobo[`${interfaceType}Slots`] || 0;
+            const usedSlots = Object.values(currentBuild).filter(p => p.type === PART_TYPES.STORAGE && p.interface === part.interface).length;
+            if (usedSlots >= maxSlots) { notify(`No free ${part.interface} slots available!`, "error"); return; }
+        }
+
+        // 5. Duplicate Parts (Single Slot items)
+        if (part.type !== PART_TYPES.RAM && part.type !== PART_TYPES.STORAGE && currentBuild[part.type]) {
+            notify(`Already have a ${part.type} in this build.`, 'error');
+            return;
+        }
 
         // Determine Slot Key
         let key = part.type;
@@ -387,6 +426,12 @@ export const useGameStore = create(
         window.location.reload();
       }
     }),
-    { name: 'pc-tycoon-storage' }
+    { 
+      name: 'pc-tycoon-storage',
+      partialize: (state) => {
+        const { user, message, ...rest } = state;
+        return rest;
+      }
+    }
   )
 );

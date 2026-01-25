@@ -38,6 +38,7 @@ export default function App() {
   const jobsCompleted = useGameStore(state => state.jobsCompleted);
   const orderTab = useGameStore(state => state.orderTab);
   const message = useGameStore(state => state.message);
+  const user = useGameStore(state => state.user);
   
   // --- STORE ACTIONS ---
   const setMoney = useGameStore(state => state.setMoney);
@@ -60,7 +61,6 @@ export default function App() {
   const setUser = useGameStore(state => state.setUser);
   const notify = useGameStore(state => state.notify);
   const checkAchievements = useGameStore(state => state.checkAchievements);
-  const user = useGameStore(state => state.user);
   
   // Action Handlers
   const { buyPart, buyPallet, sellPart, addToBuild, removeFromBuild, clearBuild, saveBuildToInventory, fulfillOrder, reshuffleJobs, buyUpgrade, unlockSkill } = useGameStore();

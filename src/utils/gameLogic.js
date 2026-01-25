@@ -48,8 +48,11 @@ export const generateOrderLocal = (activeOrders = [], excludeTitle = null) => {
   // If all orders are active, fallback to the full list *minus* the one we're excluding
   if (available.length === 0 && excludeTitle) {
     available = ORDER_TEMPLATES.filter(t => t.title !== excludeTitle);
-  } else if (available.length === 0) {
-    // If still no options (i.e., all orders are active and none to exclude), use the full list
+  }
+
+  // If we're still empty (either from the start, or because the exclude left us with nothing),
+  // fall back to the full list. This prevents crashes.
+  if (available.length === 0) {
     available = ORDER_TEMPLATES;
   }
 

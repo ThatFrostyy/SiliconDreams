@@ -19,7 +19,6 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet, sett
   const handleBuyPallet = (type) => {
     const items = buyPallet(type);
     if (items) {
-      const hasLegendary = items.some(i => i.modifierId === 'legendary');
       playSound('click', settings?.sfx);
       setOpenedItems(items);
       setOpening(true);
@@ -52,6 +51,22 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet, sett
     setOpenedItems([]);
     setRevealStage('closed');
   };
+
+  const [confettiParticles] = useState(() => {
+    return [...Array(50)].map((_, i) => {
+      const randomLeft = Math.random() * 100;
+      const randomColor = ['#f59e0b', '#ef4444', '#3b82f6', '#10b981', '#8b5cf6'][Math.floor(Math.random() * 5)];
+      const randomDuration = Math.random() * 2 + 2;
+      const randomDelay = Math.random() * 0.5;
+      return {
+        id: i,
+        left: `${randomLeft}%`,
+        backgroundColor: randomColor,
+        animationDuration: `${randomDuration}s`,
+        animationDelay: `${randomDelay}s`,
+      }
+    });
+  });
 
   return (
     <section className={`rounded-2xl border overflow-hidden shadow-2xl transition-colors ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
@@ -170,13 +185,13 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet, sett
         <div className="fixed inset-0 z-[80] bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
           {showConfetti && (
             <div className="absolute inset-0 pointer-events-none overflow-hidden z-50">
-              {[...Array(50)].map((_, i) => (
-                <div key={i} className="absolute w-3 h-3 rounded-sm animate-confetti" style={{
-                    left: `${Math.random() * 100}%`,
+              {confettiParticles.map((particle) => (
+                <div key={particle.id} className="absolute w-3 h-3 rounded-sm animate-confetti" style={{
+                    left: particle.left,
                     top: `-20px`,
-                    backgroundColor: ['#f59e0b', '#ef4444', '#3b82f6', '#10b981', '#8b5cf6'][Math.floor(Math.random() * 5)],
-                    animationDuration: `${Math.random() * 2 + 2}s`,
-                    animationDelay: `${Math.random() * 0.5}s`
+                    backgroundColor: particle.backgroundColor,
+                    animationDuration: particle.animationDuration,
+                    animationDelay: particle.animationDelay
                 }} />
               ))}
             </div>

@@ -32,7 +32,7 @@ export default function Inventory({ inventory, addToBuild, sellPart, binPart, mo
   };
 
   const startSpin = () => {
-    const result = binPart(binningItem);
+    const result = binPart(binningItem, true);
     if (!result) return; // Failed (money etc)
     
     setSpinResult(result);

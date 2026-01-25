@@ -55,7 +55,8 @@ export default function Inventory({ inventory, addToBuild, sellPart, binPart, mo
     }, 100);
 
     // Trigger animation
-    setTimeout(() => { setSpinState('SPINNING'); }, 50);
+    setSpinState('READY');
+    setTimeout(() => { setSpinState('SPINNING'); }, 100);
     
     setTimeout(() => { 
         clearInterval(tickInterval);

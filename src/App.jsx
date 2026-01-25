@@ -151,7 +151,7 @@ export default function App() {
              deleteDoc(docRef).catch(e => console.error("Error clearing inbox", e));
           }
         }
-      }
+      });
     });
     return () => unsub();
   }, [user]);

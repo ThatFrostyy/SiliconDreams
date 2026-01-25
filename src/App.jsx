@@ -1,7 +1,7 @@
 // src/App.jsx
 import React, { useState, useEffect } from 'react';
 import { CheckCircle2, AlertTriangle, ClipboardList, Wrench, ShoppingBag, Box, Settings, Volume2, VolumeX, Music, Moon, Sun, X, TrendingUp, Globe, Trash2, RefreshCw, Monitor, DollarSign, Crown } from 'lucide-react';
-import { PART_TYPES, REQUEST_TEMPLATES, ORDER_TEMPLATES } from './data/constants';
+import { PART_TYPES, REQUEST_TEMPLATES, ORDER_TEMPLATES, SKILLS } from './data/constants';
 import { playSound, musicPlayer } from './utils/sound';
 import { SpeedInsights } from "@vercel/speed-insights/react"
 import { signInAnonymously } from "firebase/auth";
@@ -19,8 +19,9 @@ import Upgrades from './components/Upgrades';
 import Trading from './components/Trading';
 import Profile from './components/Profile';
 
-const generateRequest = (reputation = 0) => {
-  const isVip = Math.random() > 0.85; // 15% chance for VIP
+const generateRequest = (reputation = 0, marketingLevel = 0) => {
+  const vipChanceThreshold = 0.85 - (marketingLevel * 0.05); // Base 15% + 5% per level
+  const isVip = Math.random() > vipChanceThreshold;
   
   // Filter templates based on reputation to balance progression
   const availableTemplates = REQUEST_TEMPLATES.filter(t => {
@@ -128,7 +129,8 @@ export default function App() {
     const o2 = generateOrderLocal([o1]);
     return [o1, o2];
   })()));
-  const [activeRequests, setActiveRequests] = useState(() => loadState('activeRequests', [generateRequest(loadState('reputation', 50)), generateRequest(loadState('reputation', 50))]));
+  const [skills, setSkills] = useState(() => loadState('skills', { negotiation: 0, barter: 0, marketing: 0, efficiency: 0 }));
+  const [activeRequests, setActiveRequests] = useState(() => loadState('activeRequests', [generateRequest(loadState('reputation', 50), loadState('skills', {marketing:0}).marketing), generateRequest(loadState('reputation', 50), loadState('skills', {marketing:0}).marketing)]));
   const [currentBuild, setCurrentBuild] = useState(() => loadState('currentBuild', {}));
   const [view, setView] = useState(() => loadState('view', 'workshop')); 
   const [reputation, setReputation] = useState(() => loadState('reputation', 50));
@@ -149,6 +151,7 @@ export default function App() {
   useEffect(() => { localStorage.setItem('orderTab', JSON.stringify(orderTab)); }, [orderTab]);
   useEffect(() => { localStorage.setItem('reputation', JSON.stringify(reputation)); }, [reputation]);
   useEffect(() => { localStorage.setItem('jobsCompleted', JSON.stringify(jobsCompleted)); }, [jobsCompleted]);
+  useEffect(() => { localStorage.setItem('skills', JSON.stringify(skills)); }, [skills]);
 
   const buildStats = calculateBuildStats(currentBuild);
 
@@ -180,7 +183,8 @@ export default function App() {
       const o1 = generateOrderLocal([]);
       const o2 = generateOrderLocal([o1]);
       setActiveOrders([o1, o2]);
-      setActiveRequests([generateRequest(0), generateRequest(0)]);
+      setActiveRequests([generateRequest(0, 0), generateRequest(0, 0)]);
+      setSkills({ negotiation: 0, barter: 0, marketing: 0, efficiency: 0 });
       setCurrentBuild({});
       setView('workshop');
       setOrderTab('STANDARD');
@@ -230,8 +234,10 @@ export default function App() {
 
   // Shop Logic
   const buyPart = (part) => {
-    if (money >= part.price) {
-      setMoney(prev => prev - part.price);
+    const discount = 1 - (skills.barter * 0.03);
+    const finalPrice = Math.floor(part.price * discount);
+    if (money >= finalPrice) {
+      setMoney(prev => prev - finalPrice);
       setInventory(prev => [...prev, { ...part, invId: Math.random().toString(36).substr(2, 5) }]);
       notify(`Bought ${part.name}`, 'success');
     } else {
@@ -470,7 +476,7 @@ export default function App() {
     const o1 = generateOrderLocal([]);
     const o2 = generateOrderLocal([o1]);
     setActiveOrders([o1, o2]);
-    setActiveRequests([generateRequest(reputation), generateRequest(reputation)]);
+    setActiveRequests([generateRequest(reputation, skills.marketing), generateRequest(reputation, skills.marketing)]);
     notify("Jobs reshuffled!", "success");
     playSound('click', settings.sfx);
   };
@@ -521,6 +527,10 @@ export default function App() {
     // Reward Logic: Cover parts cost + 25% profit margin, capped at the customer's budget.
     // This prevents players from spending very little to get a huge fixed reward,
     // and encourages building quality PCs up to the budget limit.
+    
+    // Apply Negotiation Bonus (Silver Tongue)
+    const negotiationBonus = 1 + (skills.negotiation * 0.05);
+    
     let calculatedReward = Math.floor(totalCost * 1.25);
     if (calculatedReward > order.budget) calculatedReward = order.budget;
     
@@ -528,19 +538,40 @@ export default function App() {
     
     setMoney(prev => prev + calculatedReward);
     setCurrentBuild({});
-    setReputation(prev => Math.min(prev + (order.type === 'REQUEST' ? (order.isVip ? 10 : 5) : 2), 100));
+    
+    // Apply Efficiency Bonus (Fast Learner)
+    const repGain = (order.type === 'REQUEST' ? (order.isVip ? 10 : 5) : 2);
+    const efficiencyBonus = 1 + (skills.efficiency * 0.10);
+    setReputation(prev => Math.min(prev + Math.floor(repGain * efficiencyBonus), 100));
     setJobsCompleted(prev => prev + 1);
     notify(`Order Delivered! Earned $${calculatedReward} (Profit: $${profit})`, 'success');
     
     if (order.type === 'REQUEST') {
       setActiveRequests(prev => prev.filter(o => o.id !== order.id));
-      setTimeout(() => setActiveRequests(prev => [...prev, generateRequest(reputation)]), 2000);
+      setTimeout(() => setActiveRequests(prev => [...prev, generateRequest(reputation, skills.marketing)]), 2000);
     } else {
       setActiveOrders(prev => prev.filter(o => o.id !== order.id));
       setTimeout(() => setActiveOrders(prev => {
         const newOrder = generateOrderLocal(prev, order.title);
         return [...prev, newOrder];
       }), 2000);
+    }
+  };
+
+  const unlockSkill = (skillId) => {
+    const skill = SKILLS[skillId];
+    const currentLevel = skills[skillId];
+    
+    if (currentLevel >= skill.maxLevel) return;
+    
+    const cost = Math.floor(skill.baseCost * Math.pow(skill.costMultiplier, currentLevel));
+    if (money >= cost) {
+      setMoney(m => m - cost);
+      setSkills(prev => ({ ...prev, [skillId]: currentLevel + 1 }));
+      notify(`Unlocked ${skill.name} Level ${currentLevel + 1}!`, "success");
+      playSound('success', settings.sfx);
+    } else {
+      notify("Not enough money!", "error");
     }
   };
 
@@ -630,11 +661,11 @@ export default function App() {
               onSellBuild={sellBuildInstant}
             />
           )}
-          {view === 'shop' && <Shop buyPart={buyPart} money={money} darkMode={settings.darkMode} />}
+          {view === 'shop' && <Shop buyPart={buyPart} money={money} darkMode={settings.darkMode} skills={skills} />}
           {view === 'inventory' && <Inventory inventory={inventory} addToBuild={addToBuild} sellPart={sellPart} category={inventoryCategory} setCategory={setInventoryCategory} darkMode={settings.darkMode} />}
-          {view === 'upgrades' && <Upgrades darkMode={settings.darkMode} />}
+          {view === 'upgrades' && <Upgrades darkMode={settings.darkMode} skills={skills} unlockSkill={unlockSkill} money={money} />}
           {view === 'trading' && <Trading inventory={inventory} onPostTrade={handlePostTrade} money={money} onBuyTrade={handleBuyTrade} onItemTrade={handleItemTrade} user={user} darkMode={settings.darkMode} />}
-          {view === 'profile' && <Profile user={user} money={money} reputation={reputation} jobsCompleted={jobsCompleted} darkMode={settings.darkMode} />}
+          {view === 'profile' && <Profile user={user} money={money} reputation={reputation} jobsCompleted={jobsCompleted} darkMode={settings.darkMode} skills={skills} />}
         </div>
 
         {/* RIGHT COLUMN: ORDERS */}

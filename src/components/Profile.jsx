@@ -1,8 +1,8 @@
 import React from 'react';
-import { User, Trophy, Briefcase, DollarSign, Star, Award } from 'lucide-react';
-import { REPUTATION_TITLES } from '../data/constants';
+import { User, Trophy, Briefcase, DollarSign, Star, Award, Zap } from 'lucide-react';
+import { REPUTATION_TITLES, SKILLS } from '../data/constants';
 
-export default function Profile({ user, money, reputation, jobsCompleted, darkMode }) {
+export default function Profile({ user, money, reputation, jobsCompleted, darkMode, skills }) {
   const getReputationTitle = (rep) => {
     return REPUTATION_TITLES.find(t => rep >= t.threshold)?.title || "Unknown";
   };
@@ -62,6 +62,32 @@ export default function Profile({ user, money, reputation, jobsCompleted, darkMo
         <p className="text-xs mt-4 opacity-60 leading-relaxed">
           Complete jobs successfully to increase your reputation. Higher reputation will unlock VIP clients and special requests in future updates.
         </p>
+      </div>
+
+      {/* Active Buffs Panel */}
+      <div className={`mt-6 p-6 rounded-xl border ${darkMode ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
+        <h3 className="font-bold flex items-center gap-2 mb-4"><Zap className="text-yellow-500" fill="currentColor" /> Active Effects</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {Object.entries(skills).map(([skillId, level]) => {
+            if (level === 0) return null;
+            const skillDef = SKILLS[skillId];
+            return (
+              <div key={skillId} className={`p-3 rounded-lg border flex justify-between items-center ${darkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'}`}>
+                <div>
+                  <div className="font-bold text-sm">{skillDef.name}</div>
+                  <div className="text-[10px] opacity-60">{skillDef.description}</div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xs font-black text-emerald-500">Lvl {level}</div>
+                  <div className="text-[10px] font-mono opacity-70">{skillDef.effect.replace('/ Lvl', '')}</div>
+                </div>
+              </div>
+            );
+          })}
+          {Object.values(skills).every(l => l === 0) && (
+            <div className="col-span-full text-center text-xs opacity-50 py-4">No active skills. Visit Upgrades to unlock buffs.</div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -39,6 +39,13 @@ export const REPUTATION_TITLES = [
   { threshold: 0, title: "Garage Tinkerer" }
 ];
 
+export const SKILLS = {
+  negotiation: { id: 'negotiation', name: "Silver Tongue", description: "Increases job payouts.", effect: "+5% Payout / Lvl", maxLevel: 5, baseCost: 500, costMultiplier: 1.5 },
+  barter: { id: 'barter', name: "Bulk Buyer", description: "Reduces component costs.", effect: "-3% Shop Prices / Lvl", maxLevel: 5, baseCost: 800, costMultiplier: 1.5 },
+  marketing: { id: 'marketing', name: "Influencer", description: "Attracts VIP clients.", effect: "+5% VIP Chance / Lvl", maxLevel: 5, baseCost: 1000, costMultiplier: 2.0 },
+  efficiency: { id: 'efficiency', name: "Fast Learner", description: "Gains reputation faster.", effect: "+10% Reputation / Lvl", maxLevel: 5, baseCost: 300, costMultiplier: 1.5 }
+};
+
 export const PARTS_CATALOG = [
   // --- CPUs (Chronological) ---
   { id: 'cpu_q9550', type: PART_TYPES.CPU, name: 'Core 2 Quad Q9550', price: 15, socket: SOCKETS.LGA775, power: 95, perf: 12 },

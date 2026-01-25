@@ -4,8 +4,10 @@ import { ShoppingBag } from 'lucide-react';
 import { PARTS_CATALOG, PART_TYPES } from '../data/constants';
 import { CategoryTabs, PartIcon } from './Shared';
 
-export default function Shop({ buyPart, money, darkMode }) {
+export default function Shop({ buyPart, money, darkMode, skills }) {
   const [shopCategory, setShopCategory] = useState('ALL');
+  
+  const getDiscountedPrice = (price) => Math.floor(price * (1 - ((skills?.barter || 0) * 0.03)));
 
   return (
     <section className={`rounded-2xl border overflow-hidden shadow-2xl transition-colors ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
@@ -16,7 +18,11 @@ export default function Shop({ buyPart, money, darkMode }) {
         <CategoryTabs current={shopCategory} set={setShopCategory} types={{ PC: 'PC', ...PART_TYPES }} darkMode={darkMode} />
       </div>
       <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[600px] overflow-y-auto custom-scrollbar">
-        {PARTS_CATALOG.filter(p => shopCategory === 'ALL' || p.type === shopCategory).map(part => (
+        {PARTS_CATALOG.filter(p => shopCategory === 'ALL' || p.type === shopCategory).map(part => {
+          const finalPrice = getDiscountedPrice(part.price);
+          const hasDiscount = finalPrice < part.price;
+          
+          return (
           <div key={part.id} className={`p-4 rounded-xl border flex justify-between items-center hover:border-emerald-500/50 transition-all group ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
             <div className="flex items-center gap-3">
               <div className={`p-2 rounded-lg group-hover:bg-emerald-900 transition-colors ${darkMode ? 'bg-slate-700' : 'bg-white shadow-sm'}`}>
@@ -55,13 +61,14 @@ export default function Shop({ buyPart, money, darkMode }) {
             </div>
             <button 
               onClick={() => buyPart(part)}
-              disabled={money < part.price}
-              className={`px-4 py-2 rounded-lg font-bold transition-all flex items-center gap-1 text-xs ${money >= part.price ? 'bg-emerald-600 hover:bg-emerald-500 text-white active:scale-95' : 'bg-slate-700 text-slate-500 cursor-not-allowed'}`}
+              disabled={money < finalPrice}
+              className={`px-4 py-2 rounded-lg font-bold transition-all flex flex-col items-end gap-0 text-xs ${money >= finalPrice ? 'bg-emerald-600 hover:bg-emerald-500 text-white active:scale-95' : 'bg-slate-700 text-slate-500 cursor-not-allowed'}`}
             >
-              ${part.price}
+              <span>${finalPrice}</span>
+              {hasDiscount && <span className="text-[9px] line-through opacity-60">${part.price}</span>}
             </button>
           </div>
-        ))}
+        )})}
       </div>
     </section>
   );

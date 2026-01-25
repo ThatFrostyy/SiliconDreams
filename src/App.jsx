@@ -1,7 +1,7 @@
 // src/App.jsx
 import React, { useState, useEffect } from 'react';
 import { CheckCircle2, AlertTriangle, ClipboardList, Wrench, ShoppingBag, Box, Settings, Volume2, VolumeX, Music, Moon, Sun, X, TrendingUp, Globe, Trash2, RefreshCw, Monitor, DollarSign, Crown } from 'lucide-react';
-import { PART_TYPES, REQUEST_TEMPLATES, ORDER_TEMPLATES, SKILLS } from './data/constants';
+import { PART_TYPES, REQUEST_TEMPLATES, ORDER_TEMPLATES, SKILLS, OFFICE_UPGRADES } from './data/constants';
 import { playSound, musicPlayer } from './utils/sound';
 import { SpeedInsights } from "@vercel/speed-insights/react"
 import { signInAnonymously } from "firebase/auth";
@@ -139,7 +139,10 @@ export default function App() {
     return { ...defaults, ...saved };
   });
   const [activeRequests, setActiveRequests] = useState(() => loadState('activeRequests', [generateRequest(loadState('reputation', 50), (loadState('skills', {})).marketing || 0), generateRequest(loadState('reputation', 50), (loadState('skills', {})).marketing || 0)]));
-  const [currentBuild, setCurrentBuild] = useState(() => loadState('currentBuild', {}));
+  const [builds, setBuilds] = useState(() => loadState('builds', { 0: {} }));
+  const [activeBench, setActiveBench] = useState(0);
+  const [ownedUpgrades, setOwnedUpgrades] = useState(() => loadState('ownedUpgrades', []));
+  const [achievements, setAchievements] = useState(() => loadState('achievements', []));
   const [view, setView] = useState(() => loadState('view', 'workshop')); 
   const [reputation, setReputation] = useState(() => loadState('reputation', 50));
   const [jobsCompleted, setJobsCompleted] = useState(() => loadState('jobsCompleted', 0));
@@ -147,6 +150,15 @@ export default function App() {
   const [orderTab, setOrderTab] = useState(() => loadState('orderTab', 'STANDARD'));
   const [message, setMessage] = useState({ text: 'Welcome to Silicon Dreams!', type: 'info' });
   const [user, setUser] = useState(null);
+
+  const currentBuild = builds[activeBench] || {};
+  const setCurrentBuild = (value) => {
+    setBuilds(prev => {
+      const current = prev[activeBench] || {};
+      const next = typeof value === 'function' ? value(current) : value;
+      return { ...prev, [activeBench]: next };
+    });
+  };
   
   // Save State Effects
   useEffect(() => { localStorage.setItem('money', JSON.stringify(money)); }, [money]);
@@ -154,7 +166,9 @@ export default function App() {
   useEffect(() => { localStorage.setItem('settings', JSON.stringify(settings)); }, [settings]);
   useEffect(() => { localStorage.setItem('activeOrders', JSON.stringify(activeOrders)); }, [activeOrders]);
   useEffect(() => { localStorage.setItem('activeRequests', JSON.stringify(activeRequests)); }, [activeRequests]);
-  useEffect(() => { localStorage.setItem('currentBuild', JSON.stringify(currentBuild)); }, [currentBuild]);
+  useEffect(() => { localStorage.setItem('builds', JSON.stringify(builds)); }, [builds]);
+  useEffect(() => { localStorage.setItem('ownedUpgrades', JSON.stringify(ownedUpgrades)); }, [ownedUpgrades]);
+  useEffect(() => { localStorage.setItem('achievements', JSON.stringify(achievements)); }, [achievements]);
   useEffect(() => { localStorage.setItem('view', JSON.stringify(view)); }, [view]);
   useEffect(() => { localStorage.setItem('orderTab', JSON.stringify(orderTab)); }, [orderTab]);
   useEffect(() => { localStorage.setItem('reputation', JSON.stringify(reputation)); }, [reputation]);
@@ -170,6 +184,24 @@ export default function App() {
       return () => clearTimeout(timer);
     }
   }, [message]);
+
+  // Achievement Check
+  useEffect(() => {
+    const newAchievements = [];
+    if (money >= 100000 && !achievements.includes('wealth_100k')) {
+        newAchievements.push('wealth_100k');
+        notify("Achievement Unlocked: Tycoon ($100k Earned)!", "success");
+    }
+    if (buildStats.totalPerf >= 500 && !achievements.includes('perf_500')) {
+        newAchievements.push('perf_500');
+        notify("Achievement Unlocked: Power User (500+ Perf PC)!", "success");
+    }
+
+    if (newAchievements.length > 0) {
+        setAchievements(prev => [...prev, ...newAchievements]);
+        playSound('success', settings.sfx);
+    }
+  }, [money, buildStats.totalPerf, achievements]);
 
   // Music Effect
   useEffect(() => {
@@ -568,6 +600,18 @@ export default function App() {
     }
   };
 
+  const buyUpgrade = (upgrade) => {
+    if (ownedUpgrades.includes(upgrade.id)) return;
+    if (money >= upgrade.cost) {
+      setMoney(m => m - upgrade.cost);
+      setOwnedUpgrades(prev => [...prev, upgrade.id]);
+      notify(`Purchased ${upgrade.name}!`, "success");
+      playSound('success', settings.sfx);
+    } else {
+      notify("Not enough money!", "error");
+    }
+  };
+
   const unlockSkill = (skillId) => {
     const skill = SKILLS[skillId];
     const currentLevel = skills[skillId];
@@ -672,10 +716,10 @@ export default function App() {
             />
           )}
           {view === 'shop' && <Shop buyPart={buyPart} money={money} darkMode={settings.darkMode} skills={skills} />}
-          {view === 'inventory' && <Inventory inventory={inventory} addToBuild={addToBuild} sellPart={sellPart} category={inventoryCategory} setCategory={setInventoryCategory} darkMode={settings.darkMode} maxCapacity={50 + (skills.logistics * 5)} />}
-          {view === 'upgrades' && <Upgrades darkMode={settings.darkMode} skills={skills} unlockSkill={unlockSkill} money={money} />}
+          {view === 'inventory' && <Inventory inventory={inventory} addToBuild={addToBuild} sellPart={sellPart} category={inventoryCategory} setCategory={setInventoryCategory} darkMode={settings.darkMode} maxCapacity={50 + (skills.logistics * 5) + (ownedUpgrades.includes('storage_1') ? 50 : 0)} />}
+          {view === 'upgrades' && <Upgrades darkMode={settings.darkMode} skills={skills} unlockSkill={unlockSkill} money={money} ownedUpgrades={ownedUpgrades} buyUpgrade={buyUpgrade} />}
           {view === 'trading' && <Trading inventory={inventory} onPostTrade={handlePostTrade} money={money} onBuyTrade={handleBuyTrade} onItemTrade={handleItemTrade} user={user} darkMode={settings.darkMode} />}
-          {view === 'profile' && <Profile user={user} money={money} reputation={reputation} jobsCompleted={jobsCompleted} darkMode={settings.darkMode} skills={skills} />}
+          {view === 'profile' && <Profile user={user} money={money} reputation={reputation} jobsCompleted={jobsCompleted} darkMode={settings.darkMode} skills={skills} achievements={achievements} />}
         </div>
 
         {/* RIGHT COLUMN: ORDERS */}

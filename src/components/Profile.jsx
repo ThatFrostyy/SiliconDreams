@@ -1,8 +1,8 @@
 import React from 'react';
 import { User, Trophy, Briefcase, DollarSign, Star, Award, Zap } from 'lucide-react';
-import { REPUTATION_TITLES, SKILLS } from '../data/constants';
+import { REPUTATION_TITLES, SKILLS, ACHIEVEMENTS } from '../data/constants';
 
-export default function Profile({ user, money, reputation, jobsCompleted, darkMode, skills }) {
+export default function Profile({ user, money, reputation, jobsCompleted, darkMode, skills, achievements }) {
   const getReputationTitle = (rep) => {
     return REPUTATION_TITLES.find(t => rep >= t.threshold)?.title || "Unknown";
   };
@@ -87,6 +87,28 @@ export default function Profile({ user, money, reputation, jobsCompleted, darkMo
           {Object.values(skills).every(l => l === 0) && (
             <div className="col-span-full text-center text-xs opacity-50 py-4">No active skills. Visit Upgrades to unlock buffs.</div>
           )}
+        </div>
+      </div>
+
+      {/* Achievements Panel */}
+      <div className={`mt-6 p-6 rounded-xl border ${darkMode ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
+        <h3 className="font-bold flex items-center gap-2 mb-4"><Trophy className="text-purple-500" fill="currentColor" /> Achievements</h3>
+        <div className="grid grid-cols-1 gap-3">
+            {ACHIEVEMENTS.map(ach => {
+                const unlocked = achievements && achievements.includes(ach.id);
+                return (
+                    <div key={ach.id} className={`p-4 rounded-lg border flex justify-between items-center ${unlocked ? (darkMode ? 'bg-purple-900/20 border-purple-500/30' : 'bg-purple-50 border-purple-200') : (darkMode ? 'bg-slate-900 border-slate-800 opacity-50' : 'bg-slate-50 border-slate-200 opacity-50')}`}>
+                        <div>
+                            <h4 className={`font-bold text-sm ${unlocked ? 'text-purple-400' : 'text-slate-500'}`}>{ach.title}</h4>
+                            <p className="text-xs opacity-70">{ach.description}</p>
+                        </div>
+                        <div className="text-right">
+                            {unlocked ? <span className="text-[10px] font-bold bg-purple-500 text-white px-2 py-1 rounded-full">UNLOCKED</span> : <span className="text-[10px] font-bold bg-slate-700 text-slate-400 px-2 py-1 rounded-full">LOCKED</span>}
+                            <div className="text-[10px] mt-1 opacity-60">Reward: {ach.reward}</div>
+                        </div>
+                    </div>
+                );
+            })}
         </div>
       </div>
     </div>

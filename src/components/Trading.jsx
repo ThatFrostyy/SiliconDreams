@@ -143,7 +143,7 @@ export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onI
             {/* Left: Inventory Selection */}
             <div className="lg:col-span-7 space-y-4">
                 <div className="flex gap-2 overflow-x-auto pb-2">
-                    <button onClick={() => setSellFilter('PC')} className={`px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${sellFilter === 'PC' ? 'bg-blue-500 text-white' : 'bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400'}`}>PCs</button>
+                    <button onClick={() => setSellFilter('PC')} className={`px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${sellFilter === 'PC' ? 'bg-blue-500 text-white' : 'bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400'}`}>PC</button>
                     <CategoryTabs current={sellFilter} set={setSellFilter} types={PART_TYPES} darkMode={darkMode} />
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[300px] overflow-y-auto p-1">

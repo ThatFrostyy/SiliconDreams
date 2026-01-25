@@ -4,7 +4,7 @@ import { Wrench, XCircle, ChevronRight, TrendingUp, Zap, ClipboardList, CheckCir
 import { PART_TYPES } from '../data/constants';
 import { PartIcon } from './Shared';
 
-export default function Workshop({ currentBuild, removeFromBuild, clearBuild, handleSlotClick, darkMode, buildStats: propStats, inventory, onSaveBuild, onDisassemble, onSellBuild }) {
+export default function Workshop({ currentBuild, removeFromBuild, clearBuild, handleSlotClick, darkMode, buildStats: propStats, inventory, onSaveBuild, onDisassemble, onSellBuild, activeBench, setActiveBench, ownedUpgrades, achievements }) {
   
   const mobo = currentBuild[PART_TYPES.MOTHERBOARD];
   const ramSlotCount = mobo?.ramSlots || 4;
@@ -92,8 +92,20 @@ export default function Workshop({ currentBuild, removeFromBuild, clearBuild, ha
     );
   };
 
+  const isGold = achievements && achievements.includes('wealth_100k');
+
   return (
     <div className="space-y-6">
+      {ownedUpgrades && ownedUpgrades.includes('bench_2') && (
+        <div className="flex gap-2">
+            <button onClick={() => setActiveBench(0)} className={`flex-1 py-2 rounded-lg font-bold text-xs uppercase tracking-wider transition-all ${activeBench === 0 ? 'bg-blue-600 text-white shadow-lg' : 'bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-400'}`}>
+                Workbench 1
+            </button>
+            <button onClick={() => setActiveBench(1)} className={`flex-1 py-2 rounded-lg font-bold text-xs uppercase tracking-wider transition-all ${activeBench === 1 ? 'bg-blue-600 text-white shadow-lg' : 'bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-400'}`}>
+                Workbench 2
+            </button>
+        </div>
+      )}
       <section className={`rounded-2xl border overflow-hidden shadow-2xl transition-colors ${darkMode ? 'bg-slate-950 border-slate-800' : 'bg-white border-slate-200'}`}>
         <div className={`p-6 border-b flex justify-between items-center ${darkMode ? 'border-slate-800 bg-slate-900' : 'border-slate-200 bg-slate-50'}`}>
           <h2 className={`text-xl font-bold flex items-center gap-2 italic ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
@@ -109,7 +121,7 @@ export default function Workshop({ currentBuild, removeFromBuild, clearBuild, ha
           </div>
         </div>
 
-        <div className="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className={`p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 ${isGold ? 'bg-gradient-to-br from-amber-500/5 to-yellow-500/5' : ''}`}>
             
             {/* Left Column: Core Components */}
             <div className="lg:col-span-8 space-y-6">

@@ -54,6 +54,16 @@ export const SKILLS = {
   logistics: { id: 'logistics', category: 'Operations', name: "Logistics", description: "Increases inventory capacity.", effect: "+5 Slots / Lvl", maxLevel: 5, baseCost: 400, costMultiplier: 1.3 },
 };
 
+export const OFFICE_UPGRADES = {
+  storage_1: { id: 'storage_1', category: 'Office', name: "Expanded Storage", description: "Adds 50 slots to inventory.", cost: 2000 },
+  bench_2: { id: 'bench_2', category: 'Office', name: "Second Workbench", description: "Build two PCs at once.", cost: 5000 }
+};
+
+export const ACHIEVEMENTS = [
+  { id: 'wealth_100k', title: "Tycoon", description: "Earn $100,000", reward: "Gold Workbench Skin" },
+  { id: 'perf_500', title: "Power User", description: "Build a PC with 500+ Performance", reward: "Master Builder Title" }
+];
+
 export const PARTS_CATALOG = [
   // --- CPUs (Chronological) ---
   { id: 'cpu_q9550', type: PART_TYPES.CPU, name: 'Core 2 Quad Q9550', price: 15, socket: SOCKETS.LGA775, power: 95, perf: 12 },

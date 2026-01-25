@@ -4,7 +4,7 @@ import { Box, DollarSign } from 'lucide-react';
 import { PART_TYPES } from '../data/constants';
 import { CategoryTabs, PartIcon } from './Shared';
 
-export default function Inventory({ inventory, addToBuild, sellPart, category = 'ALL', setCategory, darkMode }) {
+export default function Inventory({ inventory, addToBuild, sellPart, category = 'ALL', setCategory, darkMode, maxCapacity = 50 }) {
   return (
     <section className={`rounded-2xl border overflow-hidden shadow-2xl transition-colors ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
       <div className={`p-6 ${darkMode ? 'bg-slate-800/50' : 'bg-slate-50'}`}>
@@ -13,7 +13,7 @@ export default function Inventory({ inventory, addToBuild, sellPart, category = 
             <Box /> Local Storage
           </h2>
           <span className={`text-xs font-bold ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-            Capacity: {inventory.length} / 50
+            Capacity: {inventory.length} / {maxCapacity}
           </span>
         </div>
         <CategoryTabs current={category} set={setCategory} types={{ PC: 'PC', ...PART_TYPES }} darkMode={darkMode} />

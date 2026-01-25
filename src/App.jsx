@@ -72,7 +72,7 @@ const generateOrderLocal = (activeOrders = [], excludeTitle = null) => {
   };
 };
 
-const calculateBuildStats = (build) => {
+const calculateBuildStats = (build, skills = {}) => {
   const parts = Object.values(build);
   const totalPower = parts.reduce((acc, p) => acc + (p.power || 0), 0);
   
@@ -105,8 +105,12 @@ const calculateBuildStats = (build) => {
   }
 
   const totalPerf = Math.floor(rawPerf * perfMultiplier);
+
+  // Overclocking Skill Bonus
+  const ocBonus = 1 + ((skills.overclocking || 0) * 0.01);
+  const finalPerf = Math.floor(totalPerf * ocBonus);
   
-  return { totalPower, totalPerf, bottleneckPenalty, ramBonus };
+  return { totalPower, totalPerf: finalPerf, bottleneckPenalty, ramBonus };
 };
 
 // Helper to load state from localStorage
@@ -129,8 +133,12 @@ export default function App() {
     const o2 = generateOrderLocal([o1]);
     return [o1, o2];
   })()));
-  const [skills, setSkills] = useState(() => loadState('skills', { negotiation: 0, barter: 0, marketing: 0, efficiency: 0 }));
-  const [activeRequests, setActiveRequests] = useState(() => loadState('activeRequests', [generateRequest(loadState('reputation', 50), loadState('skills', {marketing:0}).marketing), generateRequest(loadState('reputation', 50), loadState('skills', {marketing:0}).marketing)]));
+  const [skills, setSkills] = useState(() => {
+    const saved = loadState('skills', {});
+    const defaults = { negotiation: 0, barter: 0, marketing: 0, efficiency: 0, dealmaker: 0, overclocking: 0, logistics: 0 };
+    return { ...defaults, ...saved };
+  });
+  const [activeRequests, setActiveRequests] = useState(() => loadState('activeRequests', [generateRequest(loadState('reputation', 50), (loadState('skills', {})).marketing || 0), generateRequest(loadState('reputation', 50), (loadState('skills', {})).marketing || 0)]));
   const [currentBuild, setCurrentBuild] = useState(() => loadState('currentBuild', {}));
   const [view, setView] = useState(() => loadState('view', 'workshop')); 
   const [reputation, setReputation] = useState(() => loadState('reputation', 50));
@@ -153,7 +161,7 @@ export default function App() {
   useEffect(() => { localStorage.setItem('jobsCompleted', JSON.stringify(jobsCompleted)); }, [jobsCompleted]);
   useEffect(() => { localStorage.setItem('skills', JSON.stringify(skills)); }, [skills]);
 
-  const buildStats = calculateBuildStats(currentBuild);
+  const buildStats = calculateBuildStats(currentBuild, skills);
 
   // Notifications
   useEffect(() => {
@@ -184,7 +192,7 @@ export default function App() {
       const o2 = generateOrderLocal([o1]);
       setActiveOrders([o1, o2]);
       setActiveRequests([generateRequest(0, 0), generateRequest(0, 0)]);
-      setSkills({ negotiation: 0, barter: 0, marketing: 0, efficiency: 0 });
+      setSkills({ negotiation: 0, barter: 0, marketing: 0, efficiency: 0, dealmaker: 0, overclocking: 0, logistics: 0 });
       setCurrentBuild({});
       setView('workshop');
       setOrderTab('STANDARD');
@@ -247,7 +255,8 @@ export default function App() {
 
   // Sell Logic (Half Price)
   const sellPart = (part) => {
-    const sellPrice = Math.floor(part.price * (part.type === 'PC' ? 0.8 : 0.5));
+    const dealmakerBonus = 1 + (skills.dealmaker * 0.05);
+    const sellPrice = Math.floor(part.price * (part.type === 'PC' ? 0.8 : 0.5) * dealmakerBonus);
     setMoney(prev => prev + sellPrice);
     setInventory(prev => prev.filter(p => p.invId !== part.invId));
     notify(`Sold ${part.name} for $${sellPrice}`, 'success');
@@ -309,7 +318,8 @@ export default function App() {
 
   const sellBuildInstant = (pcItem) => {
      setInventory(prev => prev.filter(i => i.invId !== pcItem.invId));
-     const sellPrice = Math.floor(pcItem.price * 0.8); // Instant sell penalty
+     const dealmakerBonus = 1 + (skills.dealmaker * 0.05);
+     const sellPrice = Math.floor(pcItem.price * 0.8 * dealmakerBonus); // Instant sell penalty
      setMoney(m => m + sellPrice);
      notify(`Sold PC for $${sellPrice}`, "success");
      playSound('cash', settings.sfx);
@@ -662,7 +672,7 @@ export default function App() {
             />
           )}
           {view === 'shop' && <Shop buyPart={buyPart} money={money} darkMode={settings.darkMode} skills={skills} />}
-          {view === 'inventory' && <Inventory inventory={inventory} addToBuild={addToBuild} sellPart={sellPart} category={inventoryCategory} setCategory={setInventoryCategory} darkMode={settings.darkMode} />}
+          {view === 'inventory' && <Inventory inventory={inventory} addToBuild={addToBuild} sellPart={sellPart} category={inventoryCategory} setCategory={setInventoryCategory} darkMode={settings.darkMode} maxCapacity={50 + (skills.logistics * 5)} />}
           {view === 'upgrades' && <Upgrades darkMode={settings.darkMode} skills={skills} unlockSkill={unlockSkill} money={money} />}
           {view === 'trading' && <Trading inventory={inventory} onPostTrade={handlePostTrade} money={money} onBuyTrade={handleBuyTrade} onItemTrade={handleItemTrade} user={user} darkMode={settings.darkMode} />}
           {view === 'profile' && <Profile user={user} money={money} reputation={reputation} jobsCompleted={jobsCompleted} darkMode={settings.darkMode} skills={skills} />}

@@ -40,10 +40,18 @@ export const REPUTATION_TITLES = [
 ];
 
 export const SKILLS = {
-  negotiation: { id: 'negotiation', name: "Silver Tongue", description: "Increases job payouts.", effect: "+5% Payout / Lvl", maxLevel: 5, baseCost: 500, costMultiplier: 1.5 },
-  barter: { id: 'barter', name: "Bulk Buyer", description: "Reduces component costs.", effect: "-3% Shop Prices / Lvl", maxLevel: 5, baseCost: 800, costMultiplier: 1.5 },
-  marketing: { id: 'marketing', name: "Influencer", description: "Attracts VIP clients.", effect: "+5% VIP Chance / Lvl", maxLevel: 5, baseCost: 1000, costMultiplier: 2.0 },
-  efficiency: { id: 'efficiency', name: "Fast Learner", description: "Gains reputation faster.", effect: "+10% Reputation / Lvl", maxLevel: 5, baseCost: 300, costMultiplier: 1.5 }
+  // Business
+  negotiation: { id: 'negotiation', category: 'Business', name: "Silver Tongue", description: "Increases job payouts.", effect: "+5% Payout / Lvl", maxLevel: 5, baseCost: 500, costMultiplier: 1.5 },
+  marketing: { id: 'marketing', category: 'Business', name: "Influencer", description: "Attracts VIP clients.", effect: "+5% VIP Chance / Lvl", maxLevel: 5, baseCost: 1000, costMultiplier: 2.0 },
+  dealmaker: { id: 'dealmaker', category: 'Business', name: "Deal Maker", description: "Better sell prices for parts.", effect: "+5% Sell Price / Lvl", maxLevel: 5, baseCost: 600, costMultiplier: 1.4 },
+
+  // Technical
+  efficiency: { id: 'efficiency', category: 'Technical', name: "Fast Learner", description: "Gains reputation faster.", effect: "+10% Reputation / Lvl", maxLevel: 5, baseCost: 300, costMultiplier: 1.5 },
+  overclocking: { id: 'overclocking', category: 'Technical', name: "Overclocker", description: "Boosts total system performance.", effect: "+1% Perf / Lvl", maxLevel: 5, baseCost: 1500, costMultiplier: 1.8 },
+  
+  // Operations
+  barter: { id: 'barter', category: 'Operations', name: "Bulk Buyer", description: "Reduces component costs.", effect: "-3% Shop Prices / Lvl", maxLevel: 5, baseCost: 800, costMultiplier: 1.5 },
+  logistics: { id: 'logistics', category: 'Operations', name: "Logistics", description: "Increases inventory capacity.", effect: "+5 Slots / Lvl", maxLevel: 5, baseCost: 400, costMultiplier: 1.3 },
 };
 
 export const PARTS_CATALOG = [

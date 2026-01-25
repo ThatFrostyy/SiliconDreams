@@ -1,9 +1,12 @@
 // src/components/Upgrades.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { TrendingUp, Lock, Check, ArrowUpCircle } from 'lucide-react';
 import { SKILLS } from '../data/constants';
 
 export default function Upgrades({ darkMode, skills, unlockSkill, money }) {
+  const [activeCategory, setActiveCategory] = useState('Business');
+  const categories = ['Business', 'Technical', 'Operations'];
+
   return (
     <section className={`rounded-2xl border overflow-hidden shadow-xl ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
       <div className={`p-6 border-b ${darkMode ? 'bg-slate-800/50 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
@@ -12,9 +15,20 @@ export default function Upgrades({ darkMode, skills, unlockSkill, money }) {
         </h2>
         <p className="text-xs opacity-60 mt-1">Invest in your skills to improve efficiency and profits.</p>
       </div>
+
+      {/* Category Tabs */}
+      <div className={`flex border-b ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
+        {categories.map(cat => (
+          <button
+            key={cat}
+            onClick={() => setActiveCategory(cat)}
+            className={`flex-1 py-3 text-xs font-bold uppercase tracking-wider transition-colors ${activeCategory === cat ? (darkMode ? 'bg-slate-800 text-white' : 'bg-slate-100 text-blue-600') : 'text-slate-500 hover:text-slate-400'}`}
+          >{cat}</button>
+        ))}
+      </div>
       
       <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-        {Object.values(SKILLS).map(skill => {
+        {Object.values(SKILLS).filter(s => s.category === activeCategory).map(skill => {
           const currentLevel = skills[skill.id];
           const isMaxed = currentLevel >= skill.maxLevel;
           const cost = Math.floor(skill.baseCost * Math.pow(skill.costMultiplier, currentLevel));

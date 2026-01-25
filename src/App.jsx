@@ -74,7 +74,11 @@ const generateOrderLocal = (activeOrders = [], excludeTitle = null) => {
 
 const calculateBuildStats = (build, skills = {}) => {
   const parts = Object.values(build);
-  const totalPower = parts.reduce((acc, p) => acc + (p.power || 0), 0);
+  let totalPower = parts.reduce((acc, p) => acc + (p.power || 0), 0);
+  
+  // Optimization Skill Bonus
+  const powerReduction = 1 - ((skills.optimization || 0) * 0.02);
+  totalPower = Math.floor(totalPower * powerReduction);
   
   const ramParts = parts.filter(p => p.type === PART_TYPES.RAM);
   let perfMultiplier = 1;
@@ -135,7 +139,7 @@ export default function App() {
   })()));
   const [skills, setSkills] = useState(() => {
     const saved = loadState('skills', {});
-    const defaults = { negotiation: 0, barter: 0, marketing: 0, efficiency: 0, dealmaker: 0, overclocking: 0, logistics: 0 };
+    const defaults = { negotiation: 0, barter: 0, marketing: 0, efficiency: 0, dealmaker: 0, overclocking: 0, logistics: 0, optimization: 0, connections: 0 };
     return { ...defaults, ...saved };
   });
   const [activeRequests, setActiveRequests] = useState(() => loadState('activeRequests', [generateRequest(loadState('reputation', 50), (loadState('skills', {})).marketing || 0), generateRequest(loadState('reputation', 50), (loadState('skills', {})).marketing || 0)]));
@@ -203,6 +207,17 @@ export default function App() {
     }
   }, [money, buildStats.totalPerf, achievements]);
 
+  // Console Cheats
+  useEffect(() => {
+    window.cheat_unlockSkin = () => {
+      if (!achievements.includes('wealth_100k')) {
+        setAchievements(prev => [...prev, 'wealth_100k']);
+        notify("Cheat Activated: Gold Workbench Unlocked!", "success");
+        playSound('success', settings.sfx);
+      }
+    };
+  }, [achievements, settings.sfx]);
+
   // Music Effect
   useEffect(() => {
     musicPlayer.toggle(settings.music);
@@ -224,7 +239,7 @@ export default function App() {
       const o2 = generateOrderLocal([o1]);
       setActiveOrders([o1, o2]);
       setActiveRequests([generateRequest(0, 0), generateRequest(0, 0)]);
-      setSkills({ negotiation: 0, barter: 0, marketing: 0, efficiency: 0, dealmaker: 0, overclocking: 0, logistics: 0 });
+      setSkills({ negotiation: 0, barter: 0, marketing: 0, efficiency: 0, dealmaker: 0, overclocking: 0, logistics: 0, optimization: 0, connections: 0 });
       setCurrentBuild({});
       setView('workshop');
       setOrderTab('STANDARD');
@@ -288,7 +303,8 @@ export default function App() {
   // Sell Logic (Half Price)
   const sellPart = (part) => {
     const dealmakerBonus = 1 + (skills.dealmaker * 0.05);
-    const sellPrice = Math.floor(part.price * (part.type === 'PC' ? 0.8 : 0.5) * dealmakerBonus);
+    const showroomBonus = (part.type === 'PC' && ownedUpgrades.includes('showroom')) ? 1.05 : 1;
+    const sellPrice = Math.floor(part.price * (part.type === 'PC' ? 0.8 : 0.5) * dealmakerBonus * showroomBonus);
     setMoney(prev => prev + sellPrice);
     setInventory(prev => prev.filter(p => p.invId !== part.invId));
     notify(`Sold ${part.name} for $${sellPrice}`, 'success');
@@ -351,7 +367,8 @@ export default function App() {
   const sellBuildInstant = (pcItem) => {
      setInventory(prev => prev.filter(i => i.invId !== pcItem.invId));
      const dealmakerBonus = 1 + (skills.dealmaker * 0.05);
-     const sellPrice = Math.floor(pcItem.price * 0.8 * dealmakerBonus); // Instant sell penalty
+     const showroomBonus = ownedUpgrades.includes('showroom') ? 1.05 : 1;
+     const sellPrice = Math.floor(pcItem.price * 0.8 * dealmakerBonus * showroomBonus); // Instant sell penalty
      setMoney(m => m + sellPrice);
      notify(`Sold PC for $${sellPrice}`, "success");
      playSound('cash', settings.sfx);
@@ -513,8 +530,9 @@ export default function App() {
   };
 
   const reshuffleJobs = () => {
-    if (money < 50) { notify("Not enough money to reshuffle ($50)", "error"); return; }
-    setMoney(m => m - 50);
+    const cost = Math.floor(50 * (1 - (skills.connections * 0.10)));
+    if (money < cost) { notify(`Not enough money to reshuffle ($${cost})`, "error"); return; }
+    setMoney(m => m - cost);
     const o1 = generateOrderLocal([]);
     const o2 = generateOrderLocal([o1]);
     setActiveOrders([o1, o2]);
@@ -716,7 +734,7 @@ export default function App() {
             />
           )}
           {view === 'shop' && <Shop buyPart={buyPart} money={money} darkMode={settings.darkMode} skills={skills} />}
-          {view === 'inventory' && <Inventory inventory={inventory} addToBuild={addToBuild} sellPart={sellPart} category={inventoryCategory} setCategory={setInventoryCategory} darkMode={settings.darkMode} maxCapacity={50 + (skills.logistics * 5) + (ownedUpgrades.includes('storage_1') ? 50 : 0)} />}
+          {view === 'inventory' && <Inventory inventory={inventory} addToBuild={addToBuild} sellPart={sellPart} category={inventoryCategory} setCategory={setInventoryCategory} darkMode={settings.darkMode} maxCapacity={50 + (skills.logistics * 5) + (ownedUpgrades.includes('storage_1') ? 50 : 0) + (ownedUpgrades.includes('storage_2') ? 100 : 0)} />}
           {view === 'upgrades' && <Upgrades darkMode={settings.darkMode} skills={skills} unlockSkill={unlockSkill} money={money} ownedUpgrades={ownedUpgrades} buyUpgrade={buyUpgrade} />}
           {view === 'trading' && <Trading inventory={inventory} onPostTrade={handlePostTrade} money={money} onBuyTrade={handleBuyTrade} onItemTrade={handleItemTrade} user={user} darkMode={settings.darkMode} />}
           {view === 'profile' && <Profile user={user} money={money} reputation={reputation} jobsCompleted={jobsCompleted} darkMode={settings.darkMode} skills={skills} achievements={achievements} />}
@@ -738,7 +756,7 @@ export default function App() {
 
           <div className="flex justify-end">
             <button onClick={reshuffleJobs} className="text-[10px] flex items-center gap-1 bg-slate-200 hover:bg-slate-300 text-slate-600 px-2 py-1 rounded transition-colors dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700">
-              <RefreshCw size={12} /> Reshuffle ($50)
+              <RefreshCw size={12} /> Reshuffle (${Math.floor(50 * (1 - (skills.connections * 0.10)))})
             </button>
           </div>
 

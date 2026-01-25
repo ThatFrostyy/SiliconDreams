@@ -48,15 +48,19 @@ export const SKILLS = {
   // Technical
   efficiency: { id: 'efficiency', category: 'Technical', name: "Fast Learner", description: "Gains reputation faster.", effect: "+10% Reputation / Lvl", maxLevel: 5, baseCost: 300, costMultiplier: 1.5 },
   overclocking: { id: 'overclocking', category: 'Technical', name: "Overclocker", description: "Boosts total system performance.", effect: "+1% Perf / Lvl", maxLevel: 5, baseCost: 1500, costMultiplier: 1.8 },
+  optimization: { id: 'optimization', category: 'Technical', name: "Power Efficiency", description: "Reduces power draw of parts.", effect: "-2% Power / Lvl", maxLevel: 5, baseCost: 400, costMultiplier: 1.4 },
   
   // Operations
   barter: { id: 'barter', category: 'Operations', name: "Bulk Buyer", description: "Reduces component costs.", effect: "-3% Shop Prices / Lvl", maxLevel: 5, baseCost: 800, costMultiplier: 1.5 },
   logistics: { id: 'logistics', category: 'Operations', name: "Logistics", description: "Increases inventory capacity.", effect: "+5 Slots / Lvl", maxLevel: 5, baseCost: 400, costMultiplier: 1.3 },
+  connections: { id: 'connections', category: 'Operations', name: "Networking", description: "Reduces job reshuffle cost.", effect: "-10% Cost / Lvl", maxLevel: 5, baseCost: 200, costMultiplier: 1.5 },
 };
 
 export const OFFICE_UPGRADES = {
   storage_1: { id: 'storage_1', category: 'Office', name: "Expanded Storage", description: "Adds 50 slots to inventory.", cost: 2000 },
-  bench_2: { id: 'bench_2', category: 'Office', name: "Second Workbench", description: "Build two PCs at once.", cost: 5000 }
+  storage_2: { id: 'storage_2', category: 'Office', name: "Warehouse Space", description: "Adds 100 slots to inventory.", cost: 5000 },
+  bench_2: { id: 'bench_2', category: 'Office', name: "Second Workbench", description: "Build two PCs at once.", cost: 5000 },
+  showroom: { id: 'showroom', category: 'Office', name: "Showroom", description: "Increases PC sell value by 5%.", cost: 8000 }
 };
 
 export const ACHIEVEMENTS = [

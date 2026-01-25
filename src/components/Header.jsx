@@ -1,6 +1,6 @@
 // src/components/Header.jsx
 import React from 'react';
-import { Monitor, DollarSign, Wrench, ShoppingBag, Box, Settings, TrendingUp, Globe } from 'lucide-react';
+import { Monitor, DollarSign, Wrench, ShoppingBag, Box, Settings, TrendingUp, Globe, User } from 'lucide-react';
 
 export default function Header({ money, view, setView, inventoryCount, toggleSettings, darkMode }) {
   return (
@@ -41,6 +41,9 @@ export default function Header({ money, view, setView, inventoryCount, toggleSet
           <DollarSign size={18} className="text-emerald-400" />
           <span className="font-bold text-emerald-400">{money.toLocaleString()}</span>
         </div>
+        <button onClick={() => setView('profile')} className={`p-2 rounded-full transition-colors ${view === 'profile' ? 'bg-blue-600 text-white' : 'hover:bg-slate-800 text-slate-400 hover:text-blue-400'}`}>
+          <User size={20} />
+        </button>
         <button onClick={toggleSettings} className="p-2 rounded-full hover:bg-slate-800 text-slate-400 hover:text-blue-400 transition-colors">
           <Settings size={20} />
         </button>

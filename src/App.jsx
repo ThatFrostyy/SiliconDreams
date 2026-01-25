@@ -17,6 +17,7 @@ import Inventory from './components/Inventory.jsx';
 import JobBoard from './components/JobBoard';
 import Upgrades from './components/Upgrades';
 import Trading from './components/Trading';
+import Profile from './components/Profile';
 
 const generateRequest = () => {
   const template = REQUEST_TEMPLATES[Math.floor(Math.random() * REQUEST_TEMPLATES.length)];
@@ -102,6 +103,8 @@ export default function App() {
   const [activeRequests, setActiveRequests] = useState(() => loadState('activeRequests', [generateRequest(), generateRequest()]));
   const [currentBuild, setCurrentBuild] = useState(() => loadState('currentBuild', {}));
   const [view, setView] = useState(() => loadState('view', 'workshop')); 
+  const [reputation, setReputation] = useState(() => loadState('reputation', 50));
+  const [jobsCompleted, setJobsCompleted] = useState(() => loadState('jobsCompleted', 0));
   const [inventoryCategory, setInventoryCategory] = useState('ALL');
   const [orderTab, setOrderTab] = useState(() => loadState('orderTab', 'STANDARD'));
   const [message, setMessage] = useState({ text: 'Welcome to Silicon Dreams!', type: 'info' });
@@ -116,6 +119,8 @@ export default function App() {
   useEffect(() => { localStorage.setItem('currentBuild', JSON.stringify(currentBuild)); }, [currentBuild]);
   useEffect(() => { localStorage.setItem('view', JSON.stringify(view)); }, [view]);
   useEffect(() => { localStorage.setItem('orderTab', JSON.stringify(orderTab)); }, [orderTab]);
+  useEffect(() => { localStorage.setItem('reputation', JSON.stringify(reputation)); }, [reputation]);
+  useEffect(() => { localStorage.setItem('jobsCompleted', JSON.stringify(jobsCompleted)); }, [jobsCompleted]);
 
   const buildStats = calculateBuildStats(currentBuild);
 
@@ -482,6 +487,8 @@ export default function App() {
     
     setMoney(prev => prev + calculatedReward);
     setCurrentBuild({});
+    setReputation(prev => Math.min(prev + (order.type === 'REQUEST' ? 5 : 2), 100));
+    setJobsCompleted(prev => prev + 1);
     notify(`Order Delivered! Earned $${calculatedReward} (Profit: $${profit})`, 'success');
     
     if (order.type === 'REQUEST') {
@@ -586,6 +593,7 @@ export default function App() {
           {view === 'inventory' && <Inventory inventory={inventory} addToBuild={addToBuild} sellPart={sellPart} category={inventoryCategory} setCategory={setInventoryCategory} darkMode={settings.darkMode} />}
           {view === 'upgrades' && <Upgrades darkMode={settings.darkMode} />}
           {view === 'trading' && <Trading inventory={inventory} onPostTrade={handlePostTrade} money={money} onBuyTrade={handleBuyTrade} onItemTrade={handleItemTrade} user={user} darkMode={settings.darkMode} />}
+          {view === 'profile' && <Profile user={user} money={money} reputation={reputation} jobsCompleted={jobsCompleted} darkMode={settings.darkMode} />}
         </div>
 
         {/* RIGHT COLUMN: ORDERS */}

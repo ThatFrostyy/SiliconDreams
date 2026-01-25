@@ -6,7 +6,7 @@ import { SpeedInsights } from "@vercel/speed-insights/react"
 import { signInAnonymously } from "firebase/auth";
 import { auth, db } from "./utils/firebase";
 import { Analytics } from "@vercel/analytics/react"
-import { doc, getDoc, updateDoc, onSnapshot, collection, query, deleteDoc } from 'firebase/firestore';
+import { onSnapshot, collection, query, deleteDoc } from 'firebase/firestore';
 import { useGameStore } from './store/gameStore';
 import { calculateBuildStats } from './utils/gameLogic';
 
@@ -63,7 +63,17 @@ export default function App() {
   const checkAchievements = useGameStore(state => state.checkAchievements);
   
   // Action Handlers
-  const { buyPart, buyPallet, sellPart, addToBuild, removeFromBuild, clearBuild, saveBuildToInventory, fulfillOrder, reshuffleJobs, buyUpgrade, unlockSkill } = useGameStore();
+  const buyPart = useGameStore(state => state.buyPart);
+  const buyPallet = useGameStore(state => state.buyPallet);
+  const sellPart = useGameStore(state => state.sellPart);
+  const addToBuild = useGameStore(state => state.addToBuild);
+  const removeFromBuild = useGameStore(state => state.removeFromBuild);
+  const clearBuild = useGameStore(state => state.clearBuild);
+  const saveBuildToInventory = useGameStore(state => state.saveBuildToInventory);
+  const fulfillOrder = useGameStore(state => state.fulfillOrder);
+  const reshuffleJobs = useGameStore(state => state.reshuffleJobs);
+  const buyUpgrade = useGameStore(state => state.buyUpgrade);
+  const unlockSkill = useGameStore(state => state.unlockSkill);
 
   const [showSettings, setShowSettings] = useState(false);
   const [inventoryCategory, setInventoryCategory] = useState('ALL');

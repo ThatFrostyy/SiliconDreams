@@ -1,10 +1,10 @@
 // src/components/Workshop.jsx
 import React, { useMemo } from 'react';
-import { Wrench, XCircle, ChevronRight, TrendingUp, Zap, ClipboardList, CheckCircle2, AlertTriangle, Cpu, Disc, Monitor, HardDrive } from 'lucide-react';
+import { Wrench, XCircle, ChevronRight, TrendingUp, Zap, ClipboardList, CheckCircle2, AlertTriangle, Cpu, Disc, Monitor, HardDrive, Save, Trash2, DollarSign } from 'lucide-react';
 import { PART_TYPES } from '../data/constants';
 import { PartIcon } from './Shared';
 
-export default function Workshop({ currentBuild, removeFromBuild, clearBuild, handleSlotClick, darkMode, buildStats: propStats }) {
+export default function Workshop({ currentBuild, removeFromBuild, clearBuild, handleSlotClick, darkMode, buildStats: propStats, inventory, onSaveBuild, onDisassemble, onSellBuild }) {
   
   const mobo = currentBuild[PART_TYPES.MOTHERBOARD];
   const ramSlotCount = mobo?.ramSlots || 4;
@@ -99,9 +99,14 @@ export default function Workshop({ currentBuild, removeFromBuild, clearBuild, ha
           <h2 className={`text-xl font-bold flex items-center gap-2 italic ${darkMode ? 'text-slate-100' : 'text-slate-800'}`}>
             <Wrench className="text-blue-500" /> Assembly Station
           </h2>
-          <button onClick={clearBuild} className="text-[10px] text-slate-500 hover:text-rose-400 transition-colors underline uppercase tracking-widest font-bold">
-            Disassemble All
-          </button>
+          <div className="flex gap-3">
+            <button onClick={onSaveBuild} className="text-[10px] flex items-center gap-1 text-emerald-500 hover:text-emerald-400 transition-colors uppercase tracking-widest font-bold">
+              <Save size={12} /> Save Build
+            </button>
+            <button onClick={clearBuild} className="text-[10px] text-slate-500 hover:text-rose-400 transition-colors underline uppercase tracking-widest font-bold">
+              Clear Bench
+            </button>
+          </div>
         </div>
 
         <div className="p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -215,6 +220,34 @@ export default function Workshop({ currentBuild, removeFromBuild, clearBuild, ha
           ))}
         </div>
       </div>
+
+      {/* Saved Builds Section */}
+      {inventory && inventory.some(i => i.type === 'PC') && (
+        <div className={`p-5 rounded-xl border ${darkMode ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200'}`}>
+          <h3 className="text-sm font-bold mb-4 flex items-center gap-2"><Monitor size={16} /> Saved Builds</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {inventory.filter(i => i.type === 'PC').map(pc => (
+              <div key={pc.invId} className={`p-4 rounded-lg border flex justify-between items-center ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
+                <div>
+                  <div className="font-bold">{pc.name}</div>
+                  <div className="text-xs opacity-60 flex gap-2">
+                    <span>Perf: {pc.perf}</span>
+                    <span>Val: ${pc.price}</span>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => onSellBuild(pc)} className="p-2 rounded bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white transition-all" title="Quick Sell (Low Price)">
+                    <DollarSign size={16} />
+                  </button>
+                  <button onClick={() => onDisassemble(pc)} className="p-2 rounded bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white transition-all" title="Disassemble">
+                    <Wrench size={16} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

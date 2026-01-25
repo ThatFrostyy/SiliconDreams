@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../utils/firebase';
 import { collection, addDoc, query, orderBy, onSnapshot, doc, runTransaction, serverTimestamp } from 'firebase/firestore';
-import { ShoppingCart, DollarSign, Tag, Package, RefreshCw, Filter, ArrowRightLeft, Search, X } from 'lucide-react';
+import { ShoppingCart, DollarSign, Tag, Package, RefreshCw, Filter, ArrowRightLeft, Search, X, Monitor } from 'lucide-react';
 import { PART_TYPES, PARTS_CATALOG } from '../data/constants';
 import { PartIcon, CategoryTabs } from './Shared';
 
@@ -130,7 +130,7 @@ export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onI
     setLoading(false);
   };
 
-  const filteredInventory = inventory.filter(p => sellFilter === 'ALL' || p.type === sellFilter);
+  const filteredInventory = inventory.filter(p => sellFilter === 'ALL' ? true : (sellFilter === 'PC' ? p.type === 'PC' : p.type === sellFilter));
   const filteredTrades = trades.filter(t => marketFilter === 'ALL' || t.part.type === marketFilter);
 
   return (
@@ -142,7 +142,10 @@ export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onI
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* Left: Inventory Selection */}
             <div className="lg:col-span-7 space-y-4">
-                <CategoryTabs current={sellFilter} set={setSellFilter} types={PART_TYPES} darkMode={darkMode} />
+                <div className="flex gap-2 overflow-x-auto pb-2">
+                    <button onClick={() => setSellFilter('PC')} className={`px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${sellFilter === 'PC' ? 'bg-blue-500 text-white' : 'bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400'}`}>PCs</button>
+                    <CategoryTabs current={sellFilter} set={setSellFilter} types={PART_TYPES} darkMode={darkMode} />
+                </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[300px] overflow-y-auto p-1">
                     {filteredInventory.map(part => (
                         <div 
@@ -154,7 +157,7 @@ export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onI
                                     : darkMode ? 'bg-slate-800 border-slate-700 hover:border-slate-500' : 'bg-slate-50 border-slate-200 hover:border-blue-300'}`}
                         >
                             <div className="flex items-center gap-2 mb-2">
-                                <PartIcon type={part.type} size={16} />
+                                {part.type === 'PC' ? <Monitor size={16} /> : <PartIcon type={part.type} size={16} />}
                                 <span className="text-[10px] font-bold uppercase opacity-50">{part.type}</span>
                             </div>
                             <div className="font-bold text-xs truncate">{part.name}</div>
@@ -171,7 +174,7 @@ export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onI
                     <>
                         <div className="flex items-start gap-3 mb-4 pb-4 border-b border-dashed border-slate-600/30">
                             <div className={`p-3 rounded-lg ${darkMode ? 'bg-slate-700' : 'bg-white shadow-sm'}`}>
-                                <PartIcon type={sellingItem.type} size={24} />
+                                {sellingItem.type === 'PC' ? <Monitor size={24} /> : <PartIcon type={sellingItem.type} size={24} />}
                             </div>
                             <div>
                                 <h3 className="font-bold">{sellingItem.name}</h3>
@@ -265,7 +268,7 @@ export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onI
                 <div className="flex justify-between items-start">
                     <div className="flex gap-3">
                         <div className={`p-2 rounded-lg h-fit ${darkMode ? 'bg-slate-800' : 'bg-slate-100'}`}>
-                            <PartIcon type={trade.part.type} size={20} />
+                            {trade.part.type === 'PC' ? <Monitor size={20} /> : <PartIcon type={trade.part.type} size={20} />}
                         </div>
                         <div>
                             <h3 className="font-bold text-lg leading-tight">{trade.part.name}</h3>

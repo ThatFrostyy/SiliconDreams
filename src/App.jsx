@@ -1,6 +1,6 @@
 // src/App.jsx
 import React, { useState, useEffect } from 'react';
-import { CheckCircle2, AlertTriangle, ClipboardList, Wrench, ShoppingBag, Box, Settings, Volume2, VolumeX, Music, Moon, Sun, X, TrendingUp, Globe, Trash2 } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, ClipboardList, Wrench, ShoppingBag, Box, Settings, Volume2, VolumeX, Music, Moon, Sun, X, TrendingUp, Globe, Trash2, RefreshCw } from 'lucide-react';
 import { PART_TYPES, REQUEST_TEMPLATES, ORDER_TEMPLATES } from './data/constants';
 import { playSound, musicPlayer } from './utils/sound';
 import { SpeedInsights } from "@vercel/speed-insights/react"
@@ -233,6 +233,49 @@ export default function App() {
     notify(`Traded for ${incomingPart.name}`, "success");
   };
 
+  // PC Management Logic
+  const saveBuildToInventory = () => {
+    const parts = Object.values(currentBuild);
+    if (parts.length === 0) { notify("Cannot save an empty build!", "error"); return; }
+    
+    const totalCost = parts.reduce((acc, p) => acc + (p.price || 0), 0);
+    const { totalPerf } = buildStats;
+    
+    const newPC = {
+      invId: Math.random().toString(36).substr(2, 9),
+      type: 'PC',
+      name: `Custom PC ${Math.floor(Math.random()*1000)}`,
+      parts: currentBuild,
+      price: Math.floor(totalCost * 1.15), // 15% markup value
+      perf: totalPerf,
+      power: buildStats.totalPower
+    };
+    
+    setInventory(prev => [...prev, newPC]);
+    setCurrentBuild({});
+    notify("PC saved to inventory!", "success");
+    playSound('success', settings.sfx);
+  };
+
+  const disassembleBuild = (pcItem) => {
+    setInventory(prev => prev.filter(i => i.invId !== pcItem.invId));
+    const parts = Object.values(pcItem.parts).map(p => ({
+      ...p,
+      invId: Math.random().toString(36).substr(2, 9)
+    }));
+    setInventory(prev => [...prev, ...parts]);
+    notify("PC disassembled. Parts returned to inventory.", "info");
+    playSound('click', settings.sfx);
+  };
+
+  const sellBuildInstant = (pcItem) => {
+     setInventory(prev => prev.filter(i => i.invId !== pcItem.invId));
+     const sellPrice = Math.floor(pcItem.price * 0.8); // Instant sell penalty
+     setMoney(m => m + sellPrice);
+     notify(`Sold PC for $${sellPrice}`, "success");
+     playSound('cash', settings.sfx);
+  };
+
   // Workshop Logic
   const addToBuild = (part) => {
     // Special handling for RAM to allow multiple sticks based on motherboard slots
@@ -373,6 +416,17 @@ export default function App() {
   const handleViewChange = (newView) => {
     if (newView === 'inventory') setInventoryCategory('ALL');
     setView(newView);
+  };
+
+  const reshuffleJobs = () => {
+    if (money < 50) { notify("Not enough money to reshuffle ($50)", "error"); return; }
+    setMoney(m => m - 50);
+    const o1 = generateOrderLocal([]);
+    const o2 = generateOrderLocal([o1]);
+    setActiveOrders([o1, o2]);
+    setActiveRequests([generateRequest(), generateRequest()]);
+    notify("Jobs reshuffled!", "success");
+    playSound('click', settings.sfx);
   };
 
   const fulfillOrder = (order) => {
@@ -522,6 +576,10 @@ export default function App() {
               handleSlotClick={handleSlotClick} 
               darkMode={settings.darkMode}
               buildStats={buildStats}
+              inventory={inventory}
+              onSaveBuild={saveBuildToInventory}
+              onDisassemble={disassembleBuild}
+              onSellBuild={sellBuildInstant}
             />
           )}
           {view === 'shop' && <Shop buyPart={buyPart} money={money} darkMode={settings.darkMode} />}
@@ -532,6 +590,12 @@ export default function App() {
 
         {/* RIGHT COLUMN: ORDERS */}
         <div className="lg:col-span-4 space-y-4">
+          <div className="flex justify-end">
+            <button onClick={reshuffleJobs} className="text-[10px] flex items-center gap-1 bg-slate-200 hover:bg-slate-300 text-slate-600 px-2 py-1 rounded transition-colors dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700">
+              <RefreshCw size={12} /> Reshuffle ($50)
+            </button>
+          </div>
+
           <div className={`flex p-1 rounded-lg border ${settings.darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
             <button onClick={() => setOrderTab('STANDARD')} className={`flex-1 py-2 text-xs font-bold rounded uppercase tracking-wider transition-all ${orderTab === 'STANDARD' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}>Standard</button>
             <button onClick={() => setOrderTab('REQUESTS')} className={`flex-1 py-2 text-xs font-bold rounded uppercase tracking-wider transition-all ${orderTab === 'REQUESTS' ? 'bg-purple-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}>Requests</button>

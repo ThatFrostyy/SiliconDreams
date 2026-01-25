@@ -16,7 +16,7 @@ export default function Inventory({ inventory, addToBuild, sellPart, category = 
             Capacity: {inventory.length} / 50
           </span>
         </div>
-        <CategoryTabs current={category} set={setCategory} types={PART_TYPES} darkMode={darkMode} />
+        <CategoryTabs current={category} set={setCategory} types={{ PC: 'PC', ...PART_TYPES }} darkMode={darkMode} />
       </div>
       <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[600px] overflow-y-auto">
         {inventory.filter(p => category === 'ALL' || p.type === category).length === 0 ? (

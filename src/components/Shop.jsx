@@ -13,7 +13,7 @@ export default function Shop({ buyPart, money, darkMode }) {
         <h2 className="text-xl font-bold flex items-center gap-2 italic text-emerald-400 mb-4">
           <ShoppingBag /> Component Market
         </h2>
-        <CategoryTabs current={shopCategory} set={setShopCategory} types={PART_TYPES} darkMode={darkMode} />
+        <CategoryTabs current={shopCategory} set={setShopCategory} types={{ PC: 'PC', ...PART_TYPES }} darkMode={darkMode} />
       </div>
       <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[600px] overflow-y-auto">
         {PARTS_CATALOG.filter(p => shopCategory === 'ALL' || p.type === shopCategory).map(part => (

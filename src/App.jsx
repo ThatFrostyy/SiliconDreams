@@ -203,7 +203,6 @@ export default function App() {
 
     if (newAchievements.length > 0) {
         setAchievements(prev => [...prev, ...newAchievements]);
-        playSound('success', settings.sfx);
     }
   }, [money, buildStats.totalPerf, achievements]);
 
@@ -213,7 +212,6 @@ export default function App() {
       if (!achievements.includes('wealth_100k')) {
         setAchievements(prev => [...prev, 'wealth_100k']);
         notify("Cheat Activated: Gold Workbench Unlocked!", "success");
-        playSound('success', settings.sfx);
       }
     };
   }, [achievements, settings.sfx]);
@@ -308,7 +306,6 @@ export default function App() {
     setMoney(prev => prev + sellPrice);
     setInventory(prev => prev.filter(p => p.invId !== part.invId));
     notify(`Sold ${part.name} for $${sellPrice}`, 'success');
-    playSound('click', settings.sfx);
   };
 
   // Trading Logic
@@ -350,7 +347,6 @@ export default function App() {
     setInventory(prev => [...prev, newPC]);
     setCurrentBuild({});
     notify("PC saved to inventory!", "success");
-    playSound('success', settings.sfx);
   };
 
   const disassembleBuild = (pcItem) => {
@@ -361,7 +357,6 @@ export default function App() {
     }));
     setInventory(prev => [...prev, ...parts]);
     notify("PC disassembled. Parts returned to inventory.", "info");
-    playSound('click', settings.sfx);
   };
 
   const sellBuildInstant = (pcItem) => {
@@ -371,7 +366,6 @@ export default function App() {
      const sellPrice = Math.floor(pcItem.price * 0.8 * dealmakerBonus * showroomBonus); // Instant sell penalty
      setMoney(m => m + sellPrice);
      notify(`Sold PC for $${sellPrice}`, "success");
-     playSound('cash', settings.sfx);
   };
 
   // Workshop Logic
@@ -538,7 +532,6 @@ export default function App() {
     setActiveOrders([o1, o2]);
     setActiveRequests([generateRequest(reputation, skills.marketing), generateRequest(reputation, skills.marketing)]);
     notify("Jobs reshuffled!", "success");
-    playSound('click', settings.sfx);
   };
 
   const fulfillOrder = (order) => {
@@ -624,7 +617,6 @@ export default function App() {
       setMoney(m => m - upgrade.cost);
       setOwnedUpgrades(prev => [...prev, upgrade.id]);
       notify(`Purchased ${upgrade.name}!`, "success");
-      playSound('success', settings.sfx);
     } else {
       notify("Not enough money!", "error");
     }
@@ -641,7 +633,6 @@ export default function App() {
       setMoney(m => m - cost);
       setSkills(prev => ({ ...prev, [skillId]: currentLevel + 1 }));
       notify(`Unlocked ${skill.name} Level ${currentLevel + 1}!`, "success");
-      playSound('success', settings.sfx);
     } else {
       notify("Not enough money!", "error");
     }

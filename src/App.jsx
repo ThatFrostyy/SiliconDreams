@@ -88,6 +88,8 @@ export default function App() {
 
   const buildStats = calculateBuildStats(currentBuild, skills);
   const netWorth = money + inventory.reduce((acc, item) => acc + (item.price || 0), 0);
+  const isGold = achievements.includes('wealth_100k');
+  const sellMarkup = isGold ? 1.25 : 1.15;
 
   // Achievement Check
   useEffect(() => {
@@ -320,6 +322,7 @@ export default function App() {
               onSaveBuild={saveBuildToInventory}
               onDisassemble={disassembleBuild}
               onSellBuild={sellBuildInstant}
+              sellMarkup={sellMarkup}
             />
           )}
           {view === 'shop' && <Shop buyPart={buyPart} money={money} darkMode={settings.darkMode} settings={settings} skills={skills} buyPallet={buyPallet} />}
@@ -388,7 +391,7 @@ export default function App() {
         >
           <BookOpen size={12} /> Devlogs
         </button>
-        <span className="hidden md:inline">•</span>
+        {/* <span className="hidden md:inline">•</span>
         <a 
           href="https://docs.google.com/document/d/1221bM02jpfA6YKCZuM6xBSmHvGQMGH0yS8hxCkSmDxM/edit?usp=sharing" 
           target="_blank" 
@@ -396,7 +399,7 @@ export default function App() {
           className="hover:underline hover:text-blue-500 transition-colors inline-flex items-center justify-center gap-1"
         >
           <ClipboardList size={12} /> Read the Official Game Guide
-        </a>
+        </a> */}
       </footer>
 
       {/* MOBILE NAV */}

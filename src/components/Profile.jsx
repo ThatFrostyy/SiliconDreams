@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Trophy, Briefcase, DollarSign, Star, Award, Zap, History, Microscope } from 'lucide-react';
+import { User, Trophy, Briefcase, DollarSign, Star, Award, Zap, History, Microscope, AlertTriangle } from 'lucide-react';
 import { REPUTATION_TITLES, SKILLS, ACHIEVEMENTS } from '../data/constants';
 
 export default function Profile({ user, money, reputation, jobsCompleted, darkMode, skills, achievements, jobHistory, binningHistory }) {
@@ -129,6 +129,11 @@ export default function Profile({ user, money, reputation, jobsCompleted, darkMo
                         <span className="text-[10px] opacity-50">{job.date}</span>
                     </div>
                     <p className="text-xs italic opacity-70 mt-2">"{job.review}"</p>
+                    {job.penalties && (
+                        <div className="mt-2 text-[10px] text-rose-500 font-bold flex items-center gap-1">
+                            <AlertTriangle size={10} /> Penalty: {job.penalties.join(', ')}
+                        </div>
+                    )}
                 </div>
             )) : (
                 <div className="text-center opacity-50 text-xs py-4">No jobs completed yet.</div>

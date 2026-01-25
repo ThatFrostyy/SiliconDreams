@@ -418,6 +418,29 @@ export const useGameStore = create(
             return;
         }
 
+        // --- NEW VALIDATION ---
+        const penalties = [];
+        if (order.req) {
+            if (order.req.partId && !parts.some(p => p.id === order.req.partId)) {
+                penalties.push("Incorrect Part Model");
+            }
+            if (order.req.minRam) {
+                const totalRam = parts.filter(p => p.type === PART_TYPES.RAM).reduce((sum, p) => sum + (p.capacity || 0), 0);
+                if (totalRam < order.req.minRam) penalties.push("Insufficient RAM");
+            }
+            if (order.req.minStorage) {
+                const totalStorage = parts.filter(p => p.type === PART_TYPES.STORAGE).reduce((sum, p) => sum + (p.capacity || 0), 0);
+                if (totalStorage < order.req.minStorage) penalties.push("Insufficient Storage");
+            }
+            if (order.req.gpuInterface) {
+                const gpu = parts.find(p => p.type === PART_TYPES.GPU);
+                if (gpu && gpu.interface !== order.req.gpuInterface) penalties.push("Wrong GPU Interface");
+            }
+            if (order.req.interface && !parts.some(p => p.interface === order.req.interface)) {
+                penalties.push(`Missing ${order.req.interface} component`);
+            }
+        }
+
         // Calculate Rewards
         const totalCost = parts.reduce((acc, p) => acc + (p.price || 0), 0);
         const negotiationBonus = 1 + (skills.negotiation * 0.05);
@@ -432,22 +455,34 @@ export const useGameStore = create(
         if (Math.random() > 0.9) stars++; // Random mood bonus
         if (stars > 5) stars = 5;
 
+        // Apply Penalties
+        if (penalties.length > 0) {
+            stars = 1;
+            reward = Math.floor(reward * 0.5);
+        }
+
         let tip = 0;
         const tipMultiplier = ownedUpgrades.includes('tip_jar') ? 1.5 : 1;
         if (stars === 5) tip = Math.floor(reward * 0.20 * tipMultiplier);
         else if (stars === 4) tip = Math.floor(reward * 0.10 * tipMultiplier);
 
         const totalPayout = reward + tip;
-        const review = REVIEW_TEMPLATES[stars][Math.floor(Math.random() * REVIEW_TEMPLATES[stars].length)];
+        let review = REVIEW_TEMPLATES[stars][Math.floor(Math.random() * REVIEW_TEMPLATES[stars].length)];
+        if (penalties.length > 0) {
+            review = `Disappointed: ${penalties.join(', ')}.`;
+        }
 
         // Update State
-        const repGain = (order.type === 'REQUEST' ? (order.isVip ? 10 : 5) : 2);
+        let repGain = (order.type === 'REQUEST' ? (order.isVip ? 10 : 5) : 2);
+        if (penalties.length > 0) repGain = -5;
+
         const efficiencyBonus = 1 + (skills.efficiency * 0.10);
+        const finalRepChange = repGain > 0 ? Math.floor(repGain * efficiencyBonus) : repGain;
 
         set(state => ({
             money: state.money + totalPayout,
             builds: { ...state.builds, [activeBench]: {} },
-            reputation: Math.min(state.reputation + Math.floor(repGain * efficiencyBonus), 100),
+            reputation: Math.max(0, Math.min(state.reputation + finalRepChange, 100)),
             jobsCompleted: state.jobsCompleted + 1,
             jobHistory: [{
                 id: Date.now(),
@@ -455,11 +490,16 @@ export const useGameStore = create(
                 reward: totalPayout,
                 stars,
                 review,
-                date: new Date().toLocaleDateString()
+                date: new Date().toLocaleDateString(),
+                penalties: penalties.length > 0 ? penalties : null
             }, ...state.jobHistory].slice(0, 10)
         }));
 
-        notify(`Delivered! ${"⭐".repeat(stars)} Tip: $${tip}`, 'success');
+        if (penalties.length > 0) {
+            notify(`Order Completed with Issues: ${penalties.join(', ')}`, 'error');
+        } else {
+            notify(`Delivered! ${"⭐".repeat(stars)} Tip: $${tip}`, 'success');
+        }
 
         // Refresh Job
         setTimeout(() => {

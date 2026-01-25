@@ -47,7 +47,7 @@ const Slot = ({ type, label, slotKey, className = "", currentBuild, handleSlotCl
   );
 };
 
-export default function Workshop({ currentBuild, removeFromBuild, clearBuild, handleSlotClick, darkMode, buildStats: propStats, onSaveBuild, activeBench, setActiveBench, ownedUpgrades, achievements }) {
+export default function Workshop({ currentBuild, removeFromBuild, clearBuild, handleSlotClick, darkMode, buildStats: propStats, onSaveBuild, activeBench, setActiveBench, ownedUpgrades, achievements, sellMarkup = 1.15 }) {
   
   const mobo = currentBuild[PART_TYPES.MOTHERBOARD];
   const ramSlotCount = mobo?.ramSlots || 4;
@@ -117,7 +117,7 @@ export default function Workshop({ currentBuild, removeFromBuild, clearBuild, ha
 
         <div className={`p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 ${isGold ? 'bg-gradient-to-br from-amber-900/20 to-yellow-900/10' : ''}`}>
             {isGold && (
-                <div className="col-span-full text-center text-[10px] font-black text-amber-500 uppercase tracking-widest bg-amber-500/10 py-2 rounded-lg border border-amber-500/20">✨ Gold Workbench Active: +25% PC Value ✨</div>
+                <div className="col-span-full text-center text-[10px] font-black text-amber-500 uppercase tracking-widest bg-amber-500/10 py-2 rounded-lg border border-amber-500/20">✨ Gold Workbench Active: +{Math.round((sellMarkup - 1) * 100)}% PC Value ✨</div>
             )}
             
             {/* Left Column: Core Components */}

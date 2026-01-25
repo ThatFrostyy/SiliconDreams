@@ -1,6 +1,6 @@
 // src/App.jsx
 import React, { useState, useEffect } from 'react';
-import { CheckCircle2, AlertTriangle, ClipboardList, Wrench, ShoppingBag, Box, Settings, Volume2, VolumeX, Music, Moon, Sun, X, TrendingUp, Globe, Trash2, RefreshCw, Monitor, DollarSign, BookOpen } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, ClipboardList, Wrench, ShoppingBag, Box, TrendingUp, Globe, RefreshCw, Monitor, DollarSign, BookOpen } from 'lucide-react';
 import { musicPlayer } from './utils/sound';
 import { SpeedInsights } from "@vercel/speed-insights/react"
 import { signInAnonymously } from "firebase/auth";
@@ -21,6 +21,9 @@ import Trading from './components/Trading';
 import Profile from './components/Profile';
 import Devlogs from './components/Devlogs';
 import Leaderboard from './components/Leaderboard';
+import NewsTicker from './components/NewsTicker';
+import SettingsModal from './components/SettingsModal';
+import CelebrationOverlay from './components/CelebrationOverlay';
 
 export default function App() {
   // --- STORE SELECTORS ---
@@ -43,23 +46,21 @@ export default function App() {
   const user = useGameStore(state => state.user);
   const unreadSales = useGameStore(state => state.unreadSales);
   const binningHistory = useGameStore(state => state.binningHistory);
-  const sfx = useGameStore(state => state.settings.sfx);
-  const music = useGameStore(state => state.settings.music);
+  const celebration = useGameStore(state => state.celebration);
   
   // --- STORE ACTIONS ---
   const setMoney = useGameStore(state => state.setMoney);
   const setInventory = useGameStore(state => state.setInventory);
-  const updateSetting = useGameStore(state => state.updateSetting);
   const setAchievements = useGameStore(state => state.setAchievements);
   const setView = useGameStore(state => state.setView);
   const setOrderTab = useGameStore(state => state.setOrderTab);
   const initOrders = useGameStore(state => state.initOrders);
-  const resetGame = useGameStore(state => state.resetGame);
   const setUser = useGameStore(state => state.setUser);
   const notify = useGameStore(state => state.notify);
   const checkAchievements = useGameStore(state => state.checkAchievements);
   const addSaleNotification = useGameStore(state => state.addSaleNotification);
   const markSalesRead = useGameStore(state => state.markSalesRead);
+  const setCelebration = useGameStore(state => state.setCelebration);
   
   // Action Handlers
   const buyPart = useGameStore(state => state.buyPart);
@@ -108,12 +109,13 @@ export default function App() {
     musicPlayer.toggle(settings.music);
   }, [settings.music]);
 
-  const handleReset = () => {
-    if (window.confirm("Are you sure you want to reset your game? All progress will be lost.")) {
-      resetGame();
-      setShowSettings(false);
+  // Auto-clear celebration
+  useEffect(() => {
+    if (celebration) {
+      const timer = setTimeout(() => setCelebration(null), 4000);
+      return () => clearTimeout(timer);
     }
-  };
+  }, [celebration, setCelebration]);
 
   useEffect(() => {
     console.log("🔌 Testing Firebase connection...");
@@ -219,7 +221,10 @@ export default function App() {
     <div className={`min-h-screen font-sans pb-20 md:pb-0 transition-colors duration-300 ${darkMode ? 'bg-slate-950 text-slate-200' : 'bg-slate-100 text-slate-800'}`}>
       <SpeedInsights />
       <Analytics />
-      <Header money={money} view={view} setView={handleViewChange} inventoryCount={inventory.length} toggleSettings={() => setShowSettings(true)} darkMode={darkMode} />
+      <Header money={money} view={view} setView={handleViewChange} inventoryCount={inventory.length} toggleSettings={() => setShowSettings(true)} darkMode={settings.darkMode} />
+      <NewsTicker darkMode={settings.darkMode} />
+
+      <CelebrationOverlay />
 
       {message.text && (
         <div className={`fixed top-20 right-4 z-[60] p-4 rounded-lg shadow-2xl border flex items-center gap-3 animate-bounce
@@ -231,58 +236,7 @@ export default function App() {
         </div>
       )}
 
-      {/* Settings Modal */}
-      {showSettings && (
-        <div className="fixed inset-0 z-[70] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className={`${darkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'} border rounded-2xl p-6 w-full max-w-md shadow-2xl`}>
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold flex items-center gap-2"><Settings /> Settings</h2>
-              <button onClick={() => setShowSettings(false)} className="hover:text-rose-500"><X /></button>
-            </div>
-            
-            <div className="space-y-4">
-              <div className={`flex justify-between items-center p-4 rounded-xl ${darkMode ? 'bg-slate-800' : 'bg-slate-100'}`}>
-                <div className="flex items-center gap-3">
-                  {music ? <Music className="text-blue-500" /> : <Music className="text-slate-500" />}
-                  <span className="font-bold">Music</span>
-                </div>
-                <button onClick={() => updateSetting('music', !music)} className={`w-12 h-6 rounded-full transition-colors relative ${music ? 'bg-blue-600' : 'bg-slate-600'}`}>
-                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${music ? 'left-7' : 'left-1'}`} />
-                </button>
-              </div>
-
-              <div className={`flex justify-between items-center p-4 rounded-xl ${darkMode ? 'bg-slate-800' : 'bg-slate-100'}`}>
-                <div className="flex items-center gap-3">
-                  {sfx ? <Volume2 className="text-emerald-500" /> : <VolumeX className="text-slate-500" />}
-                  <span className="font-bold">Sound Effects</span>
-                </div>
-                <button onClick={() => updateSetting('sfx', !sfx)} className={`w-12 h-6 rounded-full transition-colors relative ${sfx ? 'bg-emerald-600' : 'bg-slate-600'}`}>
-                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${sfx ? 'left-7' : 'left-1'}`} />
-                </button>
-              </div>
-
-              <div className={`flex justify-between items-center p-4 rounded-xl ${darkMode ? 'bg-slate-800' : 'bg-slate-100'}`}>
-                <div className="flex items-center gap-3">
-                  {darkMode ? <Moon className="text-purple-500" /> : <Sun className="text-amber-500" />}
-                  <span className="font-bold">Theme</span>
-                </div>
-                <button onClick={() => updateSetting('darkMode', !darkMode)} className={`w-12 h-6 rounded-full transition-colors relative ${darkMode ? 'bg-purple-600' : 'bg-amber-500'}`}>
-                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${darkMode ? 'left-7' : 'left-1'}`} />
-                </button>
-              </div>
-
-              <div className="pt-4 border-t border-slate-700/50">
-                <button 
-                  onClick={handleReset}
-                  className="w-full py-3 rounded-xl font-bold bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center gap-2 transition-colors shadow-lg shadow-rose-900/20"
-                >
-                  <Trash2 size={20} /> Reset Game Progress
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <SettingsModal show={showSettings} onClose={() => setShowSettings(false)} />
 
       <main className="max-w-6xl mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* LEFT COLUMN: ACTIVE VIEW */}
@@ -301,13 +255,13 @@ export default function App() {
               onSellBuild={sellBuildInstant}
             />
           )}
-          {view === 'shop' && <Shop buyPart={buyPart} money={money} darkMode={darkMode} skills={skills} buyPallet={buyPallet} />}
-          {view === 'inventory' && <Inventory inventory={inventory} addToBuild={addToBuild} sellPart={sellPart} binPart={binPart} money={money} category={inventoryCategory} setCategory={setInventoryCategory} darkMode={darkMode} maxCapacity={50 + (skills.logistics * 5) + (ownedUpgrades.includes('storage_1') ? 50 : 0) + (ownedUpgrades.includes('storage_2') ? 100 : 0)} binningHistory={binningHistory} />}
-          {view === 'upgrades' && <Upgrades darkMode={darkMode} skills={skills} unlockSkill={unlockSkill} money={money} ownedUpgrades={ownedUpgrades} buyUpgrade={buyUpgrade} />}
-          {view === 'trading' && <Trading inventory={inventory} onPostTrade={handlePostTrade} money={money} onBuyTrade={handleBuyTrade} onItemTrade={handleItemTrade} onCancelTrade={handleCancelTrade} user={user} darkMode={darkMode} netWorth={netWorth} unreadSales={unreadSales} onClearUnreadSales={markSalesRead} />}
-          {view === 'profile' && <Profile user={user} money={money} reputation={reputation} jobsCompleted={jobsCompleted} darkMode={darkMode} skills={skills} achievements={achievements} netWorth={netWorth} jobHistory={jobHistory} />}
-          {view === 'devlogs' && <Devlogs darkMode={darkMode} setView={setView} />}
-          {view === 'leaderboard' && <Leaderboard user={user} netWorth={netWorth} darkMode={darkMode} />}
+          {view === 'shop' && <Shop buyPart={buyPart} money={money} darkMode={settings.darkMode} settings={settings} skills={skills} buyPallet={buyPallet} />}
+          {view === 'inventory' && <Inventory inventory={inventory} addToBuild={addToBuild} sellPart={sellPart} binPart={binPart} money={money} category={inventoryCategory} setCategory={setInventoryCategory} darkMode={settings.darkMode} maxCapacity={50 + (skills.logistics * 5) + (ownedUpgrades.includes('storage_1') ? 50 : 0) + (ownedUpgrades.includes('storage_2') ? 100 : 0)} notify={notify} settings={settings} setCelebration={setCelebration} />}
+          {view === 'upgrades' && <Upgrades darkMode={settings.darkMode} skills={skills} unlockSkill={unlockSkill} money={money} ownedUpgrades={ownedUpgrades} buyUpgrade={buyUpgrade} />}
+          {view === 'trading' && <Trading inventory={inventory} onPostTrade={handlePostTrade} money={money} onBuyTrade={handleBuyTrade} onItemTrade={handleItemTrade} onCancelTrade={handleCancelTrade} user={user} darkMode={settings.darkMode} netWorth={netWorth} unreadSales={unreadSales} onClearUnreadSales={markSalesRead} />}
+          {view === 'profile' && <Profile user={user} money={money} reputation={reputation} jobsCompleted={jobsCompleted} darkMode={settings.darkMode} skills={skills} achievements={achievements} netWorth={netWorth} jobHistory={jobHistory} binningHistory={binningHistory} />}
+          {view === 'devlogs' && <Devlogs darkMode={settings.darkMode} setView={setView} />}
+          {view === 'leaderboard' && <Leaderboard user={user} netWorth={netWorth} darkMode={settings.darkMode} />}
         </div>
 
         {/* RIGHT COLUMN: ORDERS */}

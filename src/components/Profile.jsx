@@ -1,8 +1,8 @@
 import React from 'react';
-import { User, Trophy, Briefcase, DollarSign, Star, Award, Zap, History } from 'lucide-react';
+import { User, Trophy, Briefcase, DollarSign, Star, Award, Zap, History, Microscope } from 'lucide-react';
 import { REPUTATION_TITLES, SKILLS, ACHIEVEMENTS } from '../data/constants';
 
-export default function Profile({ user, money, reputation, jobsCompleted, darkMode, skills, achievements, jobHistory }) {
+export default function Profile({ user, money, reputation, jobsCompleted, darkMode, skills, achievements, jobHistory, binningHistory }) {
   const getReputationTitle = (rep) => {
     return REPUTATION_TITLES.find(t => rep >= t.threshold)?.title || "Unknown";
   };
@@ -132,6 +132,24 @@ export default function Profile({ user, money, reputation, jobsCompleted, darkMo
                 </div>
             )) : (
                 <div className="text-center opacity-50 text-xs py-4">No jobs completed yet.</div>
+            )}
+        </div>
+      </div>
+
+      {/* Binning History Panel */}
+      <div className={`mt-6 p-6 rounded-xl border ${darkMode ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
+        <h3 className="font-bold flex items-center gap-2 mb-4"><Microscope className="text-amber-500" /> Silicon Lottery History</h3>
+        <div className="space-y-2">
+            {binningHistory && binningHistory.length > 0 ? binningHistory.map(h => (
+                <div key={h.id} className={`p-3 rounded-lg border flex justify-between items-center ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
+                    <div>
+                        <span className="font-bold text-xs block">{h.partName}</span>
+                        <span className="text-[10px] opacity-50">{h.date}</span>
+                    </div>
+                    <span className={`font-black text-xs uppercase ${h.color}`}>{h.result}</span>
+                </div>
+            )) : (
+                <div className="text-center opacity-50 text-xs py-4">No chips binned yet.</div>
             )}
         </div>
       </div>

@@ -79,19 +79,13 @@ export default function Workshop({ currentBuild, removeFromBuild, clearBuild, ha
     );
     const isComplete = missingParts.length === 0;
     
-    const powerOk = supplyPower >= (propStats?.totalPower || 0) && supplyPower > 0;
-
-    return {
-      ...(propStats || { totalPerf: 0, totalPower: 0, ramBonus: false, bottleneckPenalty: 0 }),
-      supplyPower,
-      isComplete,
-      powerOk,
-      missingParts
-    };
+    const stats = propStats || calculateBuildStats(currentBuild);
+    const powerOk = supplyPower >= stats.totalPower && supplyPower > 0;
+    return { ...stats, supplyPower, isComplete, powerOk, missingParts };
   }, [currentBuild, propStats]);
 
+  const totalValue = Object.values(currentBuild).reduce((sum, part) => sum + (part.price || 0), 0);
   const isGold = achievements && achievements.includes('wealth_100k');
-
   const slotProps = { currentBuild, handleSlotClick, darkMode, removeFromBuild };
 
   return (
@@ -186,16 +180,20 @@ export default function Workshop({ currentBuild, removeFromBuild, clearBuild, ha
         </div>
 
         {/* Stats */}
-        <div className={`p-6 flex flex-wrap gap-8 border-t ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
+        <div className={`p-6 flex flex-wrap gap-6 border-t ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
           <div className="flex-1 min-w-[120px]">
             <p className="text-[10px] text-slate-500 uppercase font-black mb-1">System Performance</p>
             <div className="flex items-center gap-3">
               <div className={`p-2 rounded-lg ${darkMode ? 'bg-blue-500/10' : 'bg-blue-100'}`}><TrendingUp size={20} className="text-blue-400" /></div>
               <div>
                 <div className={`text-3xl font-black tracking-tight leading-none ${darkMode ? 'text-white' : 'text-slate-800'}`}>{buildStats.totalPerf}</div>
-                {buildStats.ramBonus && <div className="text-[9px] text-emerald-500 font-bold uppercase mt-1">+5% Dual Channel</div>}
+                {buildStats.bottleneckPenalty > 0 && (
+                  <div className="text-[10px] text-rose-500 font-bold flex items-center gap-1">
+                    <AlertTriangle size={10} /> -{buildStats.bottleneckPenalty} (Bottleneck)
+                  </div>
+                )}
               </div>
-            </div>
+          </div>
           </div>
           <div className="flex-1 min-w-[120px]">
             <p className="text-[10px] text-slate-500 uppercase font-black mb-1">Power Consumption</p>
@@ -211,6 +209,13 @@ export default function Workshop({ currentBuild, removeFromBuild, clearBuild, ha
                     / {buildStats.supplyPower || '0'}W Capacity
                 </span>
               </div>
+            </div>
+          </div>
+          <div className="flex-1 min-w-[120px]">
+            <p className="text-[10px] text-slate-500 uppercase font-black mb-1">Total Value</p>
+            <div className="flex items-center gap-3">
+              <div className={`p-2 rounded-lg ${darkMode ? 'bg-emerald-500/10' : 'bg-emerald-100'}`}><DollarSign size={20} className="text-emerald-500" /></div>
+              <div className={`text-3xl font-black tracking-tight leading-none ${darkMode ? 'text-white' : 'text-slate-800'}`}>${totalValue}</div>
             </div>
           </div>
         </div>

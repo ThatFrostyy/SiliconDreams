@@ -8,12 +8,35 @@ export const MODIFIERS = {
   'silver_sample': { id: 'silver_sample', label: 'Silver Sample', color: 'text-slate-300', perfMult: 1.05, priceMult: 1.1 },
   'dud': { id: 'dud', label: 'Dud', color: 'text-amber-700', perfMult: 0.95, priceMult: 0.8 },
   'unstable': { id: 'unstable', label: 'Unstable', color: 'text-red-600', perfMult: 1.15, priceMult: 0.5, unreliable: true },
+  'rusty': { id: 'rusty', label: 'Rusty', color: 'text-orange-800', perfMult: 0.8, priceMult: 0.4, unreliable: true },
 };
 
-export const getRandomModifier = () => {
+export const getRandomModifier = (tier = 'STANDARD') => {
   const roll = Math.random();
-  if (roll > 0.9) return MODIFIERS['overclocked'];
-  if (roll > 0.6) return MODIFIERS['used'];
+  
+  if (tier === 'PREMIUM') {
+    if (roll > 0.85) return MODIFIERS['golden_chip']; // 15%
+    if (roll > 0.65) return MODIFIERS['overclocked']; // 20%
+    if (roll > 0.50) return MODIFIERS['silver_sample']; // 15%
+    if (roll > 0.45) return MODIFIERS['used']; // 5%
+    return null; // 45% Clean
+  }
+  
+  if (tier === 'MEDIUM') {
+    if (roll > 0.95) return MODIFIERS['golden_chip']; // 5%
+    if (roll > 0.85) return MODIFIERS['overclocked']; // 10%
+    if (roll > 0.75) return MODIFIERS['used']; // 10%
+    if (roll > 0.70) return MODIFIERS['dud']; // 5%
+    return null;
+  }
+
+  // Standard (Low Tier - More bad stuff)
+  if (roll > 0.98) return MODIFIERS['golden_chip']; // 2% Jackpot
+  if (roll > 0.90) return MODIFIERS['overclocked']; // 8%
+  if (roll > 0.60) return MODIFIERS['used']; // 30%
+  if (roll > 0.40) return MODIFIERS['dud']; // 20%
+  if (roll > 0.30) return MODIFIERS['rusty']; // 10%
+  if (roll > 0.25) return MODIFIERS['unstable']; // 5%
   return null;
 };
 

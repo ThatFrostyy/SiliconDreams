@@ -12,35 +12,36 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet, sett
   const [openedItems, setOpenedItems] = useState([]);
   const [showConfetti, setShowConfetti] = useState(false);
   const [revealStage, setRevealStage] = useState('closed'); // closed, shaking, opening, revealed
+  const [clicks, setClicks] = useState(0);
   
   const getDiscountedPrice = (price) => Math.floor(price * (1 - ((skills?.barter || 0) * 0.03)));
 
   const handleBuyPallet = (type) => {
     const items = buyPallet(type);
     if (items) {
-      const hasLegendary = items.some(i => i.modifierId === 'legendary');
       playSound('click', settings?.sfx);
       setOpenedItems(items);
       setOpening(true);
       setRevealStage('closed');
-      
-      // Animation Sequence
-      setTimeout(() => {
-        setRevealStage('shaking');
-      }, 100);
-      setTimeout(() => {
+      setClicks(0);
+    }
+  };
+
+  const handlePackageClick = () => {
+    if (revealStage !== 'closed') return;
+    const newClicks = clicks + 1;
+    setClicks(newClicks);
+    playSound('click', settings?.sfx);
+
+    if (newClicks >= 10) {
         setRevealStage('opening');
-        playSound('install', settings?.sfx); // Whoosh sound
-      }, 1200);
-      setTimeout(() => {
-        setRevealStage('revealed');
-        if (hasLegendary) {
-            playSound('legendary', settings?.sfx);
-            setShowConfetti(true);
-        } else {
-            playSound('success', settings?.sfx); // Tada sound
-        }
-      }, 1600);
+        playSound('install', settings?.sfx);
+        setTimeout(() => {
+            setRevealStage('revealed');
+            const hasLegendary = openedItems.some(i => i.modifierId === 'golden_chip');
+            if (hasLegendary) { playSound('legendary', settings?.sfx); setShowConfetti(true); }
+            else { playSound('success', settings?.sfx); }
+        }, 500);
     }
   };
 
@@ -50,6 +51,22 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet, sett
     setOpenedItems([]);
     setRevealStage('closed');
   };
+
+  const [confettiParticles] = useState(() => {
+    return [...Array(50)].map((_, i) => {
+      const randomLeft = Math.random() * 100;
+      const randomColor = ['#f59e0b', '#ef4444', '#3b82f6', '#10b981', '#8b5cf6'][Math.floor(Math.random() * 5)];
+      const randomDuration = Math.random() * 2 + 2;
+      const randomDelay = Math.random() * 0.5;
+      return {
+        id: i,
+        left: `${randomLeft}%`,
+        backgroundColor: randomColor,
+        animationDuration: `${randomDuration}s`,
+        animationDelay: `${randomDelay}s`,
+      }
+    });
+  });
 
   return (
     <section className={`rounded-2xl border overflow-hidden shadow-2xl transition-colors ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
@@ -168,13 +185,13 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet, sett
         <div className="fixed inset-0 z-[80] bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
           {showConfetti && (
             <div className="absolute inset-0 pointer-events-none overflow-hidden z-50">
-              {[...Array(50)].map((_, i) => (
-                <div key={i} className="absolute w-3 h-3 rounded-sm animate-confetti" style={{
-                    left: `${Math.random() * 100}%`,
+              {confettiParticles.map((particle) => (
+                <div key={particle.id} className="absolute w-3 h-3 rounded-sm animate-confetti" style={{
+                    left: particle.left,
                     top: `-20px`,
-                    backgroundColor: ['#f59e0b', '#ef4444', '#3b82f6', '#10b981', '#8b5cf6'][Math.floor(Math.random() * 5)],
-                    animationDuration: `${Math.random() * 2 + 2}s`,
-                    animationDelay: `${Math.random() * 0.5}s`
+                    backgroundColor: particle.backgroundColor,
+                    animationDuration: particle.animationDuration,
+                    animationDelay: particle.animationDelay
                 }} />
               ))}
             </div>
@@ -182,9 +199,14 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet, sett
           <div className={`relative w-full max-w-3xl p-12 rounded-3xl flex flex-col items-center justify-center min-h-[500px] transition-all duration-500 shadow-2xl ${darkMode ? 'bg-slate-900 border border-slate-700' : 'bg-white'}`}>
             
             {revealStage !== 'revealed' ? (
-              <div className={`transition-all duration-500 ${revealStage === 'shaking' ? 'animate-bounce' : ''} ${revealStage === 'opening' ? 'scale-150 opacity-0' : 'scale-100'}`}>
+              <div 
+                onClick={handlePackageClick}
+                className={`transition-all duration-100 cursor-pointer select-none ${revealStage === 'opening' ? 'scale-[2] opacity-0' : 'hover:scale-105 active:scale-95'}`}
+                style={{ transform: revealStage === 'closed' ? `scale(${1 + clicks/20}) rotate(${Math.sin(clicks) * clicks}deg)` : '' }}
+              >
                 <div className="absolute inset-0 bg-blue-500/30 blur-[100px] rounded-full animate-pulse" />
-                <Package size={120} className="text-blue-500" />
+                <Package size={120} className={`text-blue-500 ${clicks > 0 ? 'animate-pulse' : ''}`} />
+                <p className="text-center mt-8 font-bold text-xs uppercase tracking-widest opacity-50 animate-bounce">Click to Open!</p>
               </div>
             ) : (
               <div className="w-full animate-in fade-in zoom-in duration-500">

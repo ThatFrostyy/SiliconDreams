@@ -1,16 +1,72 @@
 // src/components/Inventory.jsx
-import React, { useMemo } from 'react';
-import { Box, DollarSign, AlertTriangle, Microscope } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { Box, DollarSign, AlertTriangle, Microscope, X } from 'lucide-react';
 import { PART_TYPES } from '../data/constants';
 import { CategoryTabs, PartIcon } from './Shared';
-import { getModifierById, isUnreliable } from '../utils/modifiers';
+import { getModifierById, isUnreliable, MODIFIERS } from '../utils/modifiers';
+import { playSound } from '../utils/sound';
 
-export default function Inventory({ inventory, addToBuild, sellPart, binPart, money, category = 'ALL', setCategory, darkMode, maxCapacity = 50, binningHistory = [] }) {
+export default function Inventory({ inventory, addToBuild, sellPart, binPart, money, category = 'ALL', setCategory, darkMode, maxCapacity = 50, notify, settings, setCelebration }) {
 
   const filteredInventory = useMemo(() => {
     if (category === 'ALL') return inventory;
     return inventory.filter(p => p.type === category);
   }, [inventory, category]);
+
+  // Binning Modal State
+  const [binningItem, setBinningItem] = useState(null);
+  const [spinState, setSpinState] = useState('IDLE'); // IDLE, SPINNING, RESULT
+  const [spinItems, setSpinItems] = useState([]);
+  const [spinResult, setSpinResult] = useState(null);
+
+  const handleBinClick = (part) => {
+    setBinningItem(part);
+    setSpinState('IDLE');
+    setSpinItems([]);
+    setSpinResult(null);
+  };
+
+  const startSpin = () => {
+    const result = binPart(binningItem, true);
+    if (!result) return; // Failed (money etc)
+    
+    setSpinResult(result);
+    
+    // Generate items for spinner
+    const allModifiers = [...Object.values(MODIFIERS), { label: 'Average Chip', color: 'text-slate-500', id: 'average' }];
+    const items = [];
+    for (let i = 0; i < 60; i++) {
+        items.push(allModifiers[Math.floor(Math.random() * allModifiers.length)]);
+    }
+    items[50] = result; // Target at index 50
+    setSpinItems(items);
+    
+    // Sound Effect Loop
+    let ticks = 0;
+    const tickInterval = setInterval(() => {
+        playSound('click', settings?.sfx);
+        ticks++;
+        if (ticks > 35) clearInterval(tickInterval);
+    }, 100);
+
+    // Trigger animation
+    setTimeout(() => { setSpinState('SPINNING'); }, 50);
+    
+    setTimeout(() => { 
+        clearInterval(tickInterval);
+        setSpinState('RESULT');
+        
+        if (result.id === 'golden_chip') {
+             setCelebration('GOLDEN');
+             playSound('legendary', settings?.sfx);
+        } else {
+             playSound('success', settings?.sfx);
+        }
+        notify(`Binning Result: ${result.label}`, "success");
+    }, 4000);
+  };
+
+  const closeBinning = () => { setBinningItem(null); setSpinState('IDLE'); };
 
   return (
     <section className={`rounded-2xl border overflow-hidden shadow-2xl transition-colors ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
@@ -23,20 +79,6 @@ export default function Inventory({ inventory, addToBuild, sellPart, binPart, mo
             Capacity: {inventory.length} / {maxCapacity}
           </span>
         </div>
-        
-        {binningHistory.length > 0 && (
-            <div className={`mb-4 p-3 rounded-xl border ${darkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'}`}>
-                <h3 className="text-xs font-bold uppercase opacity-50 mb-2 flex items-center gap-2"><Microscope size={12} /> Recent Binning Results</h3>
-                <div className="space-y-1">
-                    {binningHistory.map(h => (
-                        <div key={h.id} className="flex justify-between text-xs">
-                            <span className="opacity-70">{h.partName}</span>
-                            <span className={`font-bold ${h.color}`}>{h.result}</span>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        )}
 
         <CategoryTabs current={category} set={setCategory} types={{ PC: 'PC', ...PART_TYPES }} darkMode={darkMode} />
       </div>
@@ -84,7 +126,7 @@ export default function Inventory({ inventory, addToBuild, sellPart, binPart, mo
               <div className="flex items-center gap-2">
                 {part.type === 'CPU' && !part.isBinned && (
                   <button
-                    onClick={() => binPart(part)}
+                    onClick={() => handleBinClick(part)}
                     disabled={money < 50}
                     className={`p-2 rounded-lg transition-colors ${money >= 50 ? 'bg-amber-500/10 text-amber-500 hover:bg-amber-500 hover:text-white' : 'bg-slate-200 text-slate-400 cursor-not-allowed'}`}
                     title="Bin/Test CPU ($50)"
@@ -110,6 +152,57 @@ export default function Inventory({ inventory, addToBuild, sellPart, binPart, mo
           )})
         )}
       </div>
+
+      {/* Binning Spinner Modal */}
+      {binningItem && (
+        <div className="fixed inset-0 z-[90] bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+            <div className={`w-full max-w-2xl p-8 rounded-3xl border flex flex-col items-center gap-6 shadow-2xl ${darkMode ? 'bg-slate-900 border-slate-700' : 'bg-white'}`}>
+                <div className="flex justify-between items-center w-full">
+                    <h2 className="text-2xl font-black italic flex items-center gap-2"><Microscope className="text-blue-500" /> Silicon Lottery</h2>
+                    {spinState !== 'SPINNING' && <button onClick={closeBinning}><X /></button>}
+                </div>
+
+                {spinState === 'IDLE' ? (
+                    <div className="text-center space-y-4">
+                        <div className="p-6 bg-slate-800/50 rounded-2xl border border-slate-700">
+                            <div className="text-4xl mb-2">🎲</div>
+                            <h3 className="text-xl font-bold text-white">{binningItem.name}</h3>
+                            <p className="text-slate-400">Test this CPU for hidden potential?</p>
+                        </div>
+                        <button onClick={startSpin} className="px-8 py-3 bg-amber-500 hover:bg-amber-400 text-black font-black uppercase tracking-widest rounded-xl shadow-lg shadow-amber-500/20 transition-transform active:scale-95">
+                            Test Silicon ($50)
+                        </button>
+                    </div>
+                ) : (
+                    <div className="w-full space-y-6">
+                        <div className="relative w-full h-32 bg-slate-950 rounded-xl border-4 border-slate-800 overflow-hidden flex items-center shadow-inner">
+                            {/* Center Line */}
+                            <div className="absolute left-1/2 top-0 bottom-0 w-1 bg-yellow-500 z-20 -translate-x-1/2 shadow-[0_0_10px_rgba(234,179,8,0.8)]"></div>
+                            
+                            {/* Strip */}
+                            <div 
+                                className="flex items-center h-full transition-transform duration-[4000ms] ease-[cubic-bezier(0.1,0,0.2,1)]"
+                                style={{ transform: spinState === 'SPINNING' || spinState === 'RESULT' ? `translateX(calc(50% - ${50 * 136 + 68}px))` : 'translateX(0)' }}
+                            >
+                                {spinItems.map((item, i) => (
+                                    <div key={i} className={`flex-shrink-0 w-32 h-24 mx-1 rounded-lg flex flex-col items-center justify-center text-center p-2 border border-slate-800 ${darkMode ? 'bg-slate-900' : 'bg-slate-100'}`}>
+                                        <div className={`font-black text-xs uppercase ${item.color}`}>{item.label}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        {spinState === 'RESULT' && (
+                            <div className="text-center animate-in zoom-in duration-300">
+                                <div className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Result</div>
+                                <div className={`text-3xl font-black ${spinResult.color}`}>{spinResult.label}</div>
+                                <button onClick={closeBinning} className="mt-6 px-6 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-bold">Collect</button>
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
+        </div>
+      )}
     </section>
   );
 }

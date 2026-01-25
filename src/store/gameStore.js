@@ -33,6 +33,7 @@ export const useGameStore = create(
       setMoney: (val) => set(state => ({ money: typeof val === 'function' ? val(state.money) : val })),
       setInventory: (val) => set(state => ({ inventory: typeof val === 'function' ? val(state.inventory) : val })),
       setSettings: (val) => set(state => ({ settings: typeof val === 'function' ? val(state.settings) : val })),
+      updateSetting: (key, value) => set(state => ({ settings: { ...state.settings, [key]: value } })),
       setUser: (user) => set({ user }),
       setView: (view) => set({ view }),
       setOrderTab: (tab) => set({ orderTab: tab }),
@@ -269,17 +270,27 @@ export const useGameStore = create(
         // Determine Slot Key
         let key = part.type;
         if (part.type === PART_TYPES.RAM) {
-            if (!currentBuild[PART_TYPES.RAM]) key = PART_TYPES.RAM;
-            else {
-                let i = 2;
-                while (currentBuild[`${PART_TYPES.RAM}_${i}`]) i++;
-                key = `${PART_TYPES.RAM}_${i}`;
+            // Find the first available RAM slot
+            const mobo = currentBuild[PART_TYPES.MOTHERBOARD];
+            for (let i = 1; i <= mobo.ramSlots; i++) {
+                const slotKey = i === 1 ? PART_TYPES.RAM : `${PART_TYPES.RAM}_${i}`;
+                if (!currentBuild[slotKey]) {
+                    key = slotKey;
+                    break;
+                }
             }
         } else if (part.type === PART_TYPES.STORAGE) {
-            const prefix = part.interface === 'M.2' ? 'M2' : part.interface;
-            let i = 1;
-            while (currentBuild[`${prefix}_${i}`]) i++;
-            key = `${prefix}_${i}`;
+            // Find the first available Storage slot of the correct interface
+            const mobo = currentBuild[PART_TYPES.MOTHERBOARD];
+            const interfacePrefix = part.interface === 'M.2' ? 'M2' : (part.interface === 'PATA' ? 'PATA' : 'SATA');
+            const maxSlots = mobo[`${interfacePrefix.toLowerCase()}Slots`] || 0;
+            for (let i = 1; i <= maxSlots; i++) {
+                const slotKey = `${interfacePrefix}_${i}`;
+                if (!currentBuild[slotKey]) {
+                    key = slotKey;
+                    break;
+                }
+            }
         }
 
         set(state => ({

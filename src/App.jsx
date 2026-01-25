@@ -26,7 +26,7 @@ export default function App() {
   // --- STORE SELECTORS ---
   const money = useGameStore(state => state.money);
   const inventory = useGameStore(state => state.inventory);
-  const settings = useGameStore(state => state.settings);
+  const darkMode = useGameStore(state => state.settings.darkMode);
   const activeOrders = useGameStore(state => state.activeOrders);
   const activeRequests = useGameStore(state => state.activeRequests);
   const skills = useGameStore(state => state.skills);
@@ -43,11 +43,13 @@ export default function App() {
   const user = useGameStore(state => state.user);
   const unreadSales = useGameStore(state => state.unreadSales);
   const binningHistory = useGameStore(state => state.binningHistory);
+  const sfx = useGameStore(state => state.settings.sfx);
+  const music = useGameStore(state => state.settings.music);
   
   // --- STORE ACTIONS ---
   const setMoney = useGameStore(state => state.setMoney);
   const setInventory = useGameStore(state => state.setInventory);
-  const setSettings = useGameStore(state => state.setSettings);
+  const updateSetting = useGameStore(state => state.updateSetting);
   const setAchievements = useGameStore(state => state.setAchievements);
   const setView = useGameStore(state => state.setView);
   const setOrderTab = useGameStore(state => state.setOrderTab);
@@ -214,10 +216,10 @@ export default function App() {
   };
 
   return (
-    <div className={`min-h-screen font-sans pb-20 md:pb-0 transition-colors duration-300 ${settings.darkMode ? 'bg-slate-950 text-slate-200' : 'bg-slate-100 text-slate-800'}`}>
+    <div className={`min-h-screen font-sans pb-20 md:pb-0 transition-colors duration-300 ${darkMode ? 'bg-slate-950 text-slate-200' : 'bg-slate-100 text-slate-800'}`}>
       <SpeedInsights />
       <Analytics />
-      <Header money={money} view={view} setView={handleViewChange} inventoryCount={inventory.length} toggleSettings={() => setShowSettings(true)} darkMode={settings.darkMode} />
+      <Header money={money} view={view} setView={handleViewChange} inventoryCount={inventory.length} toggleSettings={() => setShowSettings(true)} darkMode={darkMode} />
 
       {message.text && (
         <div className={`fixed top-20 right-4 z-[60] p-4 rounded-lg shadow-2xl border flex items-center gap-3 animate-bounce
@@ -232,40 +234,40 @@ export default function App() {
       {/* Settings Modal */}
       {showSettings && (
         <div className="fixed inset-0 z-[70] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className={`${settings.darkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'} border rounded-2xl p-6 w-full max-w-md shadow-2xl`}>
+          <div className={`${darkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'} border rounded-2xl p-6 w-full max-w-md shadow-2xl`}>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold flex items-center gap-2"><Settings /> Settings</h2>
               <button onClick={() => setShowSettings(false)} className="hover:text-rose-500"><X /></button>
             </div>
             
             <div className="space-y-4">
-              <div className={`flex justify-between items-center p-4 rounded-xl ${settings.darkMode ? 'bg-slate-800' : 'bg-slate-100'}`}>
+              <div className={`flex justify-between items-center p-4 rounded-xl ${darkMode ? 'bg-slate-800' : 'bg-slate-100'}`}>
                 <div className="flex items-center gap-3">
-                  {settings.music ? <Music className="text-blue-500" /> : <Music className="text-slate-500" />}
+                  {music ? <Music className="text-blue-500" /> : <Music className="text-slate-500" />}
                   <span className="font-bold">Music</span>
                 </div>
-                <button onClick={() => setSettings(s => ({...s, music: !s.music}))} className={`w-12 h-6 rounded-full transition-colors relative ${settings.music ? 'bg-blue-600' : 'bg-slate-600'}`}>
-                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${settings.music ? 'left-7' : 'left-1'}`} />
+                <button onClick={() => updateSetting('music', !music)} className={`w-12 h-6 rounded-full transition-colors relative ${music ? 'bg-blue-600' : 'bg-slate-600'}`}>
+                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${music ? 'left-7' : 'left-1'}`} />
                 </button>
               </div>
 
-              <div className={`flex justify-between items-center p-4 rounded-xl ${settings.darkMode ? 'bg-slate-800' : 'bg-slate-100'}`}>
+              <div className={`flex justify-between items-center p-4 rounded-xl ${darkMode ? 'bg-slate-800' : 'bg-slate-100'}`}>
                 <div className="flex items-center gap-3">
-                  {settings.sfx ? <Volume2 className="text-emerald-500" /> : <VolumeX className="text-slate-500" />}
+                  {sfx ? <Volume2 className="text-emerald-500" /> : <VolumeX className="text-slate-500" />}
                   <span className="font-bold">Sound Effects</span>
                 </div>
-                <button onClick={() => setSettings(s => ({...s, sfx: !s.sfx}))} className={`w-12 h-6 rounded-full transition-colors relative ${settings.sfx ? 'bg-emerald-600' : 'bg-slate-600'}`}>
-                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${settings.sfx ? 'left-7' : 'left-1'}`} />
+                <button onClick={() => updateSetting('sfx', !sfx)} className={`w-12 h-6 rounded-full transition-colors relative ${sfx ? 'bg-emerald-600' : 'bg-slate-600'}`}>
+                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${sfx ? 'left-7' : 'left-1'}`} />
                 </button>
               </div>
 
-              <div className={`flex justify-between items-center p-4 rounded-xl ${settings.darkMode ? 'bg-slate-800' : 'bg-slate-100'}`}>
+              <div className={`flex justify-between items-center p-4 rounded-xl ${darkMode ? 'bg-slate-800' : 'bg-slate-100'}`}>
                 <div className="flex items-center gap-3">
-                  {settings.darkMode ? <Moon className="text-purple-500" /> : <Sun className="text-amber-500" />}
+                  {darkMode ? <Moon className="text-purple-500" /> : <Sun className="text-amber-500" />}
                   <span className="font-bold">Theme</span>
                 </div>
-                <button onClick={() => setSettings(s => ({...s, darkMode: !s.darkMode}))} className={`w-12 h-6 rounded-full transition-colors relative ${settings.darkMode ? 'bg-purple-600' : 'bg-amber-500'}`}>
-                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${settings.darkMode ? 'left-7' : 'left-1'}`} />
+                <button onClick={() => updateSetting('darkMode', !darkMode)} className={`w-12 h-6 rounded-full transition-colors relative ${darkMode ? 'bg-purple-600' : 'bg-amber-500'}`}>
+                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${darkMode ? 'left-7' : 'left-1'}`} />
                 </button>
               </div>
 
@@ -291,7 +293,7 @@ export default function App() {
               removeFromBuild={removeFromBuild} 
               clearBuild={clearBuild} 
               handleSlotClick={handleSlotClick} 
-              darkMode={settings.darkMode}
+              darkMode={darkMode}
               buildStats={buildStats}
               inventory={inventory}
               onSaveBuild={saveBuildToInventory}
@@ -299,18 +301,18 @@ export default function App() {
               onSellBuild={sellBuildInstant}
             />
           )}
-          {view === 'shop' && <Shop buyPart={buyPart} money={money} darkMode={settings.darkMode} settings={settings} skills={skills} buyPallet={buyPallet} />}
-          {view === 'inventory' && <Inventory inventory={inventory} addToBuild={addToBuild} sellPart={sellPart} binPart={binPart} money={money} category={inventoryCategory} setCategory={setInventoryCategory} darkMode={settings.darkMode} maxCapacity={50 + (skills.logistics * 5) + (ownedUpgrades.includes('storage_1') ? 50 : 0) + (ownedUpgrades.includes('storage_2') ? 100 : 0)} binningHistory={binningHistory} />}
-          {view === 'upgrades' && <Upgrades darkMode={settings.darkMode} skills={skills} unlockSkill={unlockSkill} money={money} ownedUpgrades={ownedUpgrades} buyUpgrade={buyUpgrade} />}
-          {view === 'trading' && <Trading inventory={inventory} onPostTrade={handlePostTrade} money={money} onBuyTrade={handleBuyTrade} onItemTrade={handleItemTrade} onCancelTrade={handleCancelTrade} user={user} darkMode={settings.darkMode} netWorth={netWorth} unreadSales={unreadSales} onClearUnreadSales={markSalesRead} />}
-          {view === 'profile' && <Profile user={user} money={money} reputation={reputation} jobsCompleted={jobsCompleted} darkMode={settings.darkMode} skills={skills} achievements={achievements} netWorth={netWorth} jobHistory={jobHistory} />}
-          {view === 'devlogs' && <Devlogs darkMode={settings.darkMode} setView={setView} />}
-          {view === 'leaderboard' && <Leaderboard user={user} netWorth={netWorth} darkMode={settings.darkMode} />}
+          {view === 'shop' && <Shop buyPart={buyPart} money={money} darkMode={darkMode} skills={skills} buyPallet={buyPallet} />}
+          {view === 'inventory' && <Inventory inventory={inventory} addToBuild={addToBuild} sellPart={sellPart} binPart={binPart} money={money} category={inventoryCategory} setCategory={setInventoryCategory} darkMode={darkMode} maxCapacity={50 + (skills.logistics * 5) + (ownedUpgrades.includes('storage_1') ? 50 : 0) + (ownedUpgrades.includes('storage_2') ? 100 : 0)} binningHistory={binningHistory} />}
+          {view === 'upgrades' && <Upgrades darkMode={darkMode} skills={skills} unlockSkill={unlockSkill} money={money} ownedUpgrades={ownedUpgrades} buyUpgrade={buyUpgrade} />}
+          {view === 'trading' && <Trading inventory={inventory} onPostTrade={handlePostTrade} money={money} onBuyTrade={handleBuyTrade} onItemTrade={handleItemTrade} onCancelTrade={handleCancelTrade} user={user} darkMode={darkMode} netWorth={netWorth} unreadSales={unreadSales} onClearUnreadSales={markSalesRead} />}
+          {view === 'profile' && <Profile user={user} money={money} reputation={reputation} jobsCompleted={jobsCompleted} darkMode={darkMode} skills={skills} achievements={achievements} netWorth={netWorth} jobHistory={jobHistory} />}
+          {view === 'devlogs' && <Devlogs darkMode={darkMode} setView={setView} />}
+          {view === 'leaderboard' && <Leaderboard user={user} netWorth={netWorth} darkMode={darkMode} />}
         </div>
 
         {/* RIGHT COLUMN: ORDERS */}
         <div className="lg:col-span-4 space-y-4">
-          <div className={`flex p-1 rounded-lg border ${settings.darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
+          <div className={`flex p-1 rounded-lg border ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
             <button onClick={() => setOrderTab('STANDARD')} className={`flex-1 py-2 text-xs font-bold rounded uppercase tracking-wider transition-all ${orderTab === 'STANDARD' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}>Standard</button>
             <button onClick={() => setOrderTab('REQUESTS')} className={`flex-1 py-2 text-xs font-bold rounded uppercase tracking-wider transition-all ${orderTab === 'REQUESTS' ? 'bg-purple-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}>Requests</button>
           </div>
@@ -319,7 +321,7 @@ export default function App() {
             fulfillOrder={fulfillOrder} 
             view={view} 
             inventoryCount={inventory.length} 
-            darkMode={settings.darkMode}
+            darkMode={darkMode}
           />
 
           <div className="flex justify-end">
@@ -330,11 +332,11 @@ export default function App() {
 
           {/* Saved Builds Section (Moved from Workshop) */}
           {inventory && inventory.some(i => i.type === 'PC') && (
-            <div className={`p-5 rounded-xl border ${settings.darkMode ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200'}`}>
+            <div className={`p-5 rounded-xl border ${darkMode ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200'}`}>
               <h3 className="text-sm font-bold mb-4 flex items-center gap-2"><Monitor size={16} /> Saved Builds</h3>
               <div className="grid grid-cols-1 gap-4">
                 {inventory.filter(i => i.type === 'PC').map(pc => (
-                  <div key={pc.invId} className={`p-4 rounded-lg border flex justify-between items-center ${settings.darkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
+                  <div key={pc.invId} className={`p-4 rounded-lg border flex justify-between items-center ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
                     <div>
                       <div className="font-bold text-sm">{pc.name}</div>
                       <div className="text-xs opacity-60 flex gap-2">
@@ -377,7 +379,7 @@ export default function App() {
       </footer>
 
       {/* MOBILE NAV */}
-      <div className={`fixed bottom-0 left-0 right-0 border-t p-2 md:hidden flex justify-around items-center z-50 ${settings.darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
+      <div className={`fixed bottom-0 left-0 right-0 border-t p-2 md:hidden flex justify-around items-center z-50 ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
         <button onClick={() => setView('workshop')} className={`flex flex-col items-center gap-1 p-2 ${view === 'workshop' ? 'text-blue-400' : 'text-slate-500'}`}>
           <Wrench size={20} /> <span className="text-[10px] font-bold uppercase">Work</span>
         </button>

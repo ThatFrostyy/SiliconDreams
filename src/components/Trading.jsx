@@ -70,35 +70,47 @@ export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onI
   };
 
   const handleTransaction = async (trade, offeredItem = null) => {
-    if (!user || trade.sellerId === user.uid) return;
+    if (!user) {
+        alert("Please log in to trade.");
+        return;
+    }
+    if (trade.sellerId === user.uid) {
+        alert("You cannot buy your own items.");
+        return;
+    }
     if (trade.type === 'SELL' && money < trade.price) return alert("Not enough money!");
     if (trade.type === 'TRADE' && !offeredItem) return alert("Select an item to trade!");
 
     setLoading(true);
     try {
+      console.log(`Processing trade ${trade.id} with seller ${trade.sellerId}`);
+
       await runTransaction(db, async (transaction) => {
         const tradeRef = doc(db, 'market', trade.id);
         const tradeDoc = await transaction.get(tradeRef);
-        if (!tradeDoc.exists()) throw "Trade no longer exists!";
+        if (!tradeDoc.exists()) throw new Error("Trade no longer exists!");
 
         // Delete trade from market
         transaction.delete(tradeRef);
 
         // Send to Seller's Inbox (Safe Pattern)
+        // We create a new document reference inside the seller's inbox
         const inboxRef = doc(collection(db, 'users', trade.sellerId, 'inbox'));
         
         if (trade.type === 'SELL') {
             transaction.set(inboxRef, {
                 type: 'EARNINGS',
                 amount: trade.price,
-                timestamp: serverTimestamp()
+                timestamp: serverTimestamp(),
+                from: user.uid
             });
         } else {
             const { invId, ...cleanItem } = offeredItem;
             transaction.set(inboxRef, {
                 type: 'ITEM',
                 item: cleanItem,
-                timestamp: serverTimestamp()
+                timestamp: serverTimestamp(),
+                from: user.uid
             });
         }
       });
@@ -113,7 +125,7 @@ export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onI
       setOfferItem(null);
     } catch (error) {
       console.error("Transaction failed:", error);
-      alert("Transaction failed: " + error);
+      alert(`Transaction failed: ${error.message}`);
     }
     setLoading(false);
   };

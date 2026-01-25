@@ -41,6 +41,7 @@ export default function App() {
   const orderTab = useGameStore(state => state.orderTab);
   const message = useGameStore(state => state.message);
   const user = useGameStore(state => state.user);
+  const unreadSales = useGameStore(state => state.unreadSales);
   
   // --- STORE ACTIONS ---
   const setMoney = useGameStore(state => state.setMoney);
@@ -54,6 +55,8 @@ export default function App() {
   const setUser = useGameStore(state => state.setUser);
   const notify = useGameStore(state => state.notify);
   const checkAchievements = useGameStore(state => state.checkAchievements);
+  const addSaleNotification = useGameStore(state => state.addSaleNotification);
+  const markSalesRead = useGameStore(state => state.markSalesRead);
   
   // Action Handlers
   const buyPart = useGameStore(state => state.buyPart);
@@ -136,6 +139,7 @@ export default function App() {
           if (data.type === 'EARNINGS') {
             setMoney(prev => prev + data.amount);
             notify(`You sold items on the market! Earned $${data.amount}`, 'success');
+            addSaleNotification();
             deleteDoc(docRef).catch(e => console.error("Error clearing inbox", e));
           } else if (data.type === 'ITEM') {
              const newItem = { ...data.item, invId: newId() };
@@ -147,7 +151,7 @@ export default function App() {
       });
     });
     return () => unsub();
-  }, [user, setMoney, setInventory, notify]);
+  }, [user, setMoney, setInventory, notify, addSaleNotification]);
 
   // Trading Logic
   const handlePostTrade = (invId) => {
@@ -297,7 +301,7 @@ export default function App() {
           {view === 'shop' && <Shop buyPart={buyPart} money={money} darkMode={settings.darkMode} settings={settings} skills={skills} buyPallet={buyPallet} />}
           {view === 'inventory' && <Inventory inventory={inventory} addToBuild={addToBuild} sellPart={sellPart} binPart={binPart} money={money} category={inventoryCategory} setCategory={setInventoryCategory} darkMode={settings.darkMode} maxCapacity={50 + (skills.logistics * 5) + (ownedUpgrades.includes('storage_1') ? 50 : 0) + (ownedUpgrades.includes('storage_2') ? 100 : 0)} />}
           {view === 'upgrades' && <Upgrades darkMode={settings.darkMode} skills={skills} unlockSkill={unlockSkill} money={money} ownedUpgrades={ownedUpgrades} buyUpgrade={buyUpgrade} />}
-          {view === 'trading' && <Trading inventory={inventory} onPostTrade={handlePostTrade} money={money} onBuyTrade={handleBuyTrade} onItemTrade={handleItemTrade} onCancelTrade={handleCancelTrade} user={user} darkMode={settings.darkMode} netWorth={netWorth} />}
+          {view === 'trading' && <Trading inventory={inventory} onPostTrade={handlePostTrade} money={money} onBuyTrade={handleBuyTrade} onItemTrade={handleItemTrade} onCancelTrade={handleCancelTrade} user={user} darkMode={settings.darkMode} netWorth={netWorth} unreadSales={unreadSales} onClearUnreadSales={markSalesRead} />}
           {view === 'profile' && <Profile user={user} money={money} reputation={reputation} jobsCompleted={jobsCompleted} darkMode={settings.darkMode} skills={skills} achievements={achievements} netWorth={netWorth} jobHistory={jobHistory} />}
           {view === 'devlogs' && <Devlogs darkMode={settings.darkMode} setView={setView} />}
           {view === 'leaderboard' && <Leaderboard user={user} netWorth={netWorth} darkMode={settings.darkMode} />}

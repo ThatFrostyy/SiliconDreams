@@ -6,7 +6,7 @@ import { ShoppingCart, DollarSign, Tag, Package, RefreshCw, Filter, ArrowRightLe
 import { PART_TYPES, PARTS_CATALOG } from '../data/constants';
 import { PartIcon, CategoryTabs } from './Shared';
 
-export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onItemTrade, onCancelTrade, user, darkMode, netWorth }) {
+export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onItemTrade, onCancelTrade, user, darkMode, netWorth, unreadSales, onClearUnreadSales }) {
   const [trades, setTrades] = useState([]);
   const [sellingItem, setSellingItem] = useState(null);
   const [price, setPrice] = useState('');
@@ -160,7 +160,12 @@ export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onI
       <div className={`flex p-1 rounded-xl border ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
         <button onClick={() => setActiveTab('MARKET')} className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${activeTab === 'MARKET' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-400'}`}>Global Market</button>
         <button onClick={() => setActiveTab('SELL')} className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${activeTab === 'SELL' ? 'bg-emerald-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-400'}`}>Sell Item</button>
-        <button onClick={() => setActiveTab('MY_LISTINGS')} className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${activeTab === 'MY_LISTINGS' ? 'bg-purple-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-400'}`}>My Listings</button>
+        <button onClick={() => { setActiveTab('MY_LISTINGS'); if(onClearUnreadSales) onClearUnreadSales(); }} className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all relative ${activeTab === 'MY_LISTINGS' ? 'bg-purple-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-400'}`}>
+            My Listings
+            {unreadSales > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[9px] flex items-center justify-center rounded-full animate-bounce">{unreadSales}</span>
+            )}
+        </button>
       </div>
 
       {/* SELL SECTION */}
@@ -407,8 +412,8 @@ export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onI
                     <p>No active listings found for this category.</p>
                 </div>
             )}
-        </div>)}
-      </div>
+        </div>
+      </div>)}
     </div>
   );
 }

@@ -19,6 +19,7 @@ export const useGameStore = create(
       activeBench: 0,
       ownedUpgrades: [],
       achievements: [],
+      unreadSales: 0,
       jobHistory: [],
       reputation: 50,
       jobsCompleted: 0,
@@ -35,6 +36,8 @@ export const useGameStore = create(
       setView: (view) => set({ view }),
       setOrderTab: (tab) => set({ orderTab: tab }),
       setActiveBench: (bench) => set({ activeBench: bench }),
+      addSaleNotification: () => set(state => ({ unreadSales: state.unreadSales + 1 })),
+      markSalesRead: () => set({ unreadSales: 0 }),
       
       // --- ACTIONS ---
       
@@ -137,7 +140,7 @@ export const useGameStore = create(
 
       // Binning / Testing
       binPart: (part) => {
-        const { money, notify, settings } = get();
+        const { money, notify, settings, skills } = get();
         const COST = 50;
         
         if (money < COST) {
@@ -145,7 +148,7 @@ export const useGameStore = create(
             return;
         }
 
-        const modifier = getBinningResult();
+        const modifier = getBinningResult(skills.binning || 0);
         let newPart = { ...part, isBinned: true };
         
         if (modifier) {

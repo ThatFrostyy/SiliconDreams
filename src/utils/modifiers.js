@@ -1,154 +1,55 @@
 export const MODIFIERS = {
-  LEGENDARY: { 
-    id: 'legendary', 
-    label: 'Legendary', 
-    color: 'text-orange-500', 
-    priceMult: 1.5, 
-    perfMult: 1.25, 
-    reliability: 1.0, 
-    weight: 2 
-  },
-  MASTERWORK: { 
-    id: 'masterwork', 
-    label: 'Masterwork', 
-    color: 'text-yellow-500', 
-    priceMult: 1.3, 
-    perfMult: 1.15, 
-    reliability: 1.0, 
-    weight: 5 
-  },
-  SUPERIOR: { 
-    id: 'superior', 
-    label: 'Superior', 
-    color: 'text-emerald-500', 
-    priceMult: 1.15, 
-    perfMult: 1.1, 
-    reliability: 1.0, 
-    weight: 10 
-  },
-  STABLE: { 
-    id: 'stable', 
-    label: 'Stable', 
-    color: 'text-blue-500', 
-    priceMult: 1.05, 
-    perfMult: 1.0, 
-    reliability: 1.1, 
-    weight: 15 
-  },
-  NORMAL: { 
-    id: 'normal', 
-    label: '', 
-    color: '', // Inherit default color
-    priceMult: 1.0, 
-    perfMult: 1.0, 
-    reliability: 1.0, 
-    weight: 40 
-  },
-  USED: { 
-    id: 'used', 
-    label: 'Used', 
-    color: 'text-stone-500', 
-    priceMult: 0.7, 
-    perfMult: 0.9, 
-    reliability: 0.8, 
-    weight: 15 
-  },
-  RUSTY: { 
-    id: 'rusty', 
-    label: 'Rusty', 
-    color: 'text-amber-700', 
-    priceMult: 0.5, 
-    perfMult: 0.7, 
-    reliability: 0.6, 
-    weight: 8 
-  },
-  BROKEN: { 
-    id: 'broken', 
-    label: 'Broken', 
-    color: 'text-red-600', 
-    priceMult: 0.2, 
-    perfMult: 0.5, 
-    reliability: 0.4, 
-    weight: 5 
-  },
-  GOLDEN: { 
-    id: 'golden', 
-    label: 'Golden Chip', 
-    color: 'text-yellow-400', 
-    priceMult: 1.2, 
-    perfMult: 1.1, 
-    reliability: 1.0, 
-    weight: 5 
-  },
-  PLATINUM: { 
-    id: 'platinum', 
-    label: 'Platinum', 
-    color: 'text-cyan-400', 
-    priceMult: 1.5, 
-    perfMult: 1.15, 
-    reliability: 1.0, 
-    weight: 2 
-  },
-  DUD: { 
-    id: 'dud', 
-    label: 'Dud', 
-    color: 'text-stone-400', 
-    priceMult: 0.8, 
-    perfMult: 0.95, 
-    reliability: 0.9, 
-    weight: 20 
-  },
-  UNSTABLE: { 
-    id: 'unstable', 
-    label: 'Unstable', 
-    color: 'text-rose-500', 
-    priceMult: 0.6, 
-    perfMult: 1.1, 
-    reliability: 0.5, 
-    weight: 10 
-  },
+  // Standard Modifiers
+  'overclocked': { id: 'overclocked', label: 'Overclocked', color: 'text-rose-500', perfMult: 1.1, priceMult: 1.1 },
+  'used': { id: 'used', label: 'Used', color: 'text-slate-500', perfMult: 0.9, priceMult: 0.7 },
+  
+  // Binning Modifiers
+  'golden_chip': { id: 'golden_chip', label: 'Golden Chip', color: 'text-amber-400', perfMult: 1.1, priceMult: 1.2 },
+  'silver_sample': { id: 'silver_sample', label: 'Silver Sample', color: 'text-slate-300', perfMult: 1.05, priceMult: 1.1 },
+  'dud': { id: 'dud', label: 'Dud', color: 'text-amber-700', perfMult: 0.95, priceMult: 0.8 },
+  'unstable': { id: 'unstable', label: 'Unstable', color: 'text-red-600', perfMult: 1.15, priceMult: 0.5, unreliable: true },
 };
 
 export const getRandomModifier = () => {
-  const totalWeight = Object.values(MODIFIERS).reduce((acc, mod) => acc + mod.weight, 0);
-  let random = Math.random() * totalWeight;
-  
-  for (const mod of Object.values(MODIFIERS)) {
-    random -= mod.weight;
-    if (random <= 0) return mod;
-  }
-  return MODIFIERS.NORMAL;
+  const roll = Math.random();
+  if (roll > 0.9) return MODIFIERS['overclocked'];
+  if (roll > 0.6) return MODIFIERS['used'];
+  return null;
 };
 
-export const getBinningResult = () => {
+export const getBinningResult = (skillLevel = 0) => {
   const roll = Math.random();
-  if (roll < 0.05) return MODIFIERS.PLATINUM; // 5%
-  if (roll < 0.15) return MODIFIERS.GOLDEN;   // 10%
-  if (roll < 0.30) return MODIFIERS.UNSTABLE; // 15%
-  if (roll < 0.60) return MODIFIERS.DUD;      // 30%
-  return MODIFIERS.NORMAL;                    // 40%
+  
+  // Skill improves chances
+  const goldenChance = 0.95 - (skillLevel * 0.02); // Base 5%, up to 15% at Lvl 5
+  const silverChance = 0.80 - (skillLevel * 0.03); // Base 15%, up to 30% at Lvl 5
+  const unstableChance = 0.70; // Fixed 10% threshold relative to others
+  const dudChance = 0.40 - (skillLevel * 0.02); // Reduces dud chance
+
+  if (roll > goldenChance) return MODIFIERS['golden_chip'];
+  if (roll > silverChance) return MODIFIERS['silver_sample'];
+  if (roll > unstableChance) return MODIFIERS['unstable'];
+  if (roll > dudChance) return MODIFIERS['dud'];
+  return null; // Average Chip
 };
 
 export const applyModifier = (part, modifier) => {
-  const newPart = { ...part };
-  newPart.originalName = part.name;
-  newPart.modifierId = modifier.id;
-  
-  if (modifier.id !== 'normal') {
-    newPart.name = `${modifier.label} ${part.name}`;
-  }
-  
-  newPart.price = Math.floor(part.price * modifier.priceMult);
-  if (newPart.perf) newPart.perf = Math.floor(newPart.perf * modifier.perfMult);
-  newPart.reliability = (part.reliability || 1.0) * modifier.reliability;
-  
-  return newPart;
+  if (!modifier) return part;
+  return {
+    ...part,
+    modifierId: modifier.id,
+    name: `${modifier.label} ${part.name}`,
+    originalName: part.originalName || part.name,
+    perf: Math.floor((part.perf || 0) * (modifier.perfMult || 1)),
+    price: Math.floor((part.price || 0) * (modifier.priceMult || 1)),
+    isUnreliable: modifier.unreliable || false
+  };
 };
 
 export const getModifierById = (id) => {
-    return Object.values(MODIFIERS).find(m => m.id === id) || MODIFIERS.NORMAL;
+  return MODIFIERS[id] || { label: '', color: '' };
 };
 
 export const isUnreliable = (part) => {
-    return (part.reliability !== undefined && part.reliability < 0.8);
+  return part.isUnreliable || false;
 };

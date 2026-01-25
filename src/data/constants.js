@@ -49,6 +49,7 @@ export const SKILLS = {
   efficiency: { id: 'efficiency', category: 'Technical', name: "Fast Learner", description: "Gains reputation faster.", effect: "+10% Reputation / Lvl", maxLevel: 5, baseCost: 300, costMultiplier: 1.5 },
   overclocking: { id: 'overclocking', category: 'Technical', name: "Overclocker", description: "Boosts total system performance.", effect: "+1% Perf / Lvl", maxLevel: 5, baseCost: 1500, costMultiplier: 1.8 },
   optimization: { id: 'optimization', category: 'Technical', name: "Power Efficiency", description: "Reduces power draw of parts.", effect: "-2% Power / Lvl", maxLevel: 5, baseCost: 400, costMultiplier: 1.4 },
+  binning: { id: 'binning', category: 'Technical', name: "Silicon Lottery", description: "Better chance for Golden Chips.", effect: "+Chance / Lvl", maxLevel: 5, baseCost: 2000, costMultiplier: 1.5 },
   
   // Operations
   barter: { id: 'barter', category: 'Operations', name: "Bulk Buyer", description: "Reduces component costs.", effect: "-3% Shop Prices / Lvl", maxLevel: 5, baseCost: 800, costMultiplier: 1.5 },

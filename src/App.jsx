@@ -29,7 +29,8 @@ export default function App() {
   // --- STORE SELECTORS ---
   const money = useGameStore(state => state.money);
   const inventory = useGameStore(state => state.inventory);
-  const darkMode = useGameStore(state => state.settings.darkMode);
+  const settings = useGameStore(state => state.settings) || { darkMode: true, sfx: true, music: false };
+  const darkMode = settings.darkMode;
   const activeOrders = useGameStore(state => state.activeOrders);
   const activeRequests = useGameStore(state => state.activeRequests);
   const skills = useGameStore(state => state.skills);

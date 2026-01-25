@@ -82,7 +82,8 @@ class MusicPlayer {
       const arrayBuffer = await response.arrayBuffer();
       this.buffer = await this.audioCtx.decodeAudioData(arrayBuffer);
       return true;
-    } catch (e) {
+    } catch (error) {
+      console.error("Error loading custom music:", error);
       this.customMusicChecked = true;
       return false;
     }
@@ -201,7 +202,9 @@ class MusicPlayer {
             this.gainNode.gain.linearRampToValueAtTime(0, now + 0.5);
           }
           this.source.stop(now + 0.5);
-        } catch (e) {}
+        } catch (error) {
+            console.error("Error stopping music source:", error);
+        }
         this.source = null;
       }
 

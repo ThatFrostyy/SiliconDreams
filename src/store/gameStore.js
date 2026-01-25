@@ -84,7 +84,7 @@ export const useGameStore = create(
 
       // Shop Actions
       buyPart: (part) => {
-        const { money, skills, notify, settings } = get();
+        const { money, skills, notify } = get();
         const discount = 1 - (skills.barter * 0.03);
         const finalPrice = Math.floor(part.price * discount);
         
@@ -100,7 +100,7 @@ export const useGameStore = create(
       },
 
       buyPallet: (type) => {
-        const { money, notify, settings } = get();
+        const { money, notify } = get();
         let cost = 500;
         if (type === 'PREMIUM') cost = 2500;
         if (type === 'MEDIUM') cost = 1000;
@@ -154,7 +154,7 @@ export const useGameStore = create(
       },
 
       addToBuild: (part) => {
-        const { builds, activeBench, notify, settings, setView } = get();
+        const { builds, activeBench, notify, settings } = get();
         const currentBuild = builds[activeBench] || {};
 
         // Handle PC Loading
@@ -429,6 +429,7 @@ export const useGameStore = create(
     { 
       name: 'pc-tycoon-storage',
       partialize: (state) => {
+        // eslint-disable-next-line no-unused-vars
         const { user, message, ...rest } = state;
         return rest;
       }

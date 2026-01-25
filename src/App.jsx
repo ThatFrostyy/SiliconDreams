@@ -44,17 +44,8 @@ export default function App() {
   const setMoney = useGameStore(state => state.setMoney);
   const setInventory = useGameStore(state => state.setInventory);
   const setSettings = useGameStore(state => state.setSettings);
-  const setActiveOrders = useGameStore(state => state.setActiveOrders);
-  const setActiveRequests = useGameStore(state => state.setActiveRequests);
-  const setSkills = useGameStore(state => state.setSkills);
-  const setBuilds = useGameStore(state => state.setBuilds);
-  const setActiveBench = useGameStore(state => state.setActiveBench);
-  const setOwnedUpgrades = useGameStore(state => state.setOwnedUpgrades);
   const setAchievements = useGameStore(state => state.setAchievements);
-  const setJobHistory = useGameStore(state => state.setJobHistory);
   const setView = useGameStore(state => state.setView);
-  const setReputation = useGameStore(state => state.setReputation);
-  const setJobsCompleted = useGameStore(state => state.setJobsCompleted);
   const setOrderTab = useGameStore(state => state.setOrderTab);
   const initOrders = useGameStore(state => state.initOrders);
   const resetGame = useGameStore(state => state.resetGame);
@@ -83,7 +74,7 @@ export default function App() {
   // Init Orders on load
   useEffect(() => {
     initOrders();
-  }, []);
+  }, [initOrders]);
 
   const buildStats = calculateBuildStats(currentBuild, skills);
   const netWorth = money + inventory.reduce((acc, item) => acc + (item.price || 0), 0);
@@ -91,7 +82,7 @@ export default function App() {
   // Achievement Check
   useEffect(() => {
     checkAchievements();
-  }, [money, buildStats.totalPerf, achievements]);
+  }, [money, inventory, achievements, jobsCompleted, checkAchievements]);
 
   // Console Cheats
   useEffect(() => {
@@ -101,7 +92,7 @@ export default function App() {
         notify("Cheat Activated: Gold Workbench Unlocked!", "success");
       }
     };
-  }, [achievements, settings.sfx]);
+  }, [achievements, settings.sfx, notify, setAchievements]);
 
   // Music Effect
   useEffect(() => {
@@ -123,7 +114,7 @@ export default function App() {
         setUser(userCredential.user);
       })
       .catch((error) => console.error("❌ Firebase Connection Failed:", error));
-  }, []);
+  }, [setUser]);
 
   // Check for earnings from Trading
   useEffect(() => {
@@ -137,13 +128,14 @@ export default function App() {
         if (change.type === 'added') {
           const data = change.doc.data();
           const docRef = change.doc.ref;
+          const newId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
           if (data.type === 'EARNINGS') {
             setMoney(prev => prev + data.amount);
             notify(`You sold items on the market! Earned $${data.amount}`, 'success');
             deleteDoc(docRef).catch(e => console.error("Error clearing inbox", e));
           } else if (data.type === 'ITEM') {
-             const newItem = { ...data.item, invId: Math.random().toString(36).substr(2, 5) };
+             const newItem = { ...data.item, invId: newId() };
              setInventory(prev => [...prev, newItem]);
              notify(`Trade complete! Received ${newItem.name}.`, 'success');
              deleteDoc(docRef).catch(e => console.error("Error clearing inbox", e));
@@ -152,7 +144,7 @@ export default function App() {
       });
     });
     return () => unsub();
-  }, [user]);
+  }, [user, setMoney, setInventory, notify]);
 
   // Trading Logic
   const handlePostTrade = (invId) => {
@@ -161,24 +153,31 @@ export default function App() {
   };
 
   const handleBuyTrade = (part, price) => {
-    setMoney(prev => prev - price);
-    setInventory(prev => [...prev, { ...part, invId: Math.random().toString(36).substr(2, 5) }]);
+    useGameStore.setState(state => ({
+      money: state.money - price,
+      inventory: [...state.inventory, { ...part, invId: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}` }]
+    }));
     notify(`Bought ${part.name} from market`, "success");
   };
 
   const handleItemTrade = (incomingPart, outgoingPartInvId) => {
-    setInventory(prev => prev.filter(p => p.invId !== outgoingPartInvId));
-    setInventory(prev => [...prev, { ...incomingPart, invId: Math.random().toString(36).substr(2, 5) }]);
+    setInventory(prev => {
+      const newInventory = prev.filter(p => p.invId !== outgoingPartInvId);
+      newInventory.push({ ...incomingPart, invId: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}` });
+      return newInventory;
+    });
     notify(`Traded for ${incomingPart.name}`, "success");
   };
 
   const disassembleBuild = (pcItem) => {
-    setInventory(prev => prev.filter(i => i.invId !== pcItem.invId));
-    const parts = Object.values(pcItem.parts).map(p => ({
-      ...p,
-      invId: Math.random().toString(36).substr(2, 9)
-    }));
-    setInventory(prev => [...prev, ...parts]);
+    setInventory(prev => {
+      const withoutPC = prev.filter(i => i.invId !== pcItem.invId);
+      const parts = Object.values(pcItem.parts).map(p => ({
+        ...p,
+        invId: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      }));
+      return [...withoutPC, ...parts];
+    });
     notify("PC disassembled. Parts returned to inventory.", "info");
   };
 

@@ -28,7 +28,7 @@ export default function Header({ money, view, setView, inventoryCount, toggleSet
           <Box size={16} /> Inventory
         </button>
         <button onClick={() => setView('trading')} className={`px-4 py-2 rounded-full flex items-center gap-2 text-sm font-bold transition-all ${view === 'trading' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'text-slate-400 hover:bg-slate-800/50'}`}>
-          <Globe size={16} /> Trading
+          <Globe size={16} /> Market
         </button>
         <button onClick={() => setView('upgrades')} className={`px-4 py-2 rounded-full flex items-center gap-2 text-sm font-bold transition-all ${view === 'upgrades' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'text-slate-400 hover:bg-slate-800/50'}`}>
           <TrendingUp size={16} /> Upgrades

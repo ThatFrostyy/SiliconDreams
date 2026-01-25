@@ -2,11 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../utils/firebase';
 import { collection, addDoc, query, orderBy, onSnapshot, doc, runTransaction, serverTimestamp } from 'firebase/firestore';
-import { ShoppingCart, DollarSign, Tag, Package, RefreshCw, Filter, ArrowRightLeft, Search, X, Monitor } from 'lucide-react';
-import { PART_TYPES, PARTS_CATALOG } from '../data/constants';
+import { ShoppingCart, DollarSign, Tag, Package, RefreshCw, Filter, ArrowRightLeft, Search, X, Monitor, Globe } from 'lucide-react';
+import { PART_TYPES, PARTS_CATALOG, RIVAL_COMPANIES } from '../data/constants';
 import { PartIcon, CategoryTabs } from './Shared';
 
-export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onItemTrade, user, darkMode }) {
+export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onItemTrade, user, darkMode, netWorth }) {
   const [trades, setTrades] = useState([]);
   const [sellingItem, setSellingItem] = useState(null);
   const [price, setPrice] = useState('');
@@ -255,11 +255,9 @@ export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onI
 
       {/* MARKET SECTION */}
       <div className="space-y-4">
-        <div className="flex justify-between items-end">
-            <h2 className="text-xl font-bold flex items-center gap-2"><ShoppingCart className="text-blue-500" /> Global Market</h2>
-            <div className="w-1/2">
-                <CategoryTabs current={marketFilter} set={setMarketFilter} types={{ PC: 'PC', ...PART_TYPES }} darkMode={darkMode} />
-            </div>
+        <h2 className="text-xl font-bold flex items-center gap-2"><ShoppingCart className="text-blue-500" /> Global Market</h2>
+        <div className="mb-4">
+            <CategoryTabs current={marketFilter} set={setMarketFilter} types={{ PC: 'PC', ...PART_TYPES }} darkMode={darkMode} />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -355,6 +353,33 @@ export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onI
                     <p>No active listings found for this category.</p>
                 </div>
             )}
+        </div>
+      </div>
+
+      {/* LEADERBOARD SECTION */}
+      <div className={`mt-8 p-6 rounded-xl border ${darkMode ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
+        <h3 className="font-bold flex items-center gap-2 mb-4"><Globe className="text-blue-500" fill="currentColor" /> Industry Leaderboard</h3>
+        <div className="space-y-2">
+            {[...RIVAL_COMPANIES, { id: 'player', name: user ? `Player ${user.uid.substr(0, 4)}` : 'You', netWorth: netWorth || 0, color: "text-emerald-400 font-black", isPlayer: true }]
+                .sort((a, b) => b.netWorth - a.netWorth)
+                .map((company, index) => (
+                    <div key={company.id} className={`flex items-center justify-between p-3 rounded-lg border ${company.isPlayer ? (darkMode ? 'bg-emerald-900/20 border-emerald-500/50' : 'bg-emerald-50 border-emerald-200') : (darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200')}`}>
+                        <div className="flex items-center gap-4">
+                            <div className={`w-8 h-8 flex items-center justify-center rounded-full font-black text-sm ${index === 0 ? 'bg-yellow-500 text-black' : (index === 1 ? 'bg-slate-400 text-black' : (index === 2 ? 'bg-orange-700 text-white' : 'bg-slate-800 text-slate-500'))}`}>
+                                {index + 1}
+                            </div>
+                            <div>
+                                <div className={`font-bold text-sm ${company.color || (darkMode ? 'text-slate-300' : 'text-slate-700')}`}>{company.name}</div>
+                                {company.isPlayer && <div className="text-[10px] text-emerald-500 font-bold uppercase">That's You!</div>}
+                            </div>
+                        </div>
+                        <div className="text-right">
+                            <div className="font-mono font-bold text-sm">${company.netWorth.toLocaleString()}</div>
+                            <div className="text-[10px] opacity-50 uppercase">Net Worth</div>
+                        </div>
+                    </div>
+                ))
+            }
         </div>
       </div>
     </div>

@@ -300,7 +300,10 @@ export default function App() {
   };
 
   const buyPallet = (type) => {
-    const cost = type === 'PREMIUM' ? 2500 : 500;
+    let cost = 500;
+    if (type === 'PREMIUM') cost = 2500;
+    if (type === 'MEDIUM') cost = 1000;
+
     if (money < cost) {
       notify("Not enough money for this pallet!", "error");
       return;
@@ -314,7 +317,10 @@ export default function App() {
     
     for (let i = 0; i < itemCount; i++) {
       // Filter parts based on tier roughly by price
-      const pool = PARTS_CATALOG.filter(p => type === 'PREMIUM' ? p.price > 150 : p.price <= 200);
+      let pool = PARTS_CATALOG.filter(p => p.price <= 200);
+      if (type === 'PREMIUM') pool = PARTS_CATALOG.filter(p => p.price > 150);
+      if (type === 'MEDIUM') pool = PARTS_CATALOG.filter(p => p.price > 50 && p.price <= 400);
+      
       const part = pool[Math.floor(Math.random() * pool.length)];
       if (part) {
         newItems.push({ ...part, invId: Math.random().toString(36).substr(2, 5) });
@@ -759,8 +765,8 @@ export default function App() {
           {view === 'shop' && <Shop buyPart={buyPart} money={money} darkMode={settings.darkMode} skills={skills} buyPallet={buyPallet} />}
           {view === 'inventory' && <Inventory inventory={inventory} addToBuild={addToBuild} sellPart={sellPart} category={inventoryCategory} setCategory={setInventoryCategory} darkMode={settings.darkMode} maxCapacity={50 + (skills.logistics * 5) + (ownedUpgrades.includes('storage_1') ? 50 : 0) + (ownedUpgrades.includes('storage_2') ? 100 : 0)} />}
           {view === 'upgrades' && <Upgrades darkMode={settings.darkMode} skills={skills} unlockSkill={unlockSkill} money={money} ownedUpgrades={ownedUpgrades} buyUpgrade={buyUpgrade} />}
-          {view === 'trading' && <Trading inventory={inventory} onPostTrade={handlePostTrade} money={money} onBuyTrade={handleBuyTrade} onItemTrade={handleItemTrade} user={user} darkMode={settings.darkMode} />}
-          {view === 'profile' && <Profile user={user} money={money} reputation={reputation} jobsCompleted={jobsCompleted} darkMode={settings.darkMode} skills={skills} achievements={achievements} netWorth={netWorth} />}
+          {view === 'trading' && <Trading inventory={inventory} onPostTrade={handlePostTrade} money={money} onBuyTrade={handleBuyTrade} onItemTrade={handleItemTrade} user={user} darkMode={settings.darkMode} netWorth={netWorth} />}
+          {view === 'profile' && <Profile user={user} money={money} reputation={reputation} jobsCompleted={jobsCompleted} darkMode={settings.darkMode} skills={skills} achievements={achievements} />}
         </div>
 
         {/* RIGHT COLUMN: ORDERS */}

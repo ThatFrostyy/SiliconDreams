@@ -1,8 +1,8 @@
 import React from 'react';
-import { User, Trophy, Briefcase, DollarSign, Star, Award, Zap, Globe } from 'lucide-react';
-import { REPUTATION_TITLES, SKILLS, ACHIEVEMENTS, RIVAL_COMPANIES } from '../data/constants';
+import { User, Trophy, Briefcase, DollarSign, Star, Award, Zap } from 'lucide-react';
+import { REPUTATION_TITLES, SKILLS, ACHIEVEMENTS } from '../data/constants';
 
-export default function Profile({ user, money, reputation, jobsCompleted, darkMode, skills, achievements, netWorth }) {
+export default function Profile({ user, money, reputation, jobsCompleted, darkMode, skills, achievements }) {
   const getReputationTitle = (rep) => {
     return REPUTATION_TITLES.find(t => rep >= t.threshold)?.title || "Unknown";
   };
@@ -109,33 +109,6 @@ export default function Profile({ user, money, reputation, jobsCompleted, darkMo
                     </div>
                 );
             })}
-        </div>
-      </div>
-
-      {/* Leaderboard Panel */}
-      <div className={`mt-6 p-6 rounded-xl border ${darkMode ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
-        <h3 className="font-bold flex items-center gap-2 mb-4"><Globe className="text-blue-500" fill="currentColor" /> Industry Leaderboard</h3>
-        <div className="space-y-2">
-            {[...RIVAL_COMPANIES, { id: 'player', name: user ? `Player ${user.uid.substr(0, 4)}` : 'You', netWorth: netWorth, color: "text-emerald-400 font-black", isPlayer: true }]
-                .sort((a, b) => b.netWorth - a.netWorth)
-                .map((company, index) => (
-                    <div key={company.id} className={`flex items-center justify-between p-3 rounded-lg border ${company.isPlayer ? (darkMode ? 'bg-emerald-900/20 border-emerald-500/50' : 'bg-emerald-50 border-emerald-200') : (darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200')}`}>
-                        <div className="flex items-center gap-4">
-                            <div className={`w-8 h-8 flex items-center justify-center rounded-full font-black text-sm ${index === 0 ? 'bg-yellow-500 text-black' : (index === 1 ? 'bg-slate-400 text-black' : (index === 2 ? 'bg-orange-700 text-white' : 'bg-slate-800 text-slate-500'))}`}>
-                                {index + 1}
-                            </div>
-                            <div>
-                                <div className={`font-bold text-sm ${company.color || (darkMode ? 'text-slate-300' : 'text-slate-700')}`}>{company.name}</div>
-                                {company.isPlayer && <div className="text-[10px] text-emerald-500 font-bold uppercase">That's You!</div>}
-                            </div>
-                        </div>
-                        <div className="text-right">
-                            <div className="font-mono font-bold text-sm">${company.netWorth.toLocaleString()}</div>
-                            <div className="text-[10px] opacity-50 uppercase">Net Worth</div>
-                        </div>
-                    </div>
-                ))
-            }
         </div>
       </div>
     </div>

@@ -71,6 +71,42 @@ export const MODIFIERS = {
     reliability: 0.4, 
     weight: 5 
   },
+  GOLDEN: { 
+    id: 'golden', 
+    label: 'Golden Chip', 
+    color: 'text-yellow-400', 
+    priceMult: 1.2, 
+    perfMult: 1.1, 
+    reliability: 1.0, 
+    weight: 5 
+  },
+  PLATINUM: { 
+    id: 'platinum', 
+    label: 'Platinum', 
+    color: 'text-cyan-400', 
+    priceMult: 1.5, 
+    perfMult: 1.15, 
+    reliability: 1.0, 
+    weight: 2 
+  },
+  DUD: { 
+    id: 'dud', 
+    label: 'Dud', 
+    color: 'text-stone-400', 
+    priceMult: 0.8, 
+    perfMult: 0.95, 
+    reliability: 0.9, 
+    weight: 20 
+  },
+  UNSTABLE: { 
+    id: 'unstable', 
+    label: 'Unstable', 
+    color: 'text-rose-500', 
+    priceMult: 0.6, 
+    perfMult: 1.1, 
+    reliability: 0.5, 
+    weight: 10 
+  },
 };
 
 export const getRandomModifier = () => {
@@ -82,6 +118,15 @@ export const getRandomModifier = () => {
     if (random <= 0) return mod;
   }
   return MODIFIERS.NORMAL;
+};
+
+export const getBinningResult = () => {
+  const roll = Math.random();
+  if (roll < 0.05) return MODIFIERS.PLATINUM; // 5%
+  if (roll < 0.15) return MODIFIERS.GOLDEN;   // 10%
+  if (roll < 0.30) return MODIFIERS.UNSTABLE; // 15%
+  if (roll < 0.60) return MODIFIERS.DUD;      // 30%
+  return MODIFIERS.NORMAL;                    // 40%
 };
 
 export const applyModifier = (part, modifier) => {

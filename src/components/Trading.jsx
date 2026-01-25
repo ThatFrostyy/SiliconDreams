@@ -1,16 +1,17 @@
 // src/components/Trading.jsx
 import React, { useState, useEffect } from 'react';
 import { db } from '../utils/firebase';
-import { collection, addDoc, query, orderBy, onSnapshot, doc, runTransaction, serverTimestamp } from 'firebase/firestore';
-import { ShoppingCart, DollarSign, Tag, Package, RefreshCw, Filter, ArrowRightLeft, Search, X, Monitor } from 'lucide-react';
+import { collection, addDoc, query, orderBy, onSnapshot, doc, runTransaction, serverTimestamp, deleteDoc } from 'firebase/firestore';
+import { ShoppingCart, DollarSign, Tag, Package, RefreshCw, Filter, ArrowRightLeft, Search, X, Monitor, List, Trash2 } from 'lucide-react';
 import { PART_TYPES, PARTS_CATALOG } from '../data/constants';
 import { PartIcon, CategoryTabs } from './Shared';
 
-export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onItemTrade, user, darkMode, netWorth }) {
+export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onItemTrade, onCancelTrade, user, darkMode, netWorth }) {
   const [trades, setTrades] = useState([]);
   const [sellingItem, setSellingItem] = useState(null);
   const [price, setPrice] = useState('');
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('MARKET'); // MARKET, SELL, MY_LISTINGS
   
   // Filters
   const [marketFilter, setMarketFilter] = useState('ALL');
@@ -132,16 +133,38 @@ export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onI
     setLoading(false);
   };
 
+  const handleCancel = async (trade) => {
+    if (!window.confirm("Cancel this listing? Item will be returned to inventory.")) return;
+    setLoading(true);
+    try {
+      await deleteDoc(doc(db, 'market', trade.id));
+      onCancelTrade(trade);
+    } catch (error) {
+      console.error("Error cancelling trade:", error);
+      alert("Failed to cancel trade");
+    }
+    setLoading(false);
+  };
+
   const filteredInventory = inventory.filter(p => sellFilter === 'ALL' ? true : (sellFilter === 'PC' ? p.type === 'PC' : p.type === sellFilter));
   const filteredTrades = trades.filter(t => {
     if (marketFilter !== 'ALL' && t.part.type !== marketFilter) return false;
     if (showAffordable && t.type === 'SELL' && t.price > money) return false;
+    if (activeTab === 'MY_LISTINGS' && t.sellerId !== user?.uid) return false;
     return true;
   });
 
   return (
     <div className="space-y-6">
+      {/* Navigation Tabs */}
+      <div className={`flex p-1 rounded-xl border ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
+        <button onClick={() => setActiveTab('MARKET')} className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${activeTab === 'MARKET' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-400'}`}>Global Market</button>
+        <button onClick={() => setActiveTab('SELL')} className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${activeTab === 'SELL' ? 'bg-emerald-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-400'}`}>Sell Item</button>
+        <button onClick={() => setActiveTab('MY_LISTINGS')} className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${activeTab === 'MY_LISTINGS' ? 'bg-purple-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-400'}`}>My Listings</button>
+      </div>
+
       {/* SELL SECTION */}
+      {activeTab === 'SELL' && (
       <div className={`p-6 rounded-2xl border shadow-sm ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
         <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><Tag className="text-emerald-500" /> Create Listing</h2>
         
@@ -257,11 +280,17 @@ export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onI
                 )}
             </div>
         </div>
-      </div>
+      </div>)}
 
       {/* MARKET SECTION */}
+      {(activeTab === 'MARKET' || activeTab === 'MY_LISTINGS') && (
       <div className="space-y-4">
-        <h2 className="text-xl font-bold flex items-center gap-2"><ShoppingCart className="text-blue-500" /> Global Market</h2>
+        <h2 className="text-xl font-bold flex items-center gap-2">
+            {activeTab === 'MY_LISTINGS' ? <List className="text-purple-500" /> : <ShoppingCart className="text-blue-500" />} 
+            {activeTab === 'MY_LISTINGS' ? 'My Active Listings' : 'Global Market'}
+        </h2>
+        
+        {activeTab === 'MARKET' && (
         <div className="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex-1 min-w-0">
                 <CategoryTabs current={marketFilter} set={setMarketFilter} types={{ PC: 'PC', ...PART_TYPES }} darkMode={darkMode} />
@@ -275,7 +304,7 @@ export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onI
                 />
                 Affordable Only
             </label>
-        </div>
+        </div>)}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {filteredTrades.map(trade => (
@@ -313,7 +342,15 @@ export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onI
 
                 {/* Action Area */}
                 <div className="pt-3 border-t border-dashed border-slate-700/50">
-                    {user && trade.sellerId === user.uid ? (
+                    {activeTab === 'MY_LISTINGS' ? (
+                        <button 
+                            onClick={() => handleCancel(trade)}
+                            disabled={loading}
+                            className="w-full py-2 rounded-lg font-bold text-sm flex items-center justify-center gap-2 bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white transition-all"
+                        >
+                            <Trash2 size={16} /> Cancel Listing
+                        </button>
+                    ) : user && trade.sellerId === user.uid ? (
                         <div className="text-center text-xs opacity-50 font-bold py-2">Your Listing</div>
                     ) : (
                         <>
@@ -370,7 +407,7 @@ export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onI
                     <p>No active listings found for this category.</p>
                 </div>
             )}
-        </div>
+        </div>)}
       </div>
     </div>
   );

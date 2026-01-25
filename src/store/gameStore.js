@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware';
 import { generateOrderLocal, generateRequest, calculateBuildStats } from '../utils/gameLogic';
 import { PART_TYPES, PARTS_CATALOG, REVIEW_TEMPLATES, SKILLS } from '../data/constants';
 import { playSound } from '../utils/sound';
-import { getRandomModifier, applyModifier } from '../utils/modifiers';
+import { getRandomModifier, applyModifier, getBinningResult } from '../utils/modifiers';
 
 export const useGameStore = create(
   persist(
@@ -133,6 +133,34 @@ export const useGameStore = create(
         }));
         notify(`Opened Pallet! Received ${newItems.length} items.`, "success");
         return newItems;
+      },
+
+      // Binning / Testing
+      binPart: (part) => {
+        const { money, notify, settings } = get();
+        const COST = 50;
+        
+        if (money < COST) {
+            notify("Not enough money to test ($50)", "error");
+            return;
+        }
+
+        const modifier = getBinningResult();
+        let newPart = { ...part, isBinned: true };
+        
+        if (modifier) {
+            newPart = applyModifier(newPart, modifier);
+            notify(`Binning Result: ${modifier.label}`, "success");
+            playSound('success', settings.sfx);
+        } else {
+            notify("Binning Result: Average Chip (No change)", "info");
+            playSound('click', settings.sfx);
+        }
+
+        set(state => ({
+            money: state.money - COST,
+            inventory: state.inventory.map(p => p.invId === part.invId ? newPart : p)
+        }));
       },
 
       // Inventory Actions

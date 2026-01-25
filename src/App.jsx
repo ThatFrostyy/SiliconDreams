@@ -66,6 +66,7 @@ export default function App() {
   const fulfillOrder = useGameStore(state => state.fulfillOrder);
   const reshuffleJobs = useGameStore(state => state.reshuffleJobs);
   const buyUpgrade = useGameStore(state => state.buyUpgrade);
+  const binPart = useGameStore(state => state.binPart);
   const unlockSkill = useGameStore(state => state.unlockSkill);
 
   const [showSettings, setShowSettings] = useState(false);
@@ -169,6 +170,11 @@ export default function App() {
       return newInventory;
     });
     notify(`Traded for ${incomingPart.name}`, "success");
+  };
+
+  const handleCancelTrade = (trade) => {
+    setInventory(prev => [...prev, trade.part]);
+    notify("Trade cancelled. Item returned to inventory.", "info");
   };
 
   const disassembleBuild = (pcItem) => {
@@ -289,9 +295,9 @@ export default function App() {
             />
           )}
           {view === 'shop' && <Shop buyPart={buyPart} money={money} darkMode={settings.darkMode} settings={settings} skills={skills} buyPallet={buyPallet} />}
-          {view === 'inventory' && <Inventory inventory={inventory} addToBuild={addToBuild} sellPart={sellPart} category={inventoryCategory} setCategory={setInventoryCategory} darkMode={settings.darkMode} maxCapacity={50 + (skills.logistics * 5) + (ownedUpgrades.includes('storage_1') ? 50 : 0) + (ownedUpgrades.includes('storage_2') ? 100 : 0)} />}
+          {view === 'inventory' && <Inventory inventory={inventory} addToBuild={addToBuild} sellPart={sellPart} binPart={binPart} money={money} category={inventoryCategory} setCategory={setInventoryCategory} darkMode={settings.darkMode} maxCapacity={50 + (skills.logistics * 5) + (ownedUpgrades.includes('storage_1') ? 50 : 0) + (ownedUpgrades.includes('storage_2') ? 100 : 0)} />}
           {view === 'upgrades' && <Upgrades darkMode={settings.darkMode} skills={skills} unlockSkill={unlockSkill} money={money} ownedUpgrades={ownedUpgrades} buyUpgrade={buyUpgrade} />}
-          {view === 'trading' && <Trading inventory={inventory} onPostTrade={handlePostTrade} money={money} onBuyTrade={handleBuyTrade} onItemTrade={handleItemTrade} user={user} darkMode={settings.darkMode} netWorth={netWorth} />}
+          {view === 'trading' && <Trading inventory={inventory} onPostTrade={handlePostTrade} money={money} onBuyTrade={handleBuyTrade} onItemTrade={handleItemTrade} onCancelTrade={handleCancelTrade} user={user} darkMode={settings.darkMode} netWorth={netWorth} />}
           {view === 'profile' && <Profile user={user} money={money} reputation={reputation} jobsCompleted={jobsCompleted} darkMode={settings.darkMode} skills={skills} achievements={achievements} netWorth={netWorth} jobHistory={jobHistory} />}
           {view === 'devlogs' && <Devlogs darkMode={settings.darkMode} setView={setView} />}
           {view === 'leaderboard' && <Leaderboard user={user} netWorth={netWorth} darkMode={settings.darkMode} />}

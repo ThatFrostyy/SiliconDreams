@@ -1,11 +1,11 @@
 // src/components/Inventory.jsx
 import React from 'react';
-import { Box, DollarSign, AlertTriangle } from 'lucide-react';
+import { Box, DollarSign, AlertTriangle, Microscope } from 'lucide-react';
 import { PART_TYPES } from '../data/constants';
 import { CategoryTabs, PartIcon } from './Shared';
 import { getModifierById, isUnreliable } from '../utils/modifiers';
 
-export default function Inventory({ inventory, addToBuild, sellPart, category = 'ALL', setCategory, darkMode, maxCapacity = 50 }) {
+export default function Inventory({ inventory, addToBuild, sellPart, binPart, money, category = 'ALL', setCategory, darkMode, maxCapacity = 50 }) {
   return (
     <section className={`rounded-2xl border overflow-hidden shadow-2xl transition-colors ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
       <div className={`p-6 ${darkMode ? 'bg-slate-800/50' : 'bg-slate-50'}`}>
@@ -60,6 +60,16 @@ export default function Inventory({ inventory, addToBuild, sellPart, category = 
                 </div>
               </div>
               <div className="flex items-center gap-2">
+                {part.type === 'CPU' && !part.isBinned && (
+                  <button
+                    onClick={() => binPart(part)}
+                    disabled={money < 50}
+                    className={`p-2 rounded-lg transition-colors ${money >= 50 ? 'bg-amber-500/10 text-amber-500 hover:bg-amber-500 hover:text-white' : 'bg-slate-200 text-slate-400 cursor-not-allowed'}`}
+                    title="Bin/Test CPU ($50)"
+                  >
+                    <Microscope size={16} />
+                  </button>
+                )}
                 <button
                   onClick={() => sellPart(part)}
                   className="p-2 rounded-lg bg-rose-900/30 text-rose-500 hover:bg-rose-600 hover:text-white transition-colors"

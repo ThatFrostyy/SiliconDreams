@@ -19,15 +19,37 @@ import Upgrades from './components/Upgrades';
 import Trading from './components/Trading';
 import Profile from './components/Profile';
 
-const generateRequest = () => {
+const generateRequest = (reputation = 0) => {
   const isVip = Math.random() > 0.85; // 15% chance for VIP
-  const template = REQUEST_TEMPLATES[Math.floor(Math.random() * REQUEST_TEMPLATES.length)];
+  
+  // Filter templates based on reputation to balance progression
+  const availableTemplates = REQUEST_TEMPLATES.filter(t => {
+    if (reputation < 25) return t.budget <= 1500; // Novice: Low budget only
+    if (reputation < 50) return t.budget <= 5000; // Trusted: Mid budget
+    if (reputation < 75) return t.budget <= 10000; // Expert: High budget
+    return true; // Tycoon: All jobs
+  });
+
+  const templates = availableTemplates.length > 0 ? availableTemplates : REQUEST_TEMPLATES;
+  const template = templates[Math.floor(Math.random() * templates.length)];
   const budgetMultiplier = isVip ? 1.5 : 1;
+  
+  let targetPerf = 0;
+  // Use template's minPerf if specified, otherwise derive from budget
+  if (template.req && template.req.minPerf) {
+    targetPerf = Math.floor(template.req.minPerf * budgetMultiplier);
+  } else {
+    targetPerf = Math.floor((template.budget * budgetMultiplier) / 12);
+  }
+
+  // Cap performance requirement to achievable limits (max possible is ~650)
+  if (targetPerf > 600) targetPerf = 600;
+
   return {
     ...template,
     id: `req_${Math.random().toString(36).substr(2, 5)}`,
     type: 'REQUEST',
-    minPerf: Math.floor((template.budget * budgetMultiplier) / 12), // Dynamic perf based on budget
+    minPerf: targetPerf,
     budget: Math.floor(template.budget * budgetMultiplier),
     isVip,
     title: isVip ? `VIP: ${template.title}` : template.title,
@@ -106,7 +128,7 @@ export default function App() {
     const o2 = generateOrderLocal([o1]);
     return [o1, o2];
   })()));
-  const [activeRequests, setActiveRequests] = useState(() => loadState('activeRequests', [generateRequest(), generateRequest()]));
+  const [activeRequests, setActiveRequests] = useState(() => loadState('activeRequests', [generateRequest(loadState('reputation', 50)), generateRequest(loadState('reputation', 50))]));
   const [currentBuild, setCurrentBuild] = useState(() => loadState('currentBuild', {}));
   const [view, setView] = useState(() => loadState('view', 'workshop')); 
   const [reputation, setReputation] = useState(() => loadState('reputation', 50));
@@ -158,7 +180,7 @@ export default function App() {
       const o1 = generateOrderLocal([]);
       const o2 = generateOrderLocal([o1]);
       setActiveOrders([o1, o2]);
-      setActiveRequests([generateRequest(), generateRequest()]);
+      setActiveRequests([generateRequest(0), generateRequest(0)]);
       setCurrentBuild({});
       setView('workshop');
       setOrderTab('STANDARD');
@@ -448,7 +470,7 @@ export default function App() {
     const o1 = generateOrderLocal([]);
     const o2 = generateOrderLocal([o1]);
     setActiveOrders([o1, o2]);
-    setActiveRequests([generateRequest(), generateRequest()]);
+    setActiveRequests([generateRequest(reputation), generateRequest(reputation)]);
     notify("Jobs reshuffled!", "success");
     playSound('click', settings.sfx);
   };
@@ -512,7 +534,7 @@ export default function App() {
     
     if (order.type === 'REQUEST') {
       setActiveRequests(prev => prev.filter(o => o.id !== order.id));
-      setTimeout(() => setActiveRequests(prev => [...prev, generateRequest()]), 2000);
+      setTimeout(() => setActiveRequests(prev => [...prev, generateRequest(reputation)]), 2000);
     } else {
       setActiveOrders(prev => prev.filter(o => o.id !== order.id));
       setTimeout(() => setActiveOrders(prev => {

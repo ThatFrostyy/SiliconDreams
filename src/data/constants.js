@@ -251,5 +251,23 @@ export const REQUEST_TEMPLATES = [
     budget: 8000,
     description: "I need the best of the best. If it lags, you're fired.",
     req: { partId: 'gpu3', minPerf: 350 }
+  },
+  {
+    title: "Hollywood VFX Studio",
+    budget: 15000,
+    description: "We need a workstation for rendering our next blockbuster. Money is no object, but performance is everything.",
+    req: { minPerf: 500, minRam: 128 }
+  },
+  {
+    title: "Hedge Fund Algo Trader",
+    budget: 10000,
+    description: "Milliseconds matter. I need the fastest single-core performance and zero bottlenecks.",
+    req: { partId: 'cpu_i9_14900k', minRam: 64 }
+  },
+  {
+    title: "Top Secret Gov Contract",
+    budget: 20000,
+    description: "Classified requirements. Just give us the most expensive components you have. We need reliability.",
+    req: { minPerf: 550 }
   }
 ];

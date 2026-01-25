@@ -62,7 +62,7 @@ export default function Inventory({ inventory, addToBuild, sellPart, category = 
                   onClick={() => addToBuild(part)}
                   className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-[10px] font-black transition-all"
                 >
-                  INSTALL
+                  {part.type === 'PC' ? 'LOAD' : 'INSTALL'}
                 </button>
               </div>
             </div>

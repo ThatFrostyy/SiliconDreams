@@ -283,6 +283,19 @@ export default function App() {
 
   // Workshop Logic
   const addToBuild = (part) => {
+    // Handle PC Loading (Fix for invisible parts/price inflation)
+    if (part.type === 'PC') {
+      if (Object.keys(currentBuild).length > 0) {
+        notify("Workbench must be empty to load a PC.", "error");
+        return;
+      }
+      setCurrentBuild(part.parts);
+      setInventory(prev => prev.filter(p => p.invId !== part.invId));
+      notify(`Loaded ${part.name} to workbench`, 'success');
+      setView('workshop');
+      return;
+    }
+
     // Special handling for RAM to allow multiple sticks based on motherboard slots
     if (part.type === PART_TYPES.RAM) {
       const mobo = currentBuild[PART_TYPES.MOTHERBOARD];

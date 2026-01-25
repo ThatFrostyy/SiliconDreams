@@ -109,8 +109,21 @@ export const useGameStore = create(
       buyPallet: (type) => {
         const { money, notify } = get();
         let cost = 500;
-        if (type === 'PREMIUM') cost = 2500;
-        if (type === 'MEDIUM') cost = 1000;
+        let minCount = 3;
+        let maxCount = 5;
+        let poolFilter = p => p.price <= 200;
+
+        if (type === 'PREMIUM') {
+            cost = 2500; minCount = 2; maxCount = 4;
+            poolFilter = p => p.price > 150;
+        } else if (type === 'MEDIUM') {
+            cost = 1000; minCount = 3; maxCount = 5;
+            poolFilter = p => p.price > 50 && p.price <= 400;
+        } else {
+            // Standard: More items, but cheaper/worse quality
+            cost = 500; minCount = 5; maxCount = 8;
+            poolFilter = p => p.price <= 150;
+        }
 
         if (money < cost) {
           notify("Not enough money for this pallet!", "error");
@@ -118,16 +131,14 @@ export const useGameStore = create(
         }
 
         // Generate Loot
-        const itemCount = Math.floor(Math.random() * 3) + 3;
+        const itemCount = Math.floor(Math.random() * (maxCount - minCount + 1)) + minCount;
         const newItems = [];
+        const pool = PARTS_CATALOG.filter(poolFilter);
+
         for (let i = 0; i < itemCount; i++) {
-          let pool = PARTS_CATALOG.filter(p => p.price <= 200);
-          if (type === 'PREMIUM') pool = PARTS_CATALOG.filter(p => p.price > 150);
-          if (type === 'MEDIUM') pool = PARTS_CATALOG.filter(p => p.price > 50 && p.price <= 400);
-          
           const part = pool[Math.floor(Math.random() * pool.length)];
           if (part) {
-            const modifier = getRandomModifier();
+            const modifier = getRandomModifier(type || 'STANDARD');
             const modifiedPart = applyModifier(part, modifier);
             newItems.push({ ...modifiedPart, invId: Math.random().toString(36).substr(2, 5) });
           }
@@ -146,9 +157,14 @@ export const useGameStore = create(
         const { money, notify, settings, skills } = get();
         const COST = 50;
         
+        if (part.type !== 'CPU') {
+            notify("Only CPUs can be binned.", "error");
+            return null;
+        }
+
         if (money < COST) {
             notify("Not enough money to test ($50)", "error");
-            return;
+            return null;
         }
 
         const modifier = getBinningResult(skills.binning || 0);
@@ -185,6 +201,8 @@ export const useGameStore = create(
             inventory: state.inventory.map(p => p.invId === part.invId ? newPart : p),
             binningHistory: [historyEntry, ...(state.binningHistory || [])].slice(0, 10)
         }));
+
+        return modifier || { label: 'Average Chip', color: 'text-slate-500', id: 'average' };
       },
 
       // Inventory Actions

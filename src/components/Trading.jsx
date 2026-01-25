@@ -1,8 +1,8 @@
 // src/components/Trading.jsx
 import React, { useState, useEffect } from 'react';
 import { db } from '../utils/firebase';
-import { collection, addDoc, query, orderBy, onSnapshot, doc, runTransaction, serverTimestamp, deleteDoc } from 'firebase/firestore';
-import { ShoppingCart, DollarSign, Tag, Package, RefreshCw, Filter, ArrowRightLeft, Search, X, Monitor, List, Trash2 } from 'lucide-react';
+import { collection, addDoc, query, orderBy, onSnapshot, doc, runTransaction, serverTimestamp, deleteDoc, where } from 'firebase/firestore';
+import { ShoppingCart, DollarSign, Tag, Package, RefreshCw, Filter, ArrowRightLeft, Search, X, Monitor, List, Trash2, Check } from 'lucide-react';
 import { PART_TYPES, PARTS_CATALOG } from '../data/constants';
 import { PartIcon, CategoryTabs } from './Shared';
 
@@ -300,13 +300,14 @@ export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onI
             <div className="flex-1 min-w-0">
                 <CategoryTabs current={marketFilter} set={setMarketFilter} types={{ PC: 'PC', ...PART_TYPES }} darkMode={darkMode} />
             </div>
-            <label className={`flex items-center gap-2 text-xs font-bold whitespace-nowrap cursor-pointer select-none ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
+            <label className={`flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-lg border cursor-pointer transition-all select-none ${showAffordable ? 'bg-blue-600 border-blue-500 text-white' : (darkMode ? 'bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600' : 'bg-white border-slate-200 text-slate-600 hover:border-blue-300')}`}>
                 <input 
                     type="checkbox" 
                     checked={showAffordable}
                     onChange={(e) => setShowAffordable(e.target.checked)}
-                    className="rounded accent-blue-600 w-4 h-4"
+                    className="hidden"
                 />
+                {showAffordable && <Check size={14} />}
                 Affordable Only
             </label>
         </div>)}

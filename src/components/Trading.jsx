@@ -15,6 +15,7 @@ export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onI
   // Filters
   const [marketFilter, setMarketFilter] = useState('ALL');
   const [sellFilter, setSellFilter] = useState('ALL');
+  const [showAffordable, setShowAffordable] = useState(false);
 
   // Trade Mode
   const [tradeMode, setTradeMode] = useState('SELL'); // 'SELL' or 'TRADE'
@@ -132,7 +133,11 @@ export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onI
   };
 
   const filteredInventory = inventory.filter(p => sellFilter === 'ALL' ? true : (sellFilter === 'PC' ? p.type === 'PC' : p.type === sellFilter));
-  const filteredTrades = trades.filter(t => marketFilter === 'ALL' || t.part.type === marketFilter);
+  const filteredTrades = trades.filter(t => {
+    if (marketFilter !== 'ALL' && t.part.type !== marketFilter) return false;
+    if (showAffordable && t.type === 'SELL' && t.price > money) return false;
+    return true;
+  });
 
   return (
     <div className="space-y-6">
@@ -258,8 +263,19 @@ export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onI
       {/* MARKET SECTION */}
       <div className="space-y-4">
         <h2 className="text-xl font-bold flex items-center gap-2"><ShoppingCart className="text-blue-500" /> Global Market</h2>
-        <div className="mb-4">
-            <CategoryTabs current={marketFilter} set={setMarketFilter} types={{ PC: 'PC', ...PART_TYPES }} darkMode={darkMode} />
+        <div className="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex-1 min-w-0">
+                <CategoryTabs current={marketFilter} set={setMarketFilter} types={{ PC: 'PC', ...PART_TYPES }} darkMode={darkMode} />
+            </div>
+            <label className={`flex items-center gap-2 text-xs font-bold whitespace-nowrap cursor-pointer select-none ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
+                <input 
+                    type="checkbox" 
+                    checked={showAffordable}
+                    onChange={(e) => setShowAffordable(e.target.checked)}
+                    className="rounded accent-blue-600 w-4 h-4"
+                />
+                Affordable Only
+            </label>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

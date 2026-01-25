@@ -34,8 +34,12 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet, sett
       }, 1200);
       setTimeout(() => {
         setRevealStage('revealed');
-        playSound('success', settings?.sfx); // Tada sound
-        if (hasLegendary) setShowConfetti(true);
+        if (hasLegendary) {
+            playSound('legendary', settings?.sfx);
+            setShowConfetti(true);
+        } else {
+            playSound('success', settings?.sfx); // Tada sound
+        }
       }, 1600);
     }
   };

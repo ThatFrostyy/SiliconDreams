@@ -80,6 +80,39 @@ export const RIVAL_COMPANIES = [
   { id: 'rival_9', name: "Garage Fixer", netWorth: 5000, color: "text-amber-700" }
 ];
 
+export const REVIEW_TEMPLATES = {
+  5: [
+    "Absolutely amazing! Runs everything on Ultra.",
+    "Blazing fast delivery and top-tier performance!",
+    "Exceeded my expectations. Will recommend to everyone!",
+    "Wow! This PC is a beast. Thank you!"
+  ],
+  4: [
+    "Great PC, works as expected.",
+    "Solid build, good value for money.",
+    "Happy with the purchase. Thanks.",
+    "Good job, runs my games well."
+  ],
+  3: [
+    "It works. Nothing special.",
+    "Met the requirements, but took a while.",
+    "Decent PC, but I expected a bit more.",
+    "It's okay. Does the job."
+  ],
+  2: [
+    "Barely meets the specs. Disappointed.",
+    "Runs hot and loud. Not great.",
+    "I guess it works, but I'm not impressed.",
+    "Meh. Could have been better."
+  ],
+  1: [
+    "Terrible. Crashes constantly.",
+    "Ripoff! I could have built this better myself.",
+    "Worst experience ever. Do not buy.",
+    "Complete waste of money."
+  ]
+};
+
 export const PARTS_CATALOG = [
   // --- CPUs (Chronological) ---
   { id: 'cpu_q9550', type: PART_TYPES.CPU, name: 'Core 2 Quad Q9550', price: 15, socket: SOCKETS.LGA775, power: 95, perf: 12 },

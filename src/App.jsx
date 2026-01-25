@@ -1,7 +1,7 @@
 // src/App.jsx
 import React, { useState, useEffect } from 'react';
 import { CheckCircle2, AlertTriangle, ClipboardList, Wrench, ShoppingBag, Box, Settings, Volume2, VolumeX, Music, Moon, Sun, X, TrendingUp, Globe, Trash2, RefreshCw, Monitor, DollarSign, Crown } from 'lucide-react';
-import { PART_TYPES, REQUEST_TEMPLATES, ORDER_TEMPLATES, SKILLS, OFFICE_UPGRADES, PARTS_CATALOG } from './data/constants';
+import { PART_TYPES, REQUEST_TEMPLATES, ORDER_TEMPLATES, SKILLS, OFFICE_UPGRADES, PARTS_CATALOG, REVIEW_TEMPLATES } from './data/constants';
 import { playSound, musicPlayer } from './utils/sound';
 import { SpeedInsights } from "@vercel/speed-insights/react"
 import { signInAnonymously } from "firebase/auth";
@@ -622,12 +622,32 @@ export default function App() {
     // Apply Negotiation Bonus (Silver Tongue)
     const negotiationBonus = 1 + (skills.negotiation * 0.05);
     
-    let calculatedReward = Math.floor(totalCost * 1.25);
+    let calculatedReward = Math.floor(totalCost * 1.25 * negotiationBonus);
     if (calculatedReward > order.budget) calculatedReward = order.budget;
     
-    const profit = calculatedReward - totalCost;
+    // Rating Calculation
+    let stars = 3;
+    const perfRatio = totalPerf / order.minPerf;
     
-    setMoney(prev => prev + calculatedReward);
+    if (perfRatio >= 1.1) stars += 1;
+    if (perfRatio >= 1.3) stars += 1;
+    
+    // Random variance
+    const mood = Math.random();
+    if (mood > 0.9) stars += 1;
+    else if (mood < 0.1) stars -= 1;
+    
+    if (stars > 5) stars = 5;
+    if (stars < 1) stars = 1;
+
+    // Tip Calculation
+    let tip = 0;
+    if (stars === 5) tip = Math.floor(calculatedReward * 0.20);
+    else if (stars === 4) tip = Math.floor(calculatedReward * 0.10);
+    
+    const totalPayout = calculatedReward + tip;
+    
+    setMoney(prev => prev + totalPayout);
     setCurrentBuild({});
     
     // Apply Efficiency Bonus (Fast Learner)
@@ -635,7 +655,9 @@ export default function App() {
     const efficiencyBonus = 1 + (skills.efficiency * 0.10);
     setReputation(prev => Math.min(prev + Math.floor(repGain * efficiencyBonus), 100));
     setJobsCompleted(prev => prev + 1);
-    notify(`Order Delivered! Earned $${calculatedReward} (Profit: $${profit})`, 'success');
+
+    const review = REVIEW_TEMPLATES[stars][Math.floor(Math.random() * REVIEW_TEMPLATES[stars].length)];
+    notify(`Order Delivered! ${"⭐".repeat(stars)} Tip: $${tip} | "${review}"`, 'success');
     
     if (order.type === 'REQUEST') {
       setActiveRequests(prev => prev.filter(o => o.id !== order.id));

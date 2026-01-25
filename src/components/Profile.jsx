@@ -1,8 +1,8 @@
 import React from 'react';
-import { User, Trophy, Briefcase, DollarSign, Star, Award, Zap } from 'lucide-react';
-import { REPUTATION_TITLES, SKILLS, ACHIEVEMENTS } from '../data/constants';
+import { User, Trophy, Briefcase, DollarSign, Star, Award, Zap, Globe, History } from 'lucide-react';
+import { REPUTATION_TITLES, SKILLS, ACHIEVEMENTS, RIVAL_COMPANIES } from '../data/constants';
 
-export default function Profile({ user, money, reputation, jobsCompleted, darkMode, skills, achievements }) {
+export default function Profile({ user, money, reputation, jobsCompleted, darkMode, skills, achievements, netWorth, jobHistory }) {
   const getReputationTitle = (rep) => {
     return REPUTATION_TITLES.find(t => rep >= t.threshold)?.title || "Unknown";
   };
@@ -109,6 +109,57 @@ export default function Profile({ user, money, reputation, jobsCompleted, darkMo
                     </div>
                 );
             })}
+        </div>
+      </div>
+
+      {/* Job History Panel */}
+      <div className={`mt-6 p-6 rounded-xl border ${darkMode ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
+        <h3 className="font-bold flex items-center gap-2 mb-4"><History className="text-blue-400" /> Job History (Last 10)</h3>
+        <div className="space-y-3">
+            {jobHistory && jobHistory.length > 0 ? jobHistory.map(job => (
+                <div key={job.id} className={`p-3 rounded-lg border ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
+                    <div className="flex justify-between items-start mb-1">
+                        <span className="font-bold text-sm">{job.title}</span>
+                        <span className="text-emerald-500 font-mono text-xs font-bold">+${job.reward}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                        <div className="flex text-amber-400 text-[10px] gap-0.5">
+                            {"⭐".repeat(job.stars)}
+                        </div>
+                        <span className="text-[10px] opacity-50">{job.date}</span>
+                    </div>
+                    <p className="text-xs italic opacity-70 mt-2">"{job.review}"</p>
+                </div>
+            )) : (
+                <div className="text-center opacity-50 text-xs py-4">No jobs completed yet.</div>
+            )}
+        </div>
+      </div>
+
+      {/* Leaderboard Panel */}
+      <div className={`mt-6 p-6 rounded-xl border ${darkMode ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
+        <h3 className="font-bold flex items-center gap-2 mb-4"><Globe className="text-blue-500" fill="currentColor" /> Industry Leaderboard</h3>
+        <div className="space-y-2">
+            {[...RIVAL_COMPANIES, { id: 'player', name: user ? `Player ${user.uid.substr(0, 4)}` : 'You', netWorth: netWorth, color: "text-emerald-400 font-black", isPlayer: true }]
+                .sort((a, b) => b.netWorth - a.netWorth)
+                .map((company, index) => (
+                    <div key={company.id} className={`flex items-center justify-between p-3 rounded-lg border ${company.isPlayer ? (darkMode ? 'bg-emerald-900/20 border-emerald-500/50' : 'bg-emerald-50 border-emerald-200') : (darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200')}`}>
+                        <div className="flex items-center gap-4">
+                            <div className={`w-8 h-8 flex items-center justify-center rounded-full font-black text-sm ${index === 0 ? 'bg-yellow-500 text-black' : (index === 1 ? 'bg-slate-400 text-black' : (index === 2 ? 'bg-orange-700 text-white' : 'bg-slate-800 text-slate-500'))}`}>
+                                {index + 1}
+                            </div>
+                            <div>
+                                <div className={`font-bold text-sm ${company.color || (darkMode ? 'text-slate-300' : 'text-slate-700')}`}>{company.name}</div>
+                                {company.isPlayer && <div className="text-[10px] text-emerald-500 font-bold uppercase">That's You!</div>}
+                            </div>
+                        </div>
+                        <div className="text-right">
+                            <div className="font-mono font-bold text-sm">${company.netWorth.toLocaleString()}</div>
+                            <div className="text-[10px] opacity-50 uppercase">Net Worth</div>
+                        </div>
+                    </div>
+                ))
+            }
         </div>
       </div>
     </div>

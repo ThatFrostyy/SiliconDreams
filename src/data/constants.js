@@ -60,7 +60,8 @@ export const OFFICE_UPGRADES = {
   storage_1: { id: 'storage_1', category: 'Office', name: "Expanded Storage", description: "Adds 50 slots to inventory.", cost: 2000 },
   storage_2: { id: 'storage_2', category: 'Office', name: "Warehouse Space", description: "Adds 100 slots to inventory.", cost: 5000 },
   bench_2: { id: 'bench_2', category: 'Office', name: "Second Workbench", description: "Build two PCs at once.", cost: 5000 },
-  showroom: { id: 'showroom', category: 'Office', name: "Showroom", description: "Increases PC sell value by 5%.", cost: 8000 }
+  showroom: { id: 'showroom', category: 'Office', name: "Showroom", description: "Increases PC sell value by 5%.", cost: 8000 },
+  tip_jar: { id: 'tip_jar', category: 'Office', name: "Tip Jar", description: "Increases tip amount by 50%.", cost: 1500 }
 };
 
 export const ACHIEVEMENTS = [

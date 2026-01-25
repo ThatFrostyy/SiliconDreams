@@ -147,6 +147,7 @@ export default function App() {
   const [activeBench, setActiveBench] = useState(0);
   const [ownedUpgrades, setOwnedUpgrades] = useState(() => loadState('ownedUpgrades', []));
   const [achievements, setAchievements] = useState(() => loadState('achievements', []));
+  const [jobHistory, setJobHistory] = useState(() => loadState('jobHistory', []));
   const [view, setView] = useState(() => loadState('view', 'workshop')); 
   const [reputation, setReputation] = useState(() => loadState('reputation', 50));
   const [jobsCompleted, setJobsCompleted] = useState(() => loadState('jobsCompleted', 0));
@@ -173,6 +174,7 @@ export default function App() {
   useEffect(() => { localStorage.setItem('builds', JSON.stringify(builds)); }, [builds]);
   useEffect(() => { localStorage.setItem('ownedUpgrades', JSON.stringify(ownedUpgrades)); }, [ownedUpgrades]);
   useEffect(() => { localStorage.setItem('achievements', JSON.stringify(achievements)); }, [achievements]);
+  useEffect(() => { localStorage.setItem('jobHistory', JSON.stringify(jobHistory)); }, [jobHistory]);
   useEffect(() => { localStorage.setItem('view', JSON.stringify(view)); }, [view]);
   useEffect(() => { localStorage.setItem('orderTab', JSON.stringify(orderTab)); }, [orderTab]);
   useEffect(() => { localStorage.setItem('reputation', JSON.stringify(reputation)); }, [reputation]);
@@ -642,8 +644,9 @@ export default function App() {
 
     // Tip Calculation
     let tip = 0;
-    if (stars === 5) tip = Math.floor(calculatedReward * 0.20);
-    else if (stars === 4) tip = Math.floor(calculatedReward * 0.10);
+    const tipMultiplier = ownedUpgrades.includes('tip_jar') ? 1.5 : 1;
+    if (stars === 5) tip = Math.floor(calculatedReward * 0.20 * tipMultiplier);
+    else if (stars === 4) tip = Math.floor(calculatedReward * 0.10 * tipMultiplier);
     
     const totalPayout = calculatedReward + tip;
     
@@ -658,6 +661,17 @@ export default function App() {
 
     const review = REVIEW_TEMPLATES[stars][Math.floor(Math.random() * REVIEW_TEMPLATES[stars].length)];
     notify(`Order Delivered! ${"⭐".repeat(stars)} Tip: $${tip} | "${review}"`, 'success');
+
+    // Add to History
+    const historyItem = {
+      id: Date.now(),
+      title: order.title,
+      reward: totalPayout,
+      stars,
+      review,
+      date: new Date().toLocaleDateString()
+    };
+    setJobHistory(prev => [historyItem, ...prev].slice(0, 10));
     
     if (order.type === 'REQUEST') {
       setActiveRequests(prev => prev.filter(o => o.id !== order.id));
@@ -788,7 +802,7 @@ export default function App() {
           {view === 'inventory' && <Inventory inventory={inventory} addToBuild={addToBuild} sellPart={sellPart} category={inventoryCategory} setCategory={setInventoryCategory} darkMode={settings.darkMode} maxCapacity={50 + (skills.logistics * 5) + (ownedUpgrades.includes('storage_1') ? 50 : 0) + (ownedUpgrades.includes('storage_2') ? 100 : 0)} />}
           {view === 'upgrades' && <Upgrades darkMode={settings.darkMode} skills={skills} unlockSkill={unlockSkill} money={money} ownedUpgrades={ownedUpgrades} buyUpgrade={buyUpgrade} />}
           {view === 'trading' && <Trading inventory={inventory} onPostTrade={handlePostTrade} money={money} onBuyTrade={handleBuyTrade} onItemTrade={handleItemTrade} user={user} darkMode={settings.darkMode} netWorth={netWorth} />}
-          {view === 'profile' && <Profile user={user} money={money} reputation={reputation} jobsCompleted={jobsCompleted} darkMode={settings.darkMode} skills={skills} achievements={achievements} />}
+          {view === 'profile' && <Profile user={user} money={money} reputation={reputation} jobsCompleted={jobsCompleted} darkMode={settings.darkMode} skills={skills} achievements={achievements} netWorth={netWorth} jobHistory={jobHistory} />}
         </div>
 
         {/* RIGHT COLUMN: ORDERS */}

@@ -334,19 +334,23 @@ export default function App() {
     const totalCost = parts.reduce((acc, p) => acc + (p.price || 0), 0);
     const { totalPerf } = buildStats;
     
+    // Gold Workbench Bonus (Tycoon Achievement)
+    const isGold = achievements.includes('wealth_100k');
+    const markup = isGold ? 1.25 : 1.15; // 25% markup for Gold Bench vs 15% standard
+
     const newPC = {
       invId: Math.random().toString(36).substr(2, 9),
       type: 'PC',
       name: `Custom PC ${Math.floor(Math.random()*1000)}`,
       parts: currentBuild,
-      price: Math.floor(totalCost * 1.15), // 15% markup value
+      price: Math.floor(totalCost * markup),
       perf: totalPerf,
       power: buildStats.totalPower
     };
     
     setInventory(prev => [...prev, newPC]);
     setCurrentBuild({});
-    notify("PC saved to inventory!", "success");
+    notify(isGold ? "PC saved! (Gold Bench Bonus Applied)" : "PC saved to inventory!", "success");
   };
 
   const disassembleBuild = (pcItem) => {

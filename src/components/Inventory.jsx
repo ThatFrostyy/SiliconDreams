@@ -4,8 +4,10 @@ import { Box, DollarSign, AlertTriangle, Microscope, X } from 'lucide-react';
 import { PART_TYPES } from '../data/constants';
 import { CategoryTabs, PartIcon } from './Shared';
 import { getModifierById, isUnreliable, MODIFIERS } from '../utils/modifiers';
+import { useGameStore } from '../store/gameStore';
+import { playSound } from '../utils/sound';
 
-export default function Inventory({ inventory, addToBuild, sellPart, binPart, money, category = 'ALL', setCategory, darkMode, maxCapacity = 50, binningHistory = [] }) {
+export default function Inventory({ inventory, addToBuild, sellPart, binPart, money, category = 'ALL', setCategory, darkMode, maxCapacity = 50 }) {
 
   const filteredInventory = useMemo(() => {
     if (category === 'ALL') return inventory;
@@ -17,6 +19,10 @@ export default function Inventory({ inventory, addToBuild, sellPart, binPart, mo
   const [spinState, setSpinState] = useState('IDLE'); // IDLE, SPINNING, RESULT
   const [spinItems, setSpinItems] = useState([]);
   const [spinResult, setSpinResult] = useState(null);
+  
+  const notify = useGameStore(state => state.notify);
+  const settings = useGameStore(state => state.settings);
+  const setCelebration = useGameStore(state => state.setCelebration);
 
   const handleBinClick = (part) => {
     setBinningItem(part);
@@ -26,7 +32,7 @@ export default function Inventory({ inventory, addToBuild, sellPart, binPart, mo
   };
 
   const startSpin = () => {
-    const result = binPart(binningItem);
+    const result = binPart(binningItem, true); // Silent binning
     if (!result) return; // Failed (money etc)
     
     setSpinResult(result);
@@ -40,9 +46,29 @@ export default function Inventory({ inventory, addToBuild, sellPart, binPart, mo
     items[50] = result; // Target at index 50
     setSpinItems(items);
     
+    // Sound Effect Loop
+    let ticks = 0;
+    const tickInterval = setInterval(() => {
+        playSound('click', settings?.sfx);
+        ticks++;
+        if (ticks > 35) clearInterval(tickInterval);
+    }, 100);
+
     // Trigger animation
-    requestAnimationFrame(() => { requestAnimationFrame(() => { setSpinState('SPINNING'); }); });
-    setTimeout(() => { setSpinState('RESULT'); }, 4000);
+    setTimeout(() => { setSpinState('SPINNING'); }, 50);
+    
+    setTimeout(() => { 
+        clearInterval(tickInterval);
+        setSpinState('RESULT');
+        
+        if (result.id === 'golden_chip') {
+             setCelebration('GOLDEN');
+             playSound('legendary', settings?.sfx);
+        } else {
+             playSound('success', settings?.sfx);
+        }
+        notify(`Binning Result: ${result.label}`, "success");
+    }, 4000);
   };
 
   const closeBinning = () => { setBinningItem(null); setSpinState('IDLE'); };
@@ -58,20 +84,6 @@ export default function Inventory({ inventory, addToBuild, sellPart, binPart, mo
             Capacity: {inventory.length} / {maxCapacity}
           </span>
         </div>
-        
-        {binningHistory.length > 0 && (
-            <div className={`mb-4 p-3 rounded-xl border ${darkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'}`}>
-                <h3 className="text-xs font-bold uppercase opacity-50 mb-2 flex items-center gap-2"><Microscope size={12} /> Recent Binning Results</h3>
-                <div className="space-y-1">
-                    {binningHistory.map(h => (
-                        <div key={h.id} className="flex justify-between text-xs">
-                            <span className="opacity-70">{h.partName}</span>
-                            <span className={`font-bold ${h.color}`}>{h.result}</span>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        )}
 
         <CategoryTabs current={category} set={setCategory} types={{ PC: 'PC', ...PART_TYPES }} darkMode={darkMode} />
       </div>
@@ -175,7 +187,7 @@ export default function Inventory({ inventory, addToBuild, sellPart, binPart, mo
                             {/* Strip */}
                             <div 
                                 className="flex items-center h-full transition-transform duration-[4000ms] ease-[cubic-bezier(0.1,0,0.2,1)]"
-                                style={{ transform: spinState === 'SPINNING' || spinState === 'RESULT' ? `translateX(calc(50% - ${50 * 128 + 64}px))` : 'translateX(0)' }}
+                                style={{ transform: spinState === 'SPINNING' || spinState === 'RESULT' ? `translateX(calc(50% - ${50 * 136 + 68}px))` : 'translateX(0)' }}
                             >
                                 {spinItems.map((item, i) => (
                                     <div key={i} className={`flex-shrink-0 w-32 h-24 mx-1 rounded-lg flex flex-col items-center justify-center text-center p-2 border border-slate-800 ${darkMode ? 'bg-slate-900' : 'bg-slate-100'}`}>

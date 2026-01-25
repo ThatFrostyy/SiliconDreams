@@ -323,10 +323,10 @@ export default function App() {
             />
           )}
           {view === 'shop' && <Shop buyPart={buyPart} money={money} darkMode={settings.darkMode} settings={settings} skills={skills} buyPallet={buyPallet} />}
-          {view === 'inventory' && <Inventory inventory={inventory} addToBuild={addToBuild} sellPart={sellPart} binPart={binPart} money={money} category={inventoryCategory} setCategory={setInventoryCategory} darkMode={settings.darkMode} maxCapacity={50 + (skills.logistics * 5) + (ownedUpgrades.includes('storage_1') ? 50 : 0) + (ownedUpgrades.includes('storage_2') ? 100 : 0)} binningHistory={binningHistory} />}
+          {view === 'inventory' && <Inventory inventory={inventory} addToBuild={addToBuild} sellPart={sellPart} binPart={binPart} money={money} category={inventoryCategory} setCategory={setInventoryCategory} darkMode={settings.darkMode} maxCapacity={50 + (skills.logistics * 5) + (ownedUpgrades.includes('storage_1') ? 50 : 0) + (ownedUpgrades.includes('storage_2') ? 100 : 0)} />}
           {view === 'upgrades' && <Upgrades darkMode={settings.darkMode} skills={skills} unlockSkill={unlockSkill} money={money} ownedUpgrades={ownedUpgrades} buyUpgrade={buyUpgrade} />}
           {view === 'trading' && <Trading inventory={inventory} onPostTrade={handlePostTrade} money={money} onBuyTrade={handleBuyTrade} onItemTrade={handleItemTrade} onCancelTrade={handleCancelTrade} user={user} darkMode={settings.darkMode} netWorth={netWorth} unreadSales={unreadSales} onClearUnreadSales={markSalesRead} />}
-          {view === 'profile' && <Profile user={user} money={money} reputation={reputation} jobsCompleted={jobsCompleted} darkMode={settings.darkMode} skills={skills} achievements={achievements} netWorth={netWorth} jobHistory={jobHistory} />}
+          {view === 'profile' && <Profile user={user} money={money} reputation={reputation} jobsCompleted={jobsCompleted} darkMode={settings.darkMode} skills={skills} achievements={achievements} netWorth={netWorth} jobHistory={jobHistory} binningHistory={binningHistory} />}
           {view === 'devlogs' && <Devlogs darkMode={settings.darkMode} setView={setView} />}
           {view === 'leaderboard' && <Leaderboard user={user} netWorth={netWorth} darkMode={settings.darkMode} />}
         </div>

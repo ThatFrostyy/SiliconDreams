@@ -687,6 +687,17 @@ export default function App() {
         </div>
       </main>
 
+      <footer className="text-center pb-24 md:pb-8 text-xs opacity-50">
+        <a 
+          href="https://docs.google.com/document/d/1221bM02jpfA6YKCZuM6xBSmHvGQMGH0yS8hxCkSmDxM/edit?usp=sharing" 
+          target="_blank" 
+          rel="noreferrer" 
+          className="hover:underline hover:text-blue-500 transition-colors inline-flex items-center gap-1"
+        >
+          <ClipboardList size={12} /> Read the Official Game Guide
+        </a>
+      </footer>
+
       {/* MOBILE NAV */}
       <div className={`fixed bottom-0 left-0 right-0 border-t p-2 md:hidden flex justify-around items-center z-50 ${settings.darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
         <button onClick={() => setView('workshop')} className={`flex flex-col items-center gap-1 p-2 ${view === 'workshop' ? 'text-blue-400' : 'text-slate-500'}`}>

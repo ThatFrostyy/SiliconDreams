@@ -149,8 +149,7 @@ export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onI
             {/* Inventory Selection */}
             <div className="space-y-4">
                 <div className="flex gap-2 overflow-x-auto pb-2">
-                    <button onClick={() => setSellFilter('PC')} className={`px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${sellFilter === 'PC' ? 'bg-blue-500 text-white' : 'bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400'}`}>PC</button>
-                    <CategoryTabs current={sellFilter} set={setSellFilter} types={PART_TYPES} darkMode={darkMode} />
+                    <CategoryTabs current={sellFilter} set={setSellFilter} types={{ PC: 'PC', ...PART_TYPES }} darkMode={darkMode} />
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 max-h-[300px] overflow-y-auto p-1">
                     {filteredInventory.map(part => (
@@ -175,30 +174,30 @@ export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onI
             </div>
 
             {/* Configuration Panel */}
-            <div className={`w-full p-8 rounded-xl border flex flex-col gap-6 ${darkMode ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
+            <div className={`w-full p-5 rounded-xl border flex flex-col gap-4 ${darkMode ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
                 {sellingItem ? (
                     <>
-                        <div className={`flex items-center gap-4 p-4 rounded-2xl border ${darkMode ? 'bg-slate-800 border-slate-600' : 'bg-white border-slate-300 shadow-sm'}`}>
-                            <div className={`p-4 rounded-xl ${darkMode ? 'bg-slate-700' : 'bg-slate-100'}`}>
-                                {sellingItem.type === 'PC' ? <Monitor size={32} /> : <PartIcon type={sellingItem.type} size={32} />}
+                        <div className={`flex items-center gap-3 p-3 rounded-xl border ${darkMode ? 'bg-slate-800 border-slate-600' : 'bg-white border-slate-300 shadow-sm'}`}>
+                            <div className={`p-3 rounded-lg ${darkMode ? 'bg-slate-700' : 'bg-slate-100'}`}>
+                                {sellingItem.type === 'PC' ? <Monitor size={24} /> : <PartIcon type={sellingItem.type} size={24} />}
                             </div>
                             <div>
-                                <div className="text-xs font-bold opacity-50 uppercase tracking-wider mb-1">Selected Item</div>
-                                <h3 className="font-bold text-lg leading-tight">{sellingItem.name}</h3>
-                                <p className="text-sm opacity-60 font-mono mt-1">Est. Value: ${sellingItem.price}</p>
+                                <div className="text-[10px] font-bold opacity-50 uppercase tracking-wider mb-0.5">Selected Item</div>
+                                <h3 className="font-bold text-sm leading-tight">{sellingItem.name}</h3>
+                                <p className="text-xs opacity-60 font-mono mt-0.5">Est. Value: ${sellingItem.price}</p>
                             </div>
                         </div>
 
-                        <div className="flex gap-3">
+                        <div className="flex gap-2">
                             <button 
                                 onClick={() => setTradeMode('SELL')}
-                                className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all border-2 ${tradeMode === 'SELL' ? 'border-emerald-500 bg-emerald-500/10 text-emerald-500' : 'border-transparent bg-slate-500/10 hover:bg-slate-500/20'}`}
+                                className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all border ${tradeMode === 'SELL' ? 'border-emerald-500 bg-emerald-500/10 text-emerald-500' : 'border-transparent bg-slate-500/10 hover:bg-slate-500/20'}`}
                             >
                                 Sell for Cash
                             </button>
                             <button 
                                 onClick={() => setTradeMode('TRADE')}
-                                className={`flex-1 py-3 text-sm font-bold rounded-xl transition-all border-2 ${tradeMode === 'TRADE' ? 'border-blue-500 bg-blue-500/10 text-blue-500' : 'border-transparent bg-slate-500/10 hover:bg-slate-500/20'}`}
+                                className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all border ${tradeMode === 'TRADE' ? 'border-blue-500 bg-blue-500/10 text-blue-500' : 'border-transparent bg-slate-500/10 hover:bg-slate-500/20'}`}
                             >
                                 Item Trade
                             </button>
@@ -207,10 +206,10 @@ export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onI
                         <div className="flex-1">
                             {tradeMode === 'SELL' ? (
                                 <div>
-                                    <label className="text-xs font-bold uppercase mb-2 block opacity-70">Listing Price</label>
+                                    <label className="text-[10px] font-bold uppercase mb-1 block opacity-70">Listing Price</label>
                                     <input 
                                         type="number" 
-                                        className={`w-full p-4 rounded-xl border-2 font-mono text-3xl font-bold focus:outline-none focus:border-emerald-500 transition-colors ${darkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'}`}
+                                        className={`w-full p-3 rounded-lg border font-mono text-xl font-bold focus:outline-none focus:border-emerald-500 transition-colors ${darkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'}`}
                                         placeholder={sellingItem.price}
                                         value={price}
                                         onChange={(e) => setPrice(e.target.value)}
@@ -218,17 +217,17 @@ export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onI
                                 </div>
                             ) : (
                                 <div>
-                                    <label className="text-xs font-bold uppercase mb-2 block opacity-70">I want to receive:</label>
-                                    <div className="space-y-3">
+                                    <label className="text-[10px] font-bold uppercase mb-1 block opacity-70">I want to receive:</label>
+                                    <div className="space-y-2">
                                         <select 
-                                            className={`w-full p-4 rounded-xl border-2 font-bold ${darkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'}`}
+                                            className={`w-full p-2 rounded-lg border font-bold text-xs ${darkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'}`}
                                             value={wantedType}
                                             onChange={(e) => { setWantedType(e.target.value); setWantedPartName(''); }}
                                         >
                                             {Object.values(PART_TYPES).map(t => <option key={t} value={t}>{t}</option>)}
                                         </select>
                                         <select
-                                            className={`w-full p-4 rounded-xl border-2 font-bold ${darkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'}`}
+                                            className={`w-full p-2 rounded-lg border font-bold text-xs ${darkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'}`}
                                             value={wantedPartName}
                                             onChange={(e) => setWantedPartName(e.target.value)}
                                         >
@@ -245,15 +244,15 @@ export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onI
                         <button 
                             onClick={handlePost}
                             disabled={loading || (tradeMode === 'SELL' && !price)}
-                            className="mt-4 w-full py-4 rounded-xl font-black text-lg uppercase tracking-wider bg-emerald-500 hover:bg-emerald-400 text-white shadow-xl shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform active:scale-95"
+                            className="mt-2 w-full py-3 rounded-xl font-bold text-sm uppercase tracking-wider bg-emerald-500 hover:bg-emerald-400 text-white shadow-lg shadow-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform active:scale-95"
                         >
                             {loading ? 'Posting...' : 'Post Listing'}
                         </button>
                     </>
                 ) : (
-                    <div className="flex-1 flex flex-col items-center justify-center text-center opacity-40 p-12">
-                        <Package size={48} className="mb-2" />
-                        <p className="text-sm font-bold">Select an item from your inventory to list it</p>
+                    <div className="flex-1 flex flex-col items-center justify-center text-center opacity-40 p-8">
+                        <Package size={32} className="mb-2" />
+                        <p className="text-xs font-bold">Select an item to list</p>
                     </div>
                 )}
             </div>

@@ -5,6 +5,15 @@ import { DEVLOGS } from '../devlogs';
 export default function Devlogs({ darkMode, setView }) {
   const [selectedLog, setSelectedLog] = useState(null);
 
+  const renderContent = (text) => {
+    return text.split(/(\*\*.*?\*\*)/g).map((part, index) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={index} className={darkMode ? 'text-blue-400' : 'text-blue-600'}>{part.slice(2, -2)}</strong>;
+      }
+      return part;
+    });
+  };
+
   return (
     <section className={`rounded-2xl border overflow-hidden shadow-2xl transition-colors min-h-[600px] ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
       <div className={`p-6 border-b ${darkMode ? 'bg-slate-800/50 border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
@@ -24,25 +33,31 @@ export default function Devlogs({ darkMode, setView }) {
         {selectedLog ? (
           <div className="animate-in fade-in slide-in-from-right-4 duration-300">
             <div className="mb-6">
+              <div className="text-xs font-bold text-blue-500 mb-1 uppercase tracking-wider">
+                Devlog #{DEVLOGS.length - DEVLOGS.indexOf(selectedLog)}
+              </div>
               <h1 className={`text-2xl font-black mb-2 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedLog.title}</h1>
               <div className="flex items-center gap-2 text-xs opacity-60 font-mono">
                 <Calendar size={12} /> {selectedLog.date}
               </div>
             </div>
             <div className={`prose ${darkMode ? 'prose-invert' : ''} max-w-none whitespace-pre-wrap text-sm leading-relaxed opacity-80`}>
-              {selectedLog.content}
+              {renderContent(selectedLog.content)}
             </div>
           </div>
         ) : (
           <div className="grid gap-4">
-            {DEVLOGS.map(log => (
+            {DEVLOGS.map((log, index) => (
               <div 
                 key={log.id}
                 onClick={() => setSelectedLog(log)}
                 className={`p-4 rounded-xl border cursor-pointer transition-all group ${darkMode ? 'bg-slate-800/50 border-slate-700 hover:bg-slate-800 hover:border-blue-500/50' : 'bg-slate-50 border-slate-200 hover:bg-white hover:border-blue-300'}`}
               >
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className={`font-bold text-lg group-hover:text-blue-500 transition-colors ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>{log.title}</h3>
+                  <div>
+                    <span className="text-[10px] font-bold text-blue-500 uppercase tracking-wider block mb-1">Devlog #{DEVLOGS.length - index}</span>
+                    <h3 className={`font-bold text-lg group-hover:text-blue-500 transition-colors ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>{log.title}</h3>
+                  </div>
                   <span className="text-[10px] font-mono opacity-50 bg-slate-500/10 px-2 py-1 rounded">{log.date}</span>
                 </div>
                 <p className="text-xs opacity-60 line-clamp-2">{log.summary}</p>

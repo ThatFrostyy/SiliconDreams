@@ -24,6 +24,7 @@ export const useGameStore = create(
       reputation: 50,
       jobsCompleted: 0,
       orderTab: 'STANDARD',
+      binningHistory: [],
       view: 'workshop',
       user: null,
       message: { text: '', type: '' }, // Notification state
@@ -150,9 +151,13 @@ export const useGameStore = create(
 
         const modifier = getBinningResult(skills.binning || 0);
         let newPart = { ...part, isBinned: true };
+        let resultLabel = "Average Chip";
+        let resultColor = "text-slate-500";
         
         if (modifier) {
             newPart = applyModifier(newPart, modifier);
+            resultLabel = modifier.label;
+            resultColor = modifier.color;
             notify(`Binning Result: ${modifier.label}`, "success");
             playSound('success', settings.sfx);
         } else {
@@ -160,9 +165,18 @@ export const useGameStore = create(
             playSound('click', settings.sfx);
         }
 
+        const historyEntry = {
+            id: Date.now(),
+            partName: part.originalName || part.name,
+            result: resultLabel,
+            color: resultColor,
+            date: new Date().toLocaleTimeString()
+        };
+
         set(state => ({
             money: state.money - COST,
-            inventory: state.inventory.map(p => p.invId === part.invId ? newPart : p)
+            inventory: state.inventory.map(p => p.invId === part.invId ? newPart : p),
+            binningHistory: [historyEntry, ...(state.binningHistory || [])].slice(0, 10)
         }));
       },
 

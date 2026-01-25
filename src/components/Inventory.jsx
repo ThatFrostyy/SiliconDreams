@@ -5,7 +5,7 @@ import { PART_TYPES } from '../data/constants';
 import { CategoryTabs, PartIcon } from './Shared';
 import { getModifierById, isUnreliable } from '../utils/modifiers';
 
-export default function Inventory({ inventory, addToBuild, sellPart, binPart, money, category = 'ALL', setCategory, darkMode, maxCapacity = 50 }) {
+export default function Inventory({ inventory, addToBuild, sellPart, binPart, money, category = 'ALL', setCategory, darkMode, maxCapacity = 50, binningHistory = [] }) {
   return (
     <section className={`rounded-2xl border overflow-hidden shadow-2xl transition-colors ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
       <div className={`p-6 ${darkMode ? 'bg-slate-800/50' : 'bg-slate-50'}`}>
@@ -17,6 +17,21 @@ export default function Inventory({ inventory, addToBuild, sellPart, binPart, mo
             Capacity: {inventory.length} / {maxCapacity}
           </span>
         </div>
+        
+        {binningHistory.length > 0 && (
+            <div className={`mb-4 p-3 rounded-xl border ${darkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'}`}>
+                <h3 className="text-xs font-bold uppercase opacity-50 mb-2 flex items-center gap-2"><Microscope size={12} /> Recent Binning Results</h3>
+                <div className="space-y-1">
+                    {binningHistory.map(h => (
+                        <div key={h.id} className="flex justify-between text-xs">
+                            <span className="opacity-70">{h.partName}</span>
+                            <span className={`font-bold ${h.color}`}>{h.result}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )}
+
         <CategoryTabs current={category} set={setCategory} types={{ PC: 'PC', ...PART_TYPES }} darkMode={darkMode} />
       </div>
       <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[600px] overflow-y-auto">
@@ -41,6 +56,7 @@ export default function Inventory({ inventory, addToBuild, sellPart, binPart, mo
                     {part.socket && <span className="text-blue-400 bg-blue-900/30 px-1 rounded">{part.socket}</span>}
                     {part.perf && <span className="text-amber-400">PERF:{part.perf}</span>}
                     {part.wattage && <span className="text-emerald-400">C:{part.wattage}W</span>}
+                    <span className="text-emerald-500 font-bold">${part.price}</span>
                   </div>
                   {part.type === PART_TYPES.MOTHERBOARD && (
                     <div className="text-[10px] text-slate-400 mt-1 font-mono">

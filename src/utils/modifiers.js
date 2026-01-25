@@ -35,13 +35,16 @@ export const getBinningResult = (skillLevel = 0) => {
 
 export const applyModifier = (part, modifier) => {
   if (!modifier) return part;
+  const basePerf = Number(part.perf) || 0;
+  const basePrice = Number(part.price) || 0;
+
   return {
     ...part,
     modifierId: modifier.id,
     name: `${modifier.label} ${part.name}`,
     originalName: part.originalName || part.name,
-    perf: Math.floor((part.perf || 0) * (modifier.perfMult || 1)),
-    price: Math.floor((part.price || 0) * (modifier.priceMult || 1)),
+    perf: Math.floor(basePerf * (modifier.perfMult || 1)),
+    price: Math.floor(basePrice * (modifier.priceMult || 1)),
     isUnreliable: modifier.unreliable || false
   };
 };

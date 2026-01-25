@@ -1,6 +1,6 @@
 // src/components/JobBoard.jsx
 import React from 'react';
-import { ClipboardList, TrendingUp } from 'lucide-react';
+import { ClipboardList, TrendingUp, Crown } from 'lucide-react';
 
 export default function JobBoard({ activeOrders, fulfillOrder, view, inventoryCount, darkMode }) {
   return (
@@ -16,6 +16,11 @@ export default function JobBoard({ activeOrders, fulfillOrder, view, inventoryCo
         <div className="p-4 space-y-4">
           {activeOrders.map(order => (
             <div key={order.id} className={`border rounded-xl p-4 transition-colors group ${darkMode ? 'bg-slate-800/30 border-slate-700 hover:bg-slate-800/60' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'}`}>
+              {order.isVip && (
+                <div className="flex items-center gap-1 text-[10px] font-black uppercase tracking-tighter mb-2 text-amber-400">
+                  <Crown size={12} /> VIP Client
+                </div>
+              )}
               <div className="flex justify-between items-start mb-2">
                 <h3 className={`font-bold text-sm ${darkMode ? 'text-white' : 'text-slate-800'}`}>{order.title}</h3>
                 <div className="text-emerald-400 font-black text-sm">${order.budget}</div>

@@ -1,6 +1,6 @@
 // src/App.jsx
 import React, { useState, useEffect } from 'react';
-import { CheckCircle2, AlertTriangle, ClipboardList, Wrench, ShoppingBag, Box, Settings, Volume2, VolumeX, Music, Moon, Sun, X, TrendingUp, Globe, Trash2, RefreshCw } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, ClipboardList, Wrench, ShoppingBag, Box, Settings, Volume2, VolumeX, Music, Moon, Sun, X, TrendingUp, Globe, Trash2, RefreshCw, Monitor, DollarSign, Crown } from 'lucide-react';
 import { PART_TYPES, REQUEST_TEMPLATES, ORDER_TEMPLATES } from './data/constants';
 import { playSound, musicPlayer } from './utils/sound';
 import { SpeedInsights } from "@vercel/speed-insights/react"
@@ -20,12 +20,18 @@ import Trading from './components/Trading';
 import Profile from './components/Profile';
 
 const generateRequest = () => {
+  const isVip = Math.random() > 0.85; // 15% chance for VIP
   const template = REQUEST_TEMPLATES[Math.floor(Math.random() * REQUEST_TEMPLATES.length)];
+  const budgetMultiplier = isVip ? 1.5 : 1;
   return {
     ...template,
     id: `req_${Math.random().toString(36).substr(2, 5)}`,
     type: 'REQUEST',
-    minPerf: Math.floor(template.budget / 12) // Dynamic perf based on budget
+    minPerf: Math.floor((template.budget * budgetMultiplier) / 12), // Dynamic perf based on budget
+    budget: Math.floor(template.budget * budgetMultiplier),
+    isVip,
+    title: isVip ? `VIP: ${template.title}` : template.title,
+    description: isVip ? `(VIP CLIENT) ${template.description}` : template.description
   };
 };
 
@@ -213,7 +219,7 @@ export default function App() {
 
   // Sell Logic (Half Price)
   const sellPart = (part) => {
-    const sellPrice = Math.floor(part.price / 2);
+    const sellPrice = Math.floor(part.price * (part.type === 'PC' ? 0.8 : 0.5));
     setMoney(prev => prev + sellPrice);
     setInventory(prev => prev.filter(p => p.invId !== part.invId));
     notify(`Sold ${part.name} for $${sellPrice}`, 'success');
@@ -500,7 +506,7 @@ export default function App() {
     
     setMoney(prev => prev + calculatedReward);
     setCurrentBuild({});
-    setReputation(prev => Math.min(prev + (order.type === 'REQUEST' ? 5 : 2), 100));
+    setReputation(prev => Math.min(prev + (order.type === 'REQUEST' ? (order.isVip ? 10 : 5) : 2), 100));
     setJobsCompleted(prev => prev + 1);
     notify(`Order Delivered! Earned $${calculatedReward} (Profit: $${profit})`, 'success');
     
@@ -628,6 +634,34 @@ export default function App() {
             inventoryCount={inventory.length} 
             darkMode={settings.darkMode}
           />
+
+          {/* Saved Builds Section (Moved from Workshop) */}
+          {inventory && inventory.some(i => i.type === 'PC') && (
+            <div className={`p-5 rounded-xl border ${settings.darkMode ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200'}`}>
+              <h3 className="text-sm font-bold mb-4 flex items-center gap-2"><Monitor size={16} /> Saved Builds</h3>
+              <div className="grid grid-cols-1 gap-4">
+                {inventory.filter(i => i.type === 'PC').map(pc => (
+                  <div key={pc.invId} className={`p-4 rounded-lg border flex justify-between items-center ${settings.darkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
+                    <div>
+                      <div className="font-bold text-sm">{pc.name}</div>
+                      <div className="text-xs opacity-60 flex gap-2">
+                        <span>Perf: {pc.perf}</span>
+                        <span>Val: ${pc.price}</span>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <button onClick={() => sellBuildInstant(pc)} className="p-2 rounded bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white transition-all" title="Quick Sell (Low Price)">
+                        <DollarSign size={16} />
+                      </button>
+                      <button onClick={() => disassembleBuild(pc)} className="p-2 rounded bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white transition-all" title="Disassemble">
+                        <Wrench size={16} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </main>
 

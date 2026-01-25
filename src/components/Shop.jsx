@@ -15,7 +15,7 @@ export default function Shop({ buyPart, money, darkMode }) {
         </h2>
         <CategoryTabs current={shopCategory} set={setShopCategory} types={{ PC: 'PC', ...PART_TYPES }} darkMode={darkMode} />
       </div>
-      <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[600px] overflow-y-auto">
+      <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[600px] overflow-y-auto custom-scrollbar">
         {PARTS_CATALOG.filter(p => shopCategory === 'ALL' || p.type === shopCategory).map(part => (
           <div key={part.id} className={`p-4 rounded-xl border flex justify-between items-center hover:border-emerald-500/50 transition-all group ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
             <div className="flex items-center gap-3">

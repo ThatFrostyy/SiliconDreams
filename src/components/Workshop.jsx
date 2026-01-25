@@ -220,34 +220,6 @@ export default function Workshop({ currentBuild, removeFromBuild, clearBuild, ha
           ))}
         </div>
       </div>
-
-      {/* Saved Builds Section */}
-      {inventory && inventory.some(i => i.type === 'PC') && (
-        <div className={`p-5 rounded-xl border ${darkMode ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200'}`}>
-          <h3 className="text-sm font-bold mb-4 flex items-center gap-2"><Monitor size={16} /> Saved Builds</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {inventory.filter(i => i.type === 'PC').map(pc => (
-              <div key={pc.invId} className={`p-4 rounded-lg border flex justify-between items-center ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
-                <div>
-                  <div className="font-bold">{pc.name}</div>
-                  <div className="text-xs opacity-60 flex gap-2">
-                    <span>Perf: {pc.perf}</span>
-                    <span>Val: ${pc.price}</span>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <button onClick={() => onSellBuild(pc)} className="p-2 rounded bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white transition-all" title="Quick Sell (Low Price)">
-                    <DollarSign size={16} />
-                  </button>
-                  <button onClick={() => onDisassemble(pc)} className="p-2 rounded bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white transition-all" title="Disassemble">
-                    <Wrench size={16} />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

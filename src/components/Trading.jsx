@@ -81,31 +81,25 @@ export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onI
         const tradeDoc = await transaction.get(tradeRef);
         if (!tradeDoc.exists()) throw "Trade no longer exists!";
 
-        const sellerRef = doc(db, 'users', trade.sellerId);
-        const sellerDoc = await transaction.get(sellerRef);
-
-        // Delete trade
+        // Delete trade from market
         transaction.delete(tradeRef);
 
-        // Update Seller
-        if (sellerDoc.exists()) {
-            if (trade.type === 'SELL') {
-                const currentEarnings = sellerDoc.data().earnings || 0;
-                transaction.update(sellerRef, { earnings: currentEarnings + trade.price });
-            } else {
-                const currentIncoming = sellerDoc.data().incomingItems || [];
-                // Strip local invId to avoid confusion, receiver will assign new one
-                const { invId, ...cleanItem } = offeredItem; 
-                transaction.update(sellerRef, { incomingItems: [...currentIncoming, cleanItem] });
-            }
+        // Send to Seller's Inbox (Safe Pattern)
+        const inboxRef = doc(collection(db, 'users', trade.sellerId, 'inbox'));
+        
+        if (trade.type === 'SELL') {
+            transaction.set(inboxRef, {
+                type: 'EARNINGS',
+                amount: trade.price,
+                timestamp: serverTimestamp()
+            });
         } else {
-            // Create seller doc if missing (unlikely but safe)
-            if (trade.type === 'SELL') {
-                transaction.set(sellerRef, { earnings: trade.price });
-            } else {
-                const { invId, ...cleanItem } = offeredItem;
-                transaction.set(sellerRef, { incomingItems: [cleanItem] });
-            }
+            const { invId, ...cleanItem } = offeredItem;
+            transaction.set(inboxRef, {
+                type: 'ITEM',
+                item: cleanItem,
+                timestamp: serverTimestamp()
+            });
         }
       });
 

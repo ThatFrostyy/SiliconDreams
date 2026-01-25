@@ -7,7 +7,7 @@ import { SpeedInsights } from "@vercel/speed-insights/react"
 import { signInAnonymously } from "firebase/auth";
 import { auth, db } from "./utils/firebase";
 import { Analytics } from "@vercel/analytics/react"
-import { doc, getDoc, updateDoc, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, onSnapshot, collection, query, deleteDoc } from 'firebase/firestore';
 
 // Import Components
 import Header from './components/Header';
@@ -130,29 +130,26 @@ export default function App() {
   // Check for earnings from Trading
   useEffect(() => {
     if (!user) return;
-    const unsub = onSnapshot(doc(db, 'users', user.uid), (snapshot) => {
-      if (snapshot.exists()) {
-        const data = snapshot.data();
-        const updates = {};
-        let hasUpdates = false;
+    
+    // Listen to the 'inbox' subcollection for incoming trades/sales
+    const q = query(collection(db, 'users', user.uid, 'inbox'));
+    
+    const unsub = onSnapshot(q, (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === 'added') {
+          const data = change.doc.data();
+          const docRef = change.doc.ref;
 
-        if (data.earnings > 0) {
-          setMoney(prev => prev + data.earnings);
-          notify(`You sold items on the market! Earned $${data.earnings}`, 'success');
-          updates.earnings = 0;
-          hasUpdates = true;
-        }
-
-        if (data.incomingItems && data.incomingItems.length > 0) {
-           const newItems = data.incomingItems.map(item => ({ ...item, invId: Math.random().toString(36).substr(2, 5) }));
-           setInventory(prev => [...prev, ...newItems]);
-           notify(`Trade complete! Received ${newItems.length} new items.`, 'success');
-           updates.incomingItems = [];
-           hasUpdates = true;
-        }
-
-        if (hasUpdates) {
-          updateDoc(snapshot.ref, updates);
+          if (data.type === 'EARNINGS') {
+            setMoney(prev => prev + data.amount);
+            notify(`You sold items on the market! Earned $${data.amount}`, 'success');
+            deleteDoc(docRef).catch(e => console.error("Error clearing inbox", e));
+          } else if (data.type === 'ITEM') {
+             const newItem = { ...data.item, invId: Math.random().toString(36).substr(2, 5) };
+             setInventory(prev => [...prev, newItem]);
+             notify(`Trade complete! Received ${newItem.name}.`, 'success');
+             deleteDoc(docRef).catch(e => console.error("Error clearing inbox", e));
+          }
         }
       }
     });

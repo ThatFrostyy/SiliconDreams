@@ -42,6 +42,38 @@ const generateOrderLocal = (activeOrders = [], excludeTitle = null) => {
   };
 };
 
+const calculateBuildStats = (build) => {
+  const parts = Object.values(build);
+  const totalPower = parts.reduce((acc, p) => acc + (p.power || 0), 0);
+  
+  const ramParts = parts.filter(p => p.type === PART_TYPES.RAM);
+  let perfMultiplier = 1;
+  if (ramParts.length > 0) {
+    const avgSpeed = ramParts.reduce((acc, r) => acc + (r.speed || 2133), 0) / ramParts.length;
+    perfMultiplier = 1 + ((avgSpeed - 2133) / 10000); 
+    if (ramParts.length >= 2) perfMultiplier += 0.05; 
+  }
+
+  let rawPerf = parts.reduce((acc, p) => acc + (p.perf || 0), 0);
+  
+  const cpu = parts.find(p => p.type === PART_TYPES.CPU);
+  const gpu = parts.find(p => p.type === PART_TYPES.GPU);
+  let bottleneckPenalty = 0;
+  
+  if (cpu && gpu) {
+      const cpuPerf = cpu.perf || 0;
+      const gpuPerf = gpu.perf || 0;
+      if (gpuPerf > cpuPerf * 1.5) {
+           bottleneckPenalty = gpuPerf - (cpuPerf * 1.5);
+           rawPerf -= bottleneckPenalty;
+      }
+  }
+
+  const totalPerf = Math.floor(rawPerf * perfMultiplier);
+  
+  return { totalPower, totalPerf, bottleneckPenalty };
+};
+
 // Helper to load state from localStorage
 const loadState = (key, defaultValue) => {
   try {
@@ -79,6 +111,8 @@ export default function App() {
   useEffect(() => { localStorage.setItem('currentBuild', JSON.stringify(currentBuild)); }, [currentBuild]);
   useEffect(() => { localStorage.setItem('view', JSON.stringify(view)); }, [view]);
   useEffect(() => { localStorage.setItem('orderTab', JSON.stringify(orderTab)); }, [orderTab]);
+
+  const buildStats = calculateBuildStats(currentBuild);
 
   // Notifications
   useEffect(() => {
@@ -337,36 +371,12 @@ export default function App() {
   };
 
   const fulfillOrder = (order) => {
-    // Re-calculate stats locally for validation
     const parts = Object.values(currentBuild);
-    const totalPower = parts.reduce((acc, p) => acc + (p.power || 0), 0);
-    
-    // Calculate Performance with RAM Speed Multiplier
-    const ramParts = parts.filter(p => p.type === PART_TYPES.RAM);
-    let perfMultiplier = 1;
-    if (ramParts.length > 0) {
-      const avgSpeed = ramParts.reduce((acc, r) => acc + (r.speed || 2133), 0) / ramParts.length;
-      perfMultiplier = 1 + ((avgSpeed - 2133) / 10000); // Small bonus for faster RAM
-      if (ramParts.length >= 2) perfMultiplier += 0.05; // Dual channel bonus
-    }
+    const { totalPerf, totalPower, bottleneckPenalty } = buildStats;
 
-    let rawPerf = parts.reduce((acc, p) => acc + (p.perf || 0), 0);
-    
-    // Bottleneck Check
-    const cpu = parts.find(p => p.type === PART_TYPES.CPU);
-    const gpu = parts.find(p => p.type === PART_TYPES.GPU);
-    if (cpu && gpu) {
-        const cpuPerf = cpu.perf || 0;
-        const gpuPerf = gpu.perf || 0;
-        // If GPU is significantly faster than CPU (e.g. > 1.5x), cap effective GPU perf
-        if (gpuPerf > cpuPerf * 1.5) {
-             const penalty = gpuPerf - (cpuPerf * 1.5);
-             rawPerf -= penalty;
-             notify(`Bottleneck! CPU limits GPU. Performance reduced by ${Math.floor(penalty)}.`, "error");
-        }
+    if (bottleneckPenalty > 0) {
+      notify(`Bottleneck! CPU limits GPU. Performance reduced by ${Math.floor(bottleneckPenalty)}.`, "error");
     }
-
-    const totalPerf = Math.floor(rawPerf * perfMultiplier);
     
     const totalCost = parts.reduce((acc, p) => acc + (p.price || 0), 0);
     const supplyPower = currentBuild[PART_TYPES.PSU]?.wattage || 0;
@@ -506,6 +516,7 @@ export default function App() {
               clearBuild={clearBuild} 
               handleSlotClick={handleSlotClick} 
               darkMode={settings.darkMode}
+              buildStats={buildStats}
             />
           )}
           {view === 'shop' && <Shop buyPart={buyPart} money={money} darkMode={settings.darkMode} />}

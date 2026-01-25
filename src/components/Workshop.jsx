@@ -4,7 +4,7 @@ import { Wrench, XCircle, ChevronRight, TrendingUp, Zap, ClipboardList, CheckCir
 import { PART_TYPES } from '../data/constants';
 import { PartIcon } from './Shared';
 
-export default function Workshop({ currentBuild, removeFromBuild, clearBuild, handleSlotClick, darkMode }) {
+export default function Workshop({ currentBuild, removeFromBuild, clearBuild, handleSlotClick, darkMode, buildStats: propStats }) {
   
   const mobo = currentBuild[PART_TYPES.MOTHERBOARD];
   const ramSlotCount = mobo?.ramSlots || 4;
@@ -29,19 +29,26 @@ export default function Workshop({ currentBuild, removeFromBuild, clearBuild, ha
   }, [mobo]);
 
   const buildStats = useMemo(() => {
-    const parts = Object.values(currentBuild);
-    const totalPower = parts.reduce((acc, p) => acc + (p.power || 0), 0);
-    const totalPerf = parts.reduce((acc, p) => acc + (p.perf || 0), 0);
     const supplyPower = currentBuild[PART_TYPES.PSU]?.wattage || 0;
     
     const missingParts = Object.values(PART_TYPES).filter(type => 
       !Object.values(currentBuild).some(p => p.type === type)
     );
     const isComplete = missingParts.length === 0;
+    
+    if (propStats) {
+        const powerOk = supplyPower >= propStats.totalPower && supplyPower > 0;
+        return { ...propStats, supplyPower, isComplete, powerOk, missingParts };
+    }
+
+    // Fallback if prop not provided
+    const parts = Object.values(currentBuild);
+    const totalPower = parts.reduce((acc, p) => acc + (p.power || 0), 0);
+    const totalPerf = parts.reduce((acc, p) => acc + (p.perf || 0), 0);
     const powerOk = supplyPower >= totalPower && supplyPower > 0;
     
     return { totalPower, totalPerf, supplyPower, isComplete, powerOk, missingParts };
-  }, [currentBuild]);
+  }, [currentBuild, propStats]);
 
   const Slot = ({ type, label, slotKey, className = "" }) => {
     const key = slotKey || type;

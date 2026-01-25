@@ -23,6 +23,15 @@ export default function Inventory({ inventory, addToBuild, sellPart, binPart, mo
   const notify = useGameStore(state => state.notify);
   const settings = useGameStore(state => state.settings);
   const setCelebration = useGameStore(state => state.setCelebration);
+  const skills = useGameStore(state => state.skills);
+  const ownedUpgrades = useGameStore(state => state.ownedUpgrades);
+
+  const getSellPrice = (part) => {
+    const dealmakerBonus = 1 + ((skills?.dealmaker || 0) * 0.05);
+    const showroomBonus = (part.type === 'PC' && ownedUpgrades?.includes('showroom')) ? 1.05 : 1;
+    const baseMult = part.type === 'PC' ? 0.8 : 0.5;
+    return Math.floor(part.price * baseMult * dealmakerBonus * showroomBonus);
+  };
 
   const handleBinClick = (part) => {
     setBinningItem(part);
@@ -101,16 +110,16 @@ export default function Inventory({ inventory, addToBuild, sellPart, binPart, mo
             
             return (
             <div key={part.invId} className={`p-4 rounded-xl border flex justify-between items-center relative overflow-hidden ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
-              <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-lg ${darkMode ? 'bg-slate-700' : 'bg-white shadow-sm'}`}><PartIcon type={part.type} /></div>
-                <div>
+              <div className="flex items-center gap-3 min-w-0 flex-1">
+                <div className={`p-2 rounded-lg shrink-0 ${darkMode ? 'bg-slate-700' : 'bg-white shadow-sm'}`}><PartIcon type={part.type} /></div>
+                <div className="min-w-0">
                   <p className="text-[10px] text-slate-500 font-bold uppercase">{part.type}</p>
                   <h4 className={`font-bold text-sm ${modifier.color || (darkMode ? 'text-white' : 'text-slate-800')}`}>{part.name}</h4>
-                  <div className="flex gap-2 text-[10px] font-mono mt-1">
-                    {part.socket && <span className="text-blue-400 bg-blue-900/30 px-1 rounded">{part.socket}</span>}
-                    {part.perf && <span className="text-amber-400">PERF:{part.perf}</span>}
-                    {part.wattage && <span className="text-emerald-400">C:{part.wattage}W</span>}
-                    <span className="text-emerald-500 font-bold">${part.price}</span>
+                  <div className="flex flex-wrap gap-2 text-[10px] font-mono mt-1">
+                    {part.socket && <span className="text-blue-400 bg-blue-900/30 px-1 rounded whitespace-nowrap">{part.socket}</span>}
+                    {part.perf && <span className="text-amber-400 whitespace-nowrap">PERF:{part.perf}</span>}
+                    {part.wattage && <span className="text-emerald-400 whitespace-nowrap">C:{part.wattage}W</span>}
+                    <span className="text-emerald-500 font-bold whitespace-nowrap">Val: ${part.price}</span>
                   </div>
                   {part.type === PART_TYPES.MOTHERBOARD && (
                     <div className="text-[10px] text-slate-400 mt-1 font-mono">
@@ -129,7 +138,7 @@ export default function Inventory({ inventory, addToBuild, sellPart, binPart, mo
                   )}
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 shrink-0 ml-2">
                 {part.type === 'CPU' && !part.isBinned && (
                   <button
                     onClick={() => handleBinClick(part)}
@@ -143,7 +152,7 @@ export default function Inventory({ inventory, addToBuild, sellPart, binPart, mo
                 <button
                   onClick={() => sellPart(part)}
                   className="p-2 rounded-lg bg-rose-900/30 text-rose-500 hover:bg-rose-600 hover:text-white transition-colors"
-                  title={`Sell for $${Math.floor(part.price / 2)}`}
+                  title={`Sell for $${getSellPrice(part)}`}
                 >
                   <DollarSign size={16} />
                 </button>
@@ -201,6 +210,11 @@ export default function Inventory({ inventory, addToBuild, sellPart, binPart, mo
                             <div className="text-center animate-in zoom-in duration-300">
                                 <div className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Result</div>
                                 <div className={`text-3xl font-black ${spinResult.color}`}>{spinResult.label}</div>
+                                {inventory.find(p => p.invId === binningItem?.invId) && (
+                                    <div className="text-emerald-500 font-bold mt-2">
+                                        Value: ${inventory.find(p => p.invId === binningItem?.invId).price}
+                                    </div>
+                                )}
                                 <button onClick={closeBinning} className="mt-6 px-6 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-bold">Collect</button>
                             </div>
                         )}

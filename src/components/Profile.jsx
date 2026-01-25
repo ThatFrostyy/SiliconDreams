@@ -2,7 +2,7 @@ import React from 'react';
 import { User, Trophy, Briefcase, DollarSign, Star, Award, Zap, History } from 'lucide-react';
 import { REPUTATION_TITLES, SKILLS, ACHIEVEMENTS } from '../data/constants';
 
-export default function Profile({ user, money, reputation, jobsCompleted, darkMode, skills, achievements, netWorth, jobHistory }) {
+export default function Profile({ user, money, reputation, jobsCompleted, darkMode, skills, achievements, jobHistory }) {
   const getReputationTitle = (rep) => {
     return REPUTATION_TITLES.find(t => rep >= t.threshold)?.title || "Unknown";
   };

@@ -105,6 +105,7 @@ export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onI
                 from: user.uid
             });
         } else {
+            // eslint-disable-next-line no-unused-vars
             const { invId, ...cleanItem } = offeredItem;
             transaction.set(inboxRef, {
                 type: 'ITEM',

@@ -2,7 +2,7 @@
 import React from 'react';
 import { ClipboardList, TrendingUp, Crown } from 'lucide-react';
 
-export default function JobBoard({ activeOrders, fulfillOrder, view, inventoryCount, darkMode }) {
+export default function JobBoard({ activeOrders, fulfillOrder, view, darkMode }) {
   return (
     <div className="lg:col-span-4 space-y-6">
       <section className={`rounded-2xl border overflow-hidden shadow-xl transition-colors ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>

@@ -2,7 +2,7 @@
 import React from 'react';
 import { Monitor, DollarSign, Wrench, ShoppingBag, Box, Settings, TrendingUp, Globe, User } from 'lucide-react';
 
-export default function Header({ money, view, setView, inventoryCount, toggleSettings, darkMode }) {
+export default function Header({ money, view, setView, toggleSettings, darkMode }) {
   return (
     <div className={`p-4 sticky top-0 z-50 shadow-xl border-b flex justify-between items-center transition-colors ${darkMode ? 'bg-slate-900 text-white border-slate-700' : 'bg-white text-slate-800 border-slate-200'}`}>
       {/* Left: Logo */}

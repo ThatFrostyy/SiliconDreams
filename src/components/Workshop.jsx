@@ -5,7 +5,49 @@ import { PART_TYPES } from '../data/constants';
 import { PartIcon } from './Shared';
 import { calculateBuildStats } from '../utils/gameLogic';
 
-export default function Workshop({ currentBuild, removeFromBuild, clearBuild, handleSlotClick, darkMode, buildStats: propStats, inventory, onSaveBuild, onDisassemble, onSellBuild, activeBench, setActiveBench, ownedUpgrades, achievements }) {
+const Slot = ({ type, label, slotKey, className = "", currentBuild, handleSlotClick, darkMode, removeFromBuild }) => {
+  const key = slotKey || type;
+  const part = currentBuild[key];
+  const isOccupied = !!part;
+
+  return (
+    <div
+      onClick={() => !isOccupied && handleSlotClick(type)}
+      className={`relative group rounded-xl border-2 transition-all cursor-pointer overflow-hidden flex flex-col items-center justify-center p-4
+        ${isOccupied
+          ? `border-blue-500/50 shadow-lg shadow-blue-900/20 ${darkMode ? 'bg-slate-800 text-white' : 'bg-white text-slate-900'}`
+          : `${darkMode ? 'bg-slate-900/50 border-slate-800 text-slate-600 hover:border-slate-600 hover:bg-slate-800/50' : 'bg-slate-50 border-slate-200 text-slate-400 hover:border-slate-400 hover:bg-slate-100'} border-dashed`}
+        ${className}
+      `}
+    >
+      {isOccupied ? (
+        <>
+          <div className="text-blue-400 mb-2"><PartIcon type={type} size={24} /></div>
+          <p className="text-[10px] uppercase font-black text-slate-500 mb-1 tracking-tighter">{label}</p>
+          <p className="text-xs font-bold leading-tight text-center px-2 line-clamp-2">{part.name}</p>
+          <button
+            onClick={(e) => { e.stopPropagation(); removeFromBuild(key); }}
+            className="absolute top-2 right-2 text-rose-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            <XCircle size={16} />
+          </button>
+        </>
+      ) : (
+        <>
+          <div className="mb-2 opacity-20"><PartIcon type={type} size={24} /></div>
+          <p className="text-[10px] font-black uppercase tracking-widest text-center">{label}</p>
+          <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+             <div className="text-[9px] text-blue-500 font-bold flex items-center gap-0.5 bg-blue-500/10 px-2 py-1 rounded-full">
+                INSTALL <ChevronRight size={10} />
+             </div>
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+export default function Workshop({ currentBuild, removeFromBuild, clearBuild, handleSlotClick, darkMode, buildStats: propStats, onSaveBuild, activeBench, setActiveBench, ownedUpgrades, achievements }) {
   
   const mobo = currentBuild[PART_TYPES.MOTHERBOARD];
   const ramSlotCount = mobo?.ramSlots || 4;
@@ -46,49 +88,9 @@ export default function Workshop({ currentBuild, removeFromBuild, clearBuild, ha
     return { ...calculateBuildStats(currentBuild), supplyPower, isComplete, powerOk: supplyPower >= calculateBuildStats(currentBuild).totalPower && supplyPower > 0, missingParts };
   }, [currentBuild, propStats]);
 
-  const Slot = ({ type, label, slotKey, className = "" }) => {
-    const key = slotKey || type;
-    const part = currentBuild[key];
-    const isOccupied = !!part;
-
-    return (
-      <div 
-        onClick={() => !isOccupied && handleSlotClick(type)}
-        className={`relative group rounded-xl border-2 transition-all cursor-pointer overflow-hidden flex flex-col items-center justify-center p-4
-          ${isOccupied 
-            ? `border-blue-500/50 shadow-lg shadow-blue-900/20 ${darkMode ? 'bg-slate-800 text-white' : 'bg-white text-slate-900'}` 
-            : `${darkMode ? 'bg-slate-900/50 border-slate-800 text-slate-600 hover:border-slate-600 hover:bg-slate-800/50' : 'bg-slate-50 border-slate-200 text-slate-400 hover:border-slate-400 hover:bg-slate-100'} border-dashed`}
-          ${className}
-        `}
-      >
-        {isOccupied ? (
-          <>
-            <div className="text-blue-400 mb-2"><PartIcon type={type} size={24} /></div>
-            <p className="text-[10px] uppercase font-black text-slate-500 mb-1 tracking-tighter">{label}</p>
-            <p className="text-xs font-bold leading-tight text-center px-2 line-clamp-2">{part.name}</p>
-            <button 
-              onClick={(e) => { e.stopPropagation(); removeFromBuild(key); }}
-              className="absolute top-2 right-2 text-rose-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity"
-            >
-              <XCircle size={16} />
-            </button>
-          </>
-        ) : (
-          <>
-            <div className="mb-2 opacity-20"><PartIcon type={type} size={24} /></div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-center">{label}</p>
-            <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-               <div className="text-[9px] text-blue-500 font-bold flex items-center gap-0.5 bg-blue-500/10 px-2 py-1 rounded-full">
-                  INSTALL <ChevronRight size={10} />
-               </div>
-            </div>
-          </>
-        )}
-      </div>
-    );
-  };
-
   const isGold = achievements && achievements.includes('wealth_100k');
+
+  const slotProps = { currentBuild, handleSlotClick, darkMode, removeFromBuild };
 
   return (
     <div className="space-y-6">
@@ -126,8 +128,8 @@ export default function Workshop({ currentBuild, removeFromBuild, clearBuild, ha
             <div className="lg:col-span-8 space-y-6">
                 {/* Motherboard & CPU */}
                 <div className="grid grid-cols-2 gap-4">
-                    <Slot type={PART_TYPES.MOTHERBOARD} label="Motherboard" className="h-40" />
-                    <Slot type={PART_TYPES.CPU} label="Processor" className="h-40" />
+                    <Slot {...slotProps} type={PART_TYPES.MOTHERBOARD} label="Motherboard" className="h-40" />
+                    <Slot {...slotProps} type={PART_TYPES.CPU} label="Processor" className="h-40" />
                 </div>
 
                 {/* RAM Section */}
@@ -144,6 +146,7 @@ export default function Workshop({ currentBuild, removeFromBuild, clearBuild, ha
                             const key = i === 0 ? PART_TYPES.RAM : `${PART_TYPES.RAM}_${slotNum}`;
                             return (
                                 <Slot 
+                                    {...slotProps}
                                     key={key} 
                                     type={PART_TYPES.RAM} 
                                     slotKey={key} 
@@ -165,7 +168,7 @@ export default function Workshop({ currentBuild, removeFromBuild, clearBuild, ha
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         {storageSlots.map(slot => (
-                            <Slot key={slot.key} type={slot.type} slotKey={slot.key} label={slot.label} className="h-24" />
+                            <Slot {...slotProps} key={slot.key} type={slot.type} slotKey={slot.key} label={slot.label} className="h-24" />
                         ))}
                     </div>
                 </div>
@@ -173,9 +176,9 @@ export default function Workshop({ currentBuild, removeFromBuild, clearBuild, ha
 
             {/* Right Column: Expansion & Power */}
             <div className="lg:col-span-4 space-y-4">
-                <Slot type={PART_TYPES.GPU} label="Graphics Card" className="h-48" />
+                <Slot {...slotProps} type={PART_TYPES.GPU} label="Graphics Card" className="h-48" />
                 <div className="grid grid-cols-2 lg:grid-cols-1 gap-4">
-                    <Slot type={PART_TYPES.PSU} label="Power Supply" className="h-32" />
+                    <Slot {...slotProps} type={PART_TYPES.PSU} label="Power Supply" className="h-32" />
                 </div>
             </div>
         </div>

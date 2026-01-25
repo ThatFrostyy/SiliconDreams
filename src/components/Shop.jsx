@@ -10,6 +10,7 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet, sett
   const [shopCategory, setShopCategory] = useState('ALL');
   const [opening, setOpening] = useState(false);
   const [openedItems, setOpenedItems] = useState([]);
+  const [showConfetti, setShowConfetti] = useState(false);
   const [revealStage, setRevealStage] = useState('closed'); // closed, shaking, opening, revealed
   
   const getDiscountedPrice = (price) => Math.floor(price * (1 - ((skills?.barter || 0) * 0.03)));
@@ -17,6 +18,7 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet, sett
   const handleBuyPallet = (type) => {
     const items = buyPallet(type);
     if (items) {
+      const hasLegendary = items.some(i => i.modifierId === 'legendary');
       playSound('click', settings?.sfx);
       setOpenedItems(items);
       setOpening(true);
@@ -33,12 +35,14 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet, sett
       setTimeout(() => {
         setRevealStage('revealed');
         playSound('success', settings?.sfx); // Tada sound
+        if (hasLegendary) setShowConfetti(true);
       }, 1600);
     }
   };
 
   const closeOpener = () => {
     setOpening(false);
+    setShowConfetti(false);
     setOpenedItems([]);
     setRevealStage('closed');
   };
@@ -158,6 +162,19 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet, sett
       {/* Case Opener Modal */}
       {opening && (
         <div className="fixed inset-0 z-[80] bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+          {showConfetti && (
+            <div className="absolute inset-0 pointer-events-none overflow-hidden z-50">
+              {[...Array(50)].map((_, i) => (
+                <div key={i} className="absolute w-3 h-3 rounded-sm animate-confetti" style={{
+                    left: `${Math.random() * 100}%`,
+                    top: `-20px`,
+                    backgroundColor: ['#f59e0b', '#ef4444', '#3b82f6', '#10b981', '#8b5cf6'][Math.floor(Math.random() * 5)],
+                    animationDuration: `${Math.random() * 2 + 2}s`,
+                    animationDelay: `${Math.random() * 0.5}s`
+                }} />
+              ))}
+            </div>
+          )}
           <div className={`relative w-full max-w-3xl p-12 rounded-3xl flex flex-col items-center justify-center min-h-[500px] transition-all duration-500 shadow-2xl ${darkMode ? 'bg-slate-900 border border-slate-700' : 'bg-white'}`}>
             
             {revealStage !== 'revealed' ? (

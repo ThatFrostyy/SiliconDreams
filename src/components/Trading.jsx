@@ -140,14 +140,14 @@ export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onI
       <div className={`p-6 rounded-2xl border shadow-sm ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
         <h2 className="text-xl font-bold mb-4 flex items-center gap-2"><Tag className="text-emerald-500" /> Create Listing</h2>
         
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Left: Inventory Selection */}
-            <div className="lg:col-span-7 space-y-4">
+        <div className="flex flex-col gap-6">
+            {/* Inventory Selection */}
+            <div className="space-y-4">
                 <div className="flex gap-2 overflow-x-auto pb-2">
                     <button onClick={() => setSellFilter('PC')} className={`px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${sellFilter === 'PC' ? 'bg-blue-500 text-white' : 'bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400'}`}>PC</button>
                     <CategoryTabs current={sellFilter} set={setSellFilter} types={PART_TYPES} darkMode={darkMode} />
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[300px] overflow-y-auto p-1">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 max-h-[300px] overflow-y-auto p-1">
                     {filteredInventory.map(part => (
                         <div 
                             key={part.invId} 
@@ -169,8 +169,8 @@ export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onI
                 </div>
             </div>
 
-            {/* Right: Configuration */}
-            <div className={`lg:col-span-5 p-8 rounded-xl border flex flex-col gap-6 ${darkMode ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
+            {/* Configuration Panel */}
+            <div className={`w-full p-8 rounded-xl border flex flex-col gap-6 ${darkMode ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
                 {sellingItem ? (
                     <>
                         <div className={`flex items-center gap-4 p-4 rounded-2xl border ${darkMode ? 'bg-slate-800 border-slate-600' : 'bg-white border-slate-300 shadow-sm'}`}>

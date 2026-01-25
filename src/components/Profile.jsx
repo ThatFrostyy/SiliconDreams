@@ -1,13 +1,10 @@
 import React from 'react';
 import { User, Trophy, Briefcase, DollarSign, Star, Award } from 'lucide-react';
+import { REPUTATION_TITLES } from '../data/constants';
 
 export default function Profile({ user, money, reputation, jobsCompleted, darkMode }) {
   const getReputationTitle = (rep) => {
-    if (rep >= 90) return "Tech Tycoon";
-    if (rep >= 75) return "Expert Builder";
-    if (rep >= 50) return "Trusted Technician";
-    if (rep >= 25) return "Novice Builder";
-    return "Garage Tinkerer";
+    return REPUTATION_TITLES.find(t => rep >= t.threshold)?.title || "Unknown";
   };
 
   return (

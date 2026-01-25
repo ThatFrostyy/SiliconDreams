@@ -31,6 +31,14 @@ export const GPU_INTERFACES = {
   PCIE: 'PCIe x16'
 };
 
+export const REPUTATION_TITLES = [
+  { threshold: 90, title: "Tech Tycoon" },
+  { threshold: 75, title: "Expert Builder" },
+  { threshold: 50, title: "Trusted Technician" },
+  { threshold: 25, title: "Novice Builder" },
+  { threshold: 0, title: "Garage Tinkerer" }
+];
+
 export const PARTS_CATALOG = [
   // --- CPUs (Chronological) ---
   { id: 'cpu_q9550', type: PART_TYPES.CPU, name: 'Core 2 Quad Q9550', price: 15, socket: SOCKETS.LGA775, power: 95, perf: 12 },
@@ -229,5 +237,19 @@ export const REQUEST_TEMPLATES = [
     budget: 1200, 
     description: "I need 4TB of storage space minimum. I don't care if it's slow, just big.", 
     req: { minStorage: 4000 } 
+  },
+  
+  // --- VIP / HIGH END ---
+  {
+    title: "Pro Esports Arena",
+    budget: 5000,
+    description: "We are outfitting a new arena. Need a demo unit that screams performance.",
+    req: { minPerf: 250, minRam: 32 }
+  },
+  {
+    title: "Celebrity Streamer",
+    budget: 8000,
+    description: "I need the best of the best. If it lags, you're fired.",
+    req: { partId: 'gpu3', minPerf: 350 }
   }
 ];

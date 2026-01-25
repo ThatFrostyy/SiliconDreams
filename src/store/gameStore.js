@@ -34,6 +34,7 @@ export const useGameStore = create(
       setMoney: (val) => set(state => ({ money: typeof val === 'function' ? val(state.money) : val })),
       setInventory: (val) => set(state => ({ inventory: typeof val === 'function' ? val(state.inventory) : val })),
       setSettings: (val) => set(state => ({ settings: typeof val === 'function' ? val(state.settings) : val })),
+      updateSetting: (key, value) => set(state => ({ settings: { ...state.settings, [key]: value } })),
       setUser: (user) => set({ user }),
       setView: (view) => set({ view }),
       setOrderTab: (tab) => set({ orderTab: tab }),

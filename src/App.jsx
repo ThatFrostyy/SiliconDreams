@@ -1,6 +1,6 @@
 // src/App.jsx
 import React, { useState, useEffect } from 'react';
-import { CheckCircle2, AlertTriangle, ClipboardList, Wrench, ShoppingBag, Box, Settings, Volume2, VolumeX, Music, Moon, Sun, X, TrendingUp, Globe, Trash2, RefreshCw, Monitor, DollarSign, BookOpen } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, ClipboardList, Wrench, ShoppingBag, Box, TrendingUp, Globe, RefreshCw, Monitor, DollarSign, BookOpen } from 'lucide-react';
 import { musicPlayer } from './utils/sound';
 import { SpeedInsights } from "@vercel/speed-insights/react"
 import { signInAnonymously } from "firebase/auth";
@@ -22,6 +22,8 @@ import Profile from './components/Profile';
 import Devlogs from './components/Devlogs';
 import Leaderboard from './components/Leaderboard';
 import NewsTicker from './components/NewsTicker';
+import SettingsModal from './components/SettingsModal';
+import CelebrationOverlay from './components/CelebrationOverlay';
 
 export default function App() {
   // --- STORE SELECTORS ---
@@ -49,12 +51,10 @@ export default function App() {
   // --- STORE ACTIONS ---
   const setMoney = useGameStore(state => state.setMoney);
   const setInventory = useGameStore(state => state.setInventory);
-  const setSettings = useGameStore(state => state.setSettings);
   const setAchievements = useGameStore(state => state.setAchievements);
   const setView = useGameStore(state => state.setView);
   const setOrderTab = useGameStore(state => state.setOrderTab);
   const initOrders = useGameStore(state => state.initOrders);
-  const resetGame = useGameStore(state => state.resetGame);
   const setUser = useGameStore(state => state.setUser);
   const notify = useGameStore(state => state.notify);
   const checkAchievements = useGameStore(state => state.checkAchievements);
@@ -108,13 +108,6 @@ export default function App() {
   useEffect(() => {
     musicPlayer.toggle(settings.music);
   }, [settings.music]);
-
-  const handleReset = () => {
-    if (window.confirm("Are you sure you want to reset your game? All progress will be lost.")) {
-      resetGame();
-      setShowSettings(false);
-    }
-  };
 
   // Auto-clear celebration
   useEffect(() => {
@@ -231,16 +224,7 @@ export default function App() {
       <Header money={money} view={view} setView={handleViewChange} inventoryCount={inventory.length} toggleSettings={() => setShowSettings(true)} darkMode={settings.darkMode} />
       <NewsTicker darkMode={settings.darkMode} />
 
-      {/* Celebration Overlay */}
-      {celebration === 'GOLDEN' && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-in fade-in duration-300" />
-          <div className="relative z-10 text-center animate-in zoom-in-50 duration-500 slide-in-from-bottom-10">
-            <h1 className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-300 to-amber-600 drop-shadow-[0_0_25px_rgba(245,158,11,0.6)]">GOLDEN CHIP!</h1>
-            <p className="text-white text-xl md:text-2xl font-bold mt-4 drop-shadow-md tracking-widest uppercase">Legendary Silicon Found</p>
-          </div>
-        </div>
-      )}
+      <CelebrationOverlay />
 
       {message.text && (
         <div className={`fixed top-20 right-4 z-[60] p-4 rounded-lg shadow-2xl border flex items-center gap-3 animate-bounce
@@ -252,58 +236,7 @@ export default function App() {
         </div>
       )}
 
-      {/* Settings Modal */}
-      {showSettings && (
-        <div className="fixed inset-0 z-[70] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className={`${settings.darkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'} border rounded-2xl p-6 w-full max-w-md shadow-2xl`}>
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold flex items-center gap-2"><Settings /> Settings</h2>
-              <button onClick={() => setShowSettings(false)} className="hover:text-rose-500"><X /></button>
-            </div>
-            
-            <div className="space-y-4">
-              <div className={`flex justify-between items-center p-4 rounded-xl ${settings.darkMode ? 'bg-slate-800' : 'bg-slate-100'}`}>
-                <div className="flex items-center gap-3">
-                  {settings.music ? <Music className="text-blue-500" /> : <Music className="text-slate-500" />}
-                  <span className="font-bold">Music</span>
-                </div>
-                <button onClick={() => setSettings(s => ({...s, music: !s.music}))} className={`w-12 h-6 rounded-full transition-colors relative ${settings.music ? 'bg-blue-600' : 'bg-slate-600'}`}>
-                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${settings.music ? 'left-7' : 'left-1'}`} />
-                </button>
-              </div>
-
-              <div className={`flex justify-between items-center p-4 rounded-xl ${settings.darkMode ? 'bg-slate-800' : 'bg-slate-100'}`}>
-                <div className="flex items-center gap-3">
-                  {settings.sfx ? <Volume2 className="text-emerald-500" /> : <VolumeX className="text-slate-500" />}
-                  <span className="font-bold">Sound Effects</span>
-                </div>
-                <button onClick={() => setSettings(s => ({...s, sfx: !s.sfx}))} className={`w-12 h-6 rounded-full transition-colors relative ${settings.sfx ? 'bg-emerald-600' : 'bg-slate-600'}`}>
-                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${settings.sfx ? 'left-7' : 'left-1'}`} />
-                </button>
-              </div>
-
-              <div className={`flex justify-between items-center p-4 rounded-xl ${settings.darkMode ? 'bg-slate-800' : 'bg-slate-100'}`}>
-                <div className="flex items-center gap-3">
-                  {settings.darkMode ? <Moon className="text-purple-500" /> : <Sun className="text-amber-500" />}
-                  <span className="font-bold">Theme</span>
-                </div>
-                <button onClick={() => setSettings(s => ({...s, darkMode: !s.darkMode}))} className={`w-12 h-6 rounded-full transition-colors relative ${settings.darkMode ? 'bg-purple-600' : 'bg-amber-500'}`}>
-                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${settings.darkMode ? 'left-7' : 'left-1'}`} />
-                </button>
-              </div>
-
-              <div className="pt-4 border-t border-slate-700/50">
-                <button 
-                  onClick={handleReset}
-                  className="w-full py-3 rounded-xl font-bold bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center gap-2 transition-colors shadow-lg shadow-rose-900/20"
-                >
-                  <Trash2 size={20} /> Reset Game Progress
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <SettingsModal show={showSettings} onClose={() => setShowSettings(false)} />
 
       <main className="max-w-6xl mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* LEFT COLUMN: ACTIVE VIEW */}

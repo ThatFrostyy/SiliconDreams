@@ -69,6 +69,11 @@ export default function Devlogs({ darkMode, setView }) {
           </div>
         )}
       </div>
+      <div className="p-6">
+        <button onClick={() => setView('workshop')} className="text-sm flex items-center gap-2 text-blue-500 hover:underline">
+          <ChevronLeft size={16} /> Back to Game
+        </button>
+      </div>
     </section>
   );
 }

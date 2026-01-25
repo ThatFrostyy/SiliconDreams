@@ -1,12 +1,12 @@
 // src/components/Trading.jsx
 import React, { useState, useEffect } from 'react';
 import { db } from '../utils/firebase';
-import { collection, addDoc, query, orderBy, onSnapshot, doc, runTransaction, serverTimestamp, deleteDoc, where } from 'firebase/firestore';
+import { collection, addDoc, query, orderBy, onSnapshot, doc, runTransaction, serverTimestamp, deleteDoc } from 'firebase/firestore';
 import { ShoppingCart, DollarSign, Tag, Package, RefreshCw, Filter, ArrowRightLeft, Search, X, Monitor, List, Trash2, Check } from 'lucide-react';
 import { PART_TYPES, PARTS_CATALOG } from '../data/constants';
 import { PartIcon, CategoryTabs } from './Shared';
 
-export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onItemTrade, onCancelTrade, user, darkMode, netWorth, unreadSales, onClearUnreadSales }) {
+export default function Trading({ inventory, onPostTrade, money, onBuyTrade, onItemTrade, onCancelTrade, user, darkMode, unreadSales, onClearUnreadSales }) {
   const [trades, setTrades] = useState([]);
   const [sellingItem, setSellingItem] = useState(null);
   const [price, setPrice] = useState('');

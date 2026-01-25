@@ -21,6 +21,7 @@ import Trading from './components/Trading';
 import Profile from './components/Profile';
 import Devlogs from './components/Devlogs';
 import Leaderboard from './components/Leaderboard';
+import NewsTicker from './components/NewsTicker';
 
 export default function App() {
   // --- STORE SELECTORS ---
@@ -43,6 +44,7 @@ export default function App() {
   const user = useGameStore(state => state.user);
   const unreadSales = useGameStore(state => state.unreadSales);
   const binningHistory = useGameStore(state => state.binningHistory);
+  const celebration = useGameStore(state => state.celebration);
   
   // --- STORE ACTIONS ---
   const setMoney = useGameStore(state => state.setMoney);
@@ -58,6 +60,7 @@ export default function App() {
   const checkAchievements = useGameStore(state => state.checkAchievements);
   const addSaleNotification = useGameStore(state => state.addSaleNotification);
   const markSalesRead = useGameStore(state => state.markSalesRead);
+  const setCelebration = useGameStore(state => state.setCelebration);
   
   // Action Handlers
   const buyPart = useGameStore(state => state.buyPart);
@@ -112,6 +115,14 @@ export default function App() {
       setShowSettings(false);
     }
   };
+
+  // Auto-clear celebration
+  useEffect(() => {
+    if (celebration) {
+      const timer = setTimeout(() => setCelebration(null), 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [celebration, setCelebration]);
 
   useEffect(() => {
     console.log("🔌 Testing Firebase connection...");
@@ -218,6 +229,18 @@ export default function App() {
       <SpeedInsights />
       <Analytics />
       <Header money={money} view={view} setView={handleViewChange} inventoryCount={inventory.length} toggleSettings={() => setShowSettings(true)} darkMode={settings.darkMode} />
+      <NewsTicker darkMode={settings.darkMode} />
+
+      {/* Celebration Overlay */}
+      {celebration === 'GOLDEN' && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-in fade-in duration-300" />
+          <div className="relative z-10 text-center animate-in zoom-in-50 duration-500 slide-in-from-bottom-10">
+            <h1 className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-300 to-amber-600 drop-shadow-[0_0_25px_rgba(245,158,11,0.6)]">GOLDEN CHIP!</h1>
+            <p className="text-white text-xl md:text-2xl font-bold mt-4 drop-shadow-md tracking-widest uppercase">Legendary Silicon Found</p>
+          </div>
+        </div>
+      )}
 
       {message.text && (
         <div className={`fixed top-20 right-4 z-[60] p-4 rounded-lg shadow-2xl border flex items-center gap-3 animate-bounce

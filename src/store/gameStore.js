@@ -28,6 +28,7 @@ export const useGameStore = create(
       view: 'workshop',
       user: null,
       message: { text: '', type: '' }, // Notification state
+      celebration: null, // 'GOLDEN' or null
 
       // --- SETTERS ---
       setMoney: (val) => set(state => ({ money: typeof val === 'function' ? val(state.money) : val })),
@@ -39,6 +40,7 @@ export const useGameStore = create(
       setActiveBench: (bench) => set({ activeBench: bench }),
       addSaleNotification: () => set(state => ({ unreadSales: state.unreadSales + 1 })),
       markSalesRead: () => set({ unreadSales: 0 }),
+      setCelebration: (val) => set({ celebration: val }),
       
       // --- ACTIONS ---
       
@@ -158,6 +160,11 @@ export const useGameStore = create(
             newPart = applyModifier(newPart, modifier);
             resultLabel = modifier.label;
             resultColor = modifier.color;
+            
+            if (modifier.id === 'golden_chip') {
+                set({ celebration: 'GOLDEN' });
+            }
+
             notify(`Binning Result: ${modifier.label}`, "success");
             playSound('success', settings.sfx);
         } else {

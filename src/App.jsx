@@ -6,6 +6,7 @@ import { playSound, musicPlayer } from './utils/sound';
 import { SpeedInsights } from "@vercel/speed-insights/react"
 import { signInAnonymously } from "firebase/auth";
 import { auth, db } from "./utils/firebase";
+import { Analytics } from "@vercel/analytics/react"
 import { doc, getDoc, updateDoc, onSnapshot } from 'firebase/firestore';
 
 // Import Components
@@ -432,6 +433,7 @@ export default function App() {
   return (
     <div className={`min-h-screen font-sans pb-20 md:pb-0 transition-colors duration-300 ${settings.darkMode ? 'bg-slate-950 text-slate-200' : 'bg-slate-100 text-slate-800'}`}>
       <SpeedInsights />
+      <Analytics />
       <Header money={money} view={view} setView={handleViewChange} inventoryCount={inventory.length} toggleSettings={() => setShowSettings(true)} darkMode={settings.darkMode} />
 
       {message.text && (

@@ -1,13 +1,37 @@
 // src/components/Shop.jsx
 import React, { useState } from 'react';
-import { ShoppingBag, Package, HelpCircle } from 'lucide-react';
+import { ShoppingBag, Package, HelpCircle, X, PackageOpen } from 'lucide-react';
 import { PARTS_CATALOG, PART_TYPES } from '../data/constants';
 import { CategoryTabs, PartIcon } from './Shared';
+import { getModifierById } from '../utils/modifiers';
 
 export default function Shop({ buyPart, money, darkMode, skills, buyPallet }) {
   const [shopCategory, setShopCategory] = useState('ALL');
+  const [opening, setOpening] = useState(false);
+  const [openedItems, setOpenedItems] = useState([]);
+  const [revealStage, setRevealStage] = useState('closed'); // closed, shaking, opening, revealed
   
   const getDiscountedPrice = (price) => Math.floor(price * (1 - ((skills?.barter || 0) * 0.03)));
+
+  const handleBuyPallet = (type) => {
+    const items = buyPallet(type);
+    if (items) {
+      setOpenedItems(items);
+      setOpening(true);
+      setRevealStage('closed');
+      
+      // Animation Sequence
+      setTimeout(() => setRevealStage('shaking'), 100);
+      setTimeout(() => setRevealStage('opening'), 1000);
+      setTimeout(() => setRevealStage('revealed'), 1500);
+    }
+  };
+
+  const closeOpener = () => {
+    setOpening(false);
+    setOpenedItems([]);
+    setRevealStage('closed');
+  };
 
   return (
     <section className={`rounded-2xl border overflow-hidden shadow-2xl transition-colors ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
@@ -37,7 +61,7 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet }) {
                             <p className="text-xs opacity-60">3-5 Parts. Mixed Condition.</p>
                         </div>
                     </div>
-                    <button onClick={() => buyPallet('STANDARD')} className="w-full py-3 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-bold text-sm shadow-lg shadow-amber-500/20">
+                    <button onClick={() => handleBuyPallet('STANDARD')} className="w-full py-3 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-bold text-sm shadow-lg shadow-amber-500/20">
                         Buy for $500
                     </button>
                 </div>
@@ -49,7 +73,7 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet }) {
                             <p className="text-xs opacity-60">Better Odds. Mostly Stable Parts.</p>
                         </div>
                     </div>
-                    <button onClick={() => buyPallet('MEDIUM')} className="w-full py-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-lg shadow-emerald-500/20">
+                    <button onClick={() => handleBuyPallet('MEDIUM')} className="w-full py-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-lg shadow-emerald-500/20">
                         Buy for $1,000
                     </button>
                 </div>
@@ -61,7 +85,7 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet }) {
                             <p className="text-xs opacity-60">High-End. Chance for Legendary.</p>
                         </div>
                     </div>
-                    <button onClick={() => buyPallet('PREMIUM')} className="w-full py-3 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm shadow-lg shadow-purple-500/20">
+                    <button onClick={() => handleBuyPallet('PREMIUM')} className="w-full py-3 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm shadow-lg shadow-purple-500/20">
                         Buy for $2,500
                     </button>
                 </div>
@@ -120,6 +144,47 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet }) {
             )})
         )}
       </div>
+
+      {/* Case Opener Modal */}
+      {opening && (
+        <div className="fixed inset-0 z-[80] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className={`relative w-full max-w-2xl p-8 rounded-2xl flex flex-col items-center justify-center min-h-[400px] transition-all duration-500 ${darkMode ? 'bg-slate-900 border border-slate-700' : 'bg-white'}`}>
+            
+            {revealStage !== 'revealed' ? (
+              <div className={`transition-all duration-500 ${revealStage === 'shaking' ? 'animate-bounce' : ''} ${revealStage === 'opening' ? 'scale-150 opacity-0' : 'scale-100'}`}>
+                <Package size={120} className="text-blue-500" />
+              </div>
+            ) : (
+              <div className="w-full animate-in fade-in zoom-in duration-500">
+                <h2 className="text-2xl font-black text-center mb-8 text-white uppercase tracking-widest">Pallet Opened!</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  {openedItems.map((item, idx) => {
+                    const modifier = getModifierById(item.modifierId);
+                    return (
+                      <div key={idx} className={`p-4 rounded-xl border bg-slate-800/50 border-slate-700 flex flex-col items-center gap-2 animate-in slide-in-from-bottom-4 fade-in duration-500`} style={{animationDelay: `${idx * 100}ms`}}>
+                        <div className={`p-3 rounded-lg bg-slate-700/50`}><PartIcon type={item.type} /></div>
+                        <div className="text-center">
+                          <div className={`text-xs font-bold uppercase mb-1 ${modifier.color}`}>{modifier.label}</div>
+                          <div className="font-bold text-sm text-white leading-tight">{item.originalName || item.name}</div>
+                          <div className="text-[10px] text-slate-400 mt-1">${item.price}</div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <button 
+                  onClick={closeOpener}
+                  className="mt-8 w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold uppercase tracking-wider shadow-lg shadow-blue-500/20"
+                >
+                  Collect Items
+                </button>
+              </div>
+            )}
+
+            {revealStage === 'opening' && <div className="absolute inset-0 flex items-center justify-center"><div className="w-full h-1 bg-white animate-ping" /></div>}
+          </div>
+        </div>
+      )}
     </section>
   );
 }

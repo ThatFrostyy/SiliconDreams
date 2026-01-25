@@ -20,6 +20,7 @@ import Upgrades from './components/Upgrades';
 import Trading from './components/Trading';
 import Profile from './components/Profile';
 import Devlogs from './components/Devlogs';
+import Leaderboard from './components/Leaderboard';
 
 export default function App() {
   // --- STORE SELECTORS ---
@@ -293,6 +294,7 @@ export default function App() {
           {view === 'trading' && <Trading inventory={inventory} onPostTrade={handlePostTrade} money={money} onBuyTrade={handleBuyTrade} onItemTrade={handleItemTrade} user={user} darkMode={settings.darkMode} netWorth={netWorth} />}
           {view === 'profile' && <Profile user={user} money={money} reputation={reputation} jobsCompleted={jobsCompleted} darkMode={settings.darkMode} skills={skills} achievements={achievements} netWorth={netWorth} jobHistory={jobHistory} />}
           {view === 'devlogs' && <Devlogs darkMode={settings.darkMode} setView={setView} />}
+          {view === 'leaderboard' && <Leaderboard user={user} netWorth={netWorth} darkMode={settings.darkMode} />}
         </div>
 
         {/* RIGHT COLUMN: ORDERS */}

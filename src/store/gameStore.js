@@ -108,7 +108,7 @@ export const useGameStore = create(
 
         if (money < cost) {
           notify("Not enough money for this pallet!", "error");
-          return;
+          return null;
         }
 
         // Generate Loot
@@ -132,6 +132,7 @@ export const useGameStore = create(
             inventory: [...state.inventory, ...newItems]
         }));
         notify(`Opened Pallet! Received ${newItems.length} items.`, "success");
+        return newItems;
       },
 
       // Inventory Actions

@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware';
 import { generateOrderLocal, generateRequest, calculateBuildStats } from '../utils/gameLogic';
 import { PART_TYPES, PARTS_CATALOG, REVIEW_TEMPLATES, SKILLS } from '../data/constants';
 import { playSound } from '../utils/sound';
-import { getRandomModifier, applyModifier, getBinningResult } from '../utils/modifiers';
+import { getRandomModifier, applyModifier, getBinningResult, MODIFIERS, isUnreliable } from '../utils/modifiers';
 
 export const useGameStore = create(
   persist(
@@ -60,12 +60,19 @@ export const useGameStore = create(
       initOrders: () => {
         const { activeOrders, activeRequests, reputation, skills } = get();
         if (activeOrders.length === 0) {
-           const o1 = generateOrderLocal([]);
-           const o2 = generateOrderLocal([o1]);
-           set({ activeOrders: [o1, o2] });
+           const o1 = generateOrderLocal([], 'LOW');
+           const o2 = generateOrderLocal([o1], 'MID');
+           const o3 = generateOrderLocal([o1, o2], 'HIGH');
+           const o4 = generateOrderLocal([o1, o2, o3], 'ANY');
+           set({ activeOrders: [o1, o2, o3, o4] });
         }
         if (activeRequests.length === 0) {
-           set({ activeRequests: [generateRequest(reputation, skills.marketing), generateRequest(reputation, skills.marketing)] });
+           set({ activeRequests: [
+               generateRequest(reputation, skills.marketing), 
+               generateRequest(reputation, skills.marketing),
+               generateRequest(reputation, skills.marketing),
+               generateRequest(reputation, skills.marketing)
+           ] });
         }
       },
 
@@ -114,15 +121,15 @@ export const useGameStore = create(
         let poolFilter = p => p.price <= 200;
 
         if (type === 'PREMIUM') {
-            cost = 2500; minCount = 2; maxCount = 4;
+            cost = 1500; minCount = 3; maxCount = 5;
             poolFilter = p => p.price > 150;
         } else if (type === 'MEDIUM') {
-            cost = 1000; minCount = 3; maxCount = 5;
+            cost = 500; minCount = 4; maxCount = 6;
             poolFilter = p => p.price > 50 && p.price <= 400;
         } else {
             // Standard: More items, but cheaper/worse quality
-            cost = 500; minCount = 5; maxCount = 8;
-            poolFilter = p => p.price <= 150;
+            cost = 150; minCount = 5; maxCount = 8;
+            poolFilter = p => p.price <= 100;
         }
 
         if (money < cost) {
@@ -383,29 +390,59 @@ export const useGameStore = create(
         notify(isGold ? "PC saved! (Gold Bench Bonus)" : "PC saved to inventory!", "success");
       },
 
-      // Job Logic
-      reshuffleJobs: () => {
-        const { money, skills, reputation, notify } = get();
-        const cost = Math.floor(50 * (1 - (skills.connections * 0.10)));
-        
-        if (money < cost) { notify(`Not enough money ($${cost})`, "error"); return; }
-
-        const o1 = generateOrderLocal([]);
-        const o2 = generateOrderLocal([o1]);
-        
-        set(state => ({
-            money: state.money - cost,
-            activeOrders: [o1, o2],
-            activeRequests: [generateRequest(reputation, skills.marketing), generateRequest(reputation, skills.marketing)]
-        }));
-        notify("Jobs reshuffled!", "success");
-      },
-
       fulfillOrder: (order) => {
         const { builds, activeBench, skills, ownedUpgrades, notify } = get();
         const currentBuild = builds[activeBench] || {};
         const parts = Object.values(currentBuild);
         const stats = calculateBuildStats(currentBuild, skills);
+
+        // --- REPAIR/UPGRADE JOB LOGIC (Start Phase) ---
+        if ((order.type === 'REPAIR' || order.type === 'UPGRADE') && !order.inProgress) {
+            // 1. Generate the Customer's PC
+            const customerParts = {};
+            const startingPartsDef = order.startingParts || [];
+            
+            startingPartsDef.forEach(def => {
+                const catalogPart = PARTS_CATALOG.find(p => p.id === def.id);
+                if (catalogPart) {
+                    let part = { ...catalogPart, invId: Math.random().toString(36).substr(2, 9) };
+                    
+                    // Apply Modifier (e.g. 'dud', 'rusty')
+                    if (def.modifier && MODIFIERS[def.modifier]) {
+                        part = applyModifier(part, MODIFIERS[def.modifier]);
+                    }
+
+                    // Assign to Slot
+                    let key = part.type;
+                    if (part.type === PART_TYPES.RAM) {
+                        const count = Object.keys(customerParts).filter(k => k.startsWith('RAM')).length;
+                        key = count === 0 ? 'RAM' : `RAM_${count + 1}`;
+                    } else if (part.type === PART_TYPES.STORAGE) {
+                        const count = Object.keys(customerParts).filter(k => k.startsWith('STORAGE') || k.startsWith('SATA') || k.startsWith('M2')).length;
+                        key = `SATA_${count + 1}`; // Simplified assignment
+                    }
+                    customerParts[key] = part;
+                }
+            });
+
+            const customerPC = {
+                invId: Math.random().toString(36).substr(2, 9),
+                type: 'PC',
+                name: `Customer's PC (${order.title})`,
+                parts: customerParts,
+                price: 0, // Customer PC has no sell value initially
+                perf: 0,
+                power: 0
+            };
+
+            // 2. Add to Inventory & Update Order Status
+            set(state => ({
+                inventory: [...state.inventory, customerPC],
+                activeRequests: state.activeRequests.map(r => r.id === order.id ? { ...r, inProgress: true, description: "[IN PROGRESS] " + r.description } : r)
+            }));
+            notify(`${order.type === 'REPAIR' ? 'Repair' : 'Upgrade'} Job Accepted! Customer PC added to Inventory.`, "success");
+            return;
+        }
 
         // Basic Validation
         if (stats.bottleneckPenalty > 0) notify(`Bottleneck detected! Perf reduced by ${stats.bottleneckPenalty}`, "error");
@@ -441,10 +478,14 @@ export const useGameStore = create(
             }
         }
 
+        if (parts.some(p => isUnreliable(p))) {
+            penalties.push("Defective/Unreliable Part Detected");
+        }
+
         // Calculate Rewards
         const totalCost = parts.reduce((acc, p) => acc + (p.price || 0), 0);
         const negotiationBonus = 1 + (skills.negotiation * 0.05);
-        let reward = Math.floor(totalCost * 1.25 * negotiationBonus);
+        let reward = Math.floor(totalCost * 1.50 * negotiationBonus); // Increased to 1.5x in Patch 1.1
         if (reward > order.budget) reward = order.budget;
 
         // Rating & Tip

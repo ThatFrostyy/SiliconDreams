@@ -39,22 +39,18 @@ export const generateRequest = (reputation = 0, marketingLevel = 0) => {
   };
 };
 
-export const generateOrderLocal = (activeOrders = [], excludeTitle = null) => {
+export const generateOrderLocal = (activeOrders = [], tier = 'ANY') => {
   const activeTitles = activeOrders.map(o => o.title);
-  if (excludeTitle) activeTitles.push(excludeTitle);
-
   let available = ORDER_TEMPLATES.filter(t => !activeTitles.includes(t.title));
-
-  // If all orders are active, fallback to the full list *minus* the one we're excluding
-  if (available.length === 0 && excludeTitle) {
-    available = ORDER_TEMPLATES.filter(t => t.title !== excludeTitle);
-  } else if (available.length === 0) {
-    // If still no options (i.e., all orders are active and none to exclude), use the full list
-    available = ORDER_TEMPLATES;
-  }
+  
+  if (tier === 'LOW') available = available.filter(t => t.budget <= 1000);
+  else if (tier === 'MID') available = available.filter(t => t.budget > 1000 && t.budget <= 2500);
+  else if (tier === 'HIGH') available = available.filter(t => t.budget > 2500);
+  
+  if (available.length === 0) available = ORDER_TEMPLATES.filter(t => !activeTitles.includes(t.title));
+  if (available.length === 0) available = ORDER_TEMPLATES;
 
   const template = available[Math.floor(Math.random() * available.length)];
-
   return {
     ...template,
     id: `ord_${Math.random().toString(36).substr(2, 5)}`,

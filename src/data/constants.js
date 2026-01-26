@@ -184,7 +184,10 @@ export const PARTS_CATALOG = [
 
   // --- STORAGE ---
   { id: 'hdd_250', type: PART_TYPES.STORAGE, name: '250GB HDD', price: 10, power: 8, perf: 2, interface: INTERFACES.PATA, capacity: 250 },
+  { id: 'hdd_500', type: PART_TYPES.STORAGE, name: '500GB HDD', price: 18, power: 8, perf: 5, interface: INTERFACES.SATA, capacity: 500 },
+  { id: 'hdd_1tb', type: PART_TYPES.STORAGE, name: '1TB HDD', price: 30, power: 9, perf: 10, interface: INTERFACES.SATA, capacity: 1000 },
   { id: 'ssd_sata', type: PART_TYPES.STORAGE, name: '500GB SATA SSD', price: 40, power: 4, perf: 15, interface: INTERFACES.SATA, capacity: 500 },
+  { id: 'ssd_sata_1tb', type: PART_TYPES.STORAGE, name: '1TB SATA SSD', price: 70, power: 4, perf: 20, interface: INTERFACES.SATA, capacity: 1000 },
   { id: 'ssd2', type: PART_TYPES.STORAGE, name: '1TB NVMe Gen4', price: 85, power: 5, perf: 45, interface: INTERFACES.M2, capacity: 1000 },
   { id: 'ssd_gen5', type: PART_TYPES.STORAGE, name: '4TB NVMe Gen5', price: 450, power: 10, perf: 90, interface: INTERFACES.M2, capacity: 4000 },
 
@@ -197,9 +200,9 @@ export const PARTS_CATALOG = [
 ];
 
 export const ORDER_TEMPLATES = [
-  { title: "Office PC", minPerf: 20, budget: 250, description: "Just need to run Excel. Don't overspend." },
-  { title: "Retro Station", minPerf: 40, budget: 450, description: "I only play games from 2004. Keep it simple." },
-  { title: "Budget Gamer", minPerf: 60, budget: 650, description: "I want to play Valorant and CS2 on a budget." },
+  { title: "Office PC", minPerf: 20, budget: 500, description: "Just need to run Excel. Don't overspend." },
+  { title: "Retro Station", minPerf: 40, budget: 900, description: "I only play games from 2004. Keep it simple." },
+  { title: "Budget Gamer", minPerf: 60, budget: 1300, description: "I want to play Valorant and CS2 on a budget." },
   { title: "Mid Gaming PC", minPerf: 90, budget: 1000, description: "Fortnite and Minecraft player here. 1080p High settings." },
   { title: "Esports Pro", minPerf: 120, budget: 1400, description: "I need 240Hz in competitive shooters. Performance over graphics." },
   { title: "Content Creator", minPerf: 160, budget: 2000, description: "Editing 4K video is a nightmare on my current laptop." },
@@ -241,7 +244,7 @@ export const REQUEST_TEMPLATES = [
   { 
     title: "The 'Silent' Accountant", 
     budget: 600, 
-    description: "I hate fan noise. Give me the 720W PSU so the fans barely spin.", 
+    description: "I hate fan noise. Give me the 750W PSU so the fans barely spin.", 
     req: { partId: 'psu2' } // Requires the 750W Gold
   },
   { 
@@ -261,6 +264,99 @@ export const REQUEST_TEMPLATES = [
     budget: 2000, 
     description: "I heard the Ryzen 7 7800X3D cpu is the best for gaming. I want one!", 
     req: { partId: 'cpu_r7_7800x3d', minPerf: 200 } 
+  },
+
+  // --- UPGRADE / REPAIR REQUESTS ---
+  {
+    title: "Repair: Dead GPU",
+    type: 'REPAIR',
+    budget: 400,
+    description: "My PC won't display anything. I think the GPU is fried. Please swap it out. (You keep the broken parts)",
+    req: { minPerf: 30, gpuInterface: GPU_INTERFACES.PCIE },
+    startingParts: [
+      { id: 'cpu_i3_2100' }, { id: 'mobo_d2991' }, { id: 'ram_ddr3_4' }, { id: 'hdd_500' }, { id: 'psu_generic' },
+      { id: 'gpu_750ti', modifier: 'dud' } // The broken part
+    ]
+  },
+  {
+    title: "Repair: Blue Screen of Death",
+    type: 'REPAIR',
+    budget: 300,
+    description: "My computer keeps crashing. My nephew said the RAM is 'rusty'. Can you fix it?",
+    req: { minRam: 8 },
+    startingParts: [
+      { id: 'cpu_fx6300' }, { id: 'mobo_970' }, { id: 'gpu_730' }, { id: 'hdd_250' }, { id: 'psu_generic' },
+      { id: 'ram_ddr3_4', modifier: 'rusty' }, { id: 'ram_ddr3_4', modifier: 'rusty' }
+    ]
+  },
+  {
+    title: "Repair: Power Surge Victim",
+    type: 'REPAIR',
+    budget: 600,
+    description: "Lightning struck near my house. Now my PC won't turn on. I think the PSU and GPU are toast.",
+    req: { partId: 'psu1', minPerf: 40 },
+    startingParts: [
+      { id: 'cpu_i5_2400' }, { id: 'mobo_d2991' }, { id: 'ram_ddr3_8' }, { id: 'hdd_500' },
+      { id: 'psu_generic', modifier: 'dud' }, // Dead PSU
+      { id: 'gpu_750ti', modifier: 'dud' } // Dead GPU
+    ]
+  },
+  {
+    title: "Repair: Rusty Rig",
+    type: 'REPAIR',
+    budget: 250,
+    description: "I left my PC in the garage. It boots but crashes constantly. Can you replace the rusty RAM and HDD?",
+    req: { minRam: 8, minStorage: 500 },
+    startingParts: [
+      { id: 'cpu_fx6300' }, { id: 'mobo_970' }, { id: 'gpu_730' }, { id: 'psu_generic' },
+      { id: 'ram_ddr3_4', modifier: 'rusty' }, { id: 'ram_ddr3_4', modifier: 'rusty' }, { id: 'hdd_250', modifier: 'rusty' }
+    ]
+  },
+
+  // --- UPGRADE JOBS ---
+  {
+    title: "Upgrade: Ray Tracing Ready",
+    type: 'UPGRADE',
+    budget: 1000,
+    description: "My GTX 1080 Ti is legendary, but it lacks Ray Tracing features. Upgrade me to an RTX 3080. You can keep the old card.",
+    req: { partId: 'gpu_3080' },
+    startingParts: [
+      { id: 'cpu_i7_2600k' }, { id: 'mobo_z77' }, { id: 'ram_ddr3_8' }, { id: 'ram_ddr3_8' }, { id: 'ssd_sata' }, { id: 'psu2' },
+      { id: 'gpu_1080ti' }
+    ]
+  },
+  {
+    title: "Upgrade: CPU Bottleneck",
+    type: 'UPGRADE',
+    budget: 600,
+    description: "I bought a fast GPU but my old Ryzen 5 1600 is holding it back. Upgrade me to a Ryzen 7 5800X.",
+    req: { partId: 'cpu3' },
+    startingParts: [
+      { id: 'cpu_r5_1600' }, { id: 'mobo3' }, { id: 'ram2' }, { id: 'ssd2' }, { id: 'psu1' },
+      { id: 'gpu2' }
+    ]
+  },
+  {
+    title: "Upgrade: Next Gen Jump",
+    type: 'UPGRADE',
+    budget: 1500,
+    description: "I want to move to the AM5 platform. I need a Ryzen 5 7600, a B650 motherboard, and DDR5 RAM.",
+    req: { partId: 'cpu_r5_7600', minRam: 16 },
+    startingParts: [
+      { id: 'cpu_r5_3600' }, { id: 'mobo1' }, { id: 'ram1' }, { id: 'ram1' }, { id: 'ssd2' }, { id: 'psu1' },
+      { id: 'gpu_1660s' }
+    ]
+  },
+  {
+    title: "Upgrade: Storage & Memory",
+    type: 'UPGRADE',
+    budget: 800,
+    description: "My PC is running out of space and memory. I need 32GB of RAM and a 1TB NVMe SSD.",
+    req: { minRam: 32, minStorage: 1000, interface: INTERFACES.M2 },
+    startingParts: [
+      { id: 'cpu2' }, { id: 'mobo2' }, { id: 'ram1' }, { id: 'hdd_500' }, { id: 'psu_generic' },
+      { id: 'gpu_1050ti' }
+    ]
   },
 
   // --- HIGH TIER / BIG PROFIT JOBS ---

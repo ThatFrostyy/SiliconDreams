@@ -71,7 +71,6 @@ export default function App() {
   const clearBuild = useGameStore(state => state.clearBuild);
   const saveBuildToInventory = useGameStore(state => state.saveBuildToInventory);
   const fulfillOrder = useGameStore(state => state.fulfillOrder);
-  const reshuffleJobs = useGameStore(state => state.reshuffleJobs);
   const buyUpgrade = useGameStore(state => state.buyUpgrade);
   const binPart = useGameStore(state => state.binPart);
   const unlockSkill = useGameStore(state => state.unlockSkill);
@@ -347,12 +346,6 @@ export default function App() {
             inventoryCount={inventory.length} 
             darkMode={settings.darkMode}
           />
-
-          <div className="flex justify-end">
-            <button onClick={reshuffleJobs} className="text-[10px] flex items-center gap-1 bg-slate-200 hover:bg-slate-300 text-slate-600 px-2 py-1 rounded transition-colors dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700">
-              <RefreshCw size={12} /> Reshuffle (${Math.floor(50 * (1 - (skills.connections * 0.10)))})
-            </button>
-          </div>
 
           {/* Saved Builds Section (Moved from Workshop) */}
           {inventory && inventory.some(i => i.type === 'PC') && (

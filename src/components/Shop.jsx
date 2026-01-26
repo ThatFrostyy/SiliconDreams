@@ -86,11 +86,11 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet, sett
                         <div className="p-3 rounded-lg bg-amber-500/10 text-amber-500"><Package size={32} /></div>
                         <div className="text-right">
                             <h3 className="font-bold text-lg">Standard Pallet</h3>
-                            <p className="text-xs opacity-60">3-5 Parts. Mixed Condition.</p>
+                            <p className="text-xs opacity-60">5-8 Parts. Budget/Scrap.</p>
                         </div>
                     </div>
                     <button onClick={() => handleBuyPallet('STANDARD')} className="w-full py-3 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-bold text-sm shadow-lg shadow-amber-500/20">
-                        Buy for $500
+                        Buy for $150
                     </button>
                 </div>
                 <div className={`p-5 rounded-xl border flex flex-col gap-3 ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
@@ -98,11 +98,11 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet, sett
                         <div className="p-3 rounded-lg bg-emerald-500/10 text-emerald-500"><Package size={32} /></div>
                         <div className="text-right">
                             <h3 className="font-bold text-lg">Medium Pallet</h3>
-                            <p className="text-xs opacity-60">Better Odds. Mostly Stable Parts.</p>
+                            <p className="text-xs opacity-60">4-6 Parts. Mid-Range.</p>
                         </div>
                     </div>
                     <button onClick={() => handleBuyPallet('MEDIUM')} className="w-full py-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-lg shadow-emerald-500/20">
-                        Buy for $1,000
+                        Buy for $500
                     </button>
                 </div>
                 <div className={`p-5 rounded-xl border flex flex-col gap-3 ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
@@ -110,11 +110,11 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet, sett
                         <div className="p-3 rounded-lg bg-purple-500/10 text-purple-500"><HelpCircle size={32} /></div>
                         <div className="text-right">
                             <h3 className="font-bold text-lg">Premium Pallet</h3>
-                            <p className="text-xs opacity-60">High-End. Chance for Legendary.</p>
+                            <p className="text-xs opacity-60">3-5 Parts. High-End.</p>
                         </div>
                     </div>
                     <button onClick={() => handleBuyPallet('PREMIUM')} className="w-full py-3 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm shadow-lg shadow-purple-500/20">
-                        Buy for $2,500
+                        Buy for $1,500
                     </button>
                 </div>
             </>
@@ -141,7 +141,9 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet, sett
                     <div className="text-[10px] text-slate-400 mt-1 font-mono">
                         {part.memoryType} • Max {part.maxRam}GB • {part.ramSlots} Slots
                         <br/>
-                        <span className="text-slate-500">SATA:{part.sataSlots || 0} • PATA:{part.pataSlots || 0} • M.2:{part.m2Slots || 0}</span>
+                        <span className={(part.sataSlots || 0) > 0 ? "text-yellow-500" : "text-slate-500"}>SATA:{part.sataSlots || 0}</span> • 
+                        <span className={(part.pataSlots || 0) > 0 ? "text-yellow-500" : "text-slate-500"}> PATA:{part.pataSlots || 0}</span> • 
+                        <span className={(part.m2Slots || 0) > 0 ? "text-yellow-500" : "text-slate-500"}> M.2:{part.m2Slots || 0}</span>
                         <br/><span className="text-blue-500">{part.gpuInterface}</span>
                     </div>
                     )}

@@ -122,6 +122,9 @@ export default function Inventory({ inventory, addToBuild, sellPart, binPart, mo
                   {part.type === PART_TYPES.MOTHERBOARD && (
                     <div className="text-[10px] text-slate-400 mt-1 font-mono">
                       {part.memoryType} • Max {part.maxRam}GB • {part.ramSlots} Slots
+                      <br/>
+                      <span className={(part.sataSlots || 0) > 0 ? "text-yellow-500" : "text-slate-500"}>SATA:{part.sataSlots || 0}</span> • 
+                      <span className={(part.pataSlots || 0) > 0 ? "text-yellow-500" : "text-slate-500"}> PATA:{part.pataSlots || 0}</span>
                     </div>
                   )}
                   {part.type === PART_TYPES.RAM && (

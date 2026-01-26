@@ -1,6 +1,6 @@
 // src/components/Shop.jsx
-import React, { useState } from 'react';
-import { ShoppingBag, Package, HelpCircle, X, PackageOpen } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { ShoppingBag, Package, HelpCircle, X, PackageOpen, Filter, ArrowDownUp, Check } from 'lucide-react';
 import { PARTS_CATALOG, PART_TYPES } from '../data/constants';
 import { CategoryTabs, PartIcon } from './Shared';
 import { getModifierById } from '../utils/modifiers';
@@ -22,6 +22,9 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet, sett
   const [showConfetti, setShowConfetti] = useState(false);
   const [revealStage, setRevealStage] = useState('closed'); // closed, shaking, opening, revealed
   const [clicks, setClicks] = useState(0);
+  const [sortBy, setSortBy] = useState('AGE_DESC');
+  const [showAffordable, setShowAffordable] = useState(false);
+  const [brandFilter, setBrandFilter] = useState('ALL');
   
   const getDiscountedPrice = (price) => Math.floor(price * (1 - ((skills?.barter || 0) * 0.03)));
 
@@ -61,6 +64,51 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet, sett
     setRevealStage('closed');
   };
 
+  const availableBrands = useMemo(() => {
+    if (shopCategory === 'CPU') return ['INTEL', 'AMD'];
+    if (shopCategory === 'GPU') return ['NVIDIA', 'AMD'];
+    if (shopCategory === 'Motherboard') return ['INTEL', 'AMD'];
+    return [];
+  }, [shopCategory]);
+
+  const getBrand = (part) => {
+    if (part.type === PART_TYPES.MOTHERBOARD || part.type === PART_TYPES.CPU) {
+        if (part.socket && part.socket.startsWith('LGA')) return 'INTEL';
+        if (part.socket && (part.socket.startsWith('AM') || part.socket.startsWith('TR'))) return 'AMD';
+    }
+    const n = part.name.toLowerCase();
+    if (n.includes('intel') || n.includes('core') || n.includes('pentium')) return 'INTEL';
+    if (n.includes('amd') || n.includes('ryzen') || n.includes('threadripper') || n.includes('radeon')) return 'AMD';
+    if (n.includes('nvidia') || n.includes('geforce') || n.includes('gtx') || n.includes('rtx')) return 'NVIDIA';
+    return 'OTHER';
+  };
+
+  const filteredCatalog = useMemo(() => {
+    let parts = PARTS_CATALOG.filter(p => shopCategory === 'ALL' || p.type === shopCategory);
+
+    if (brandFilter !== 'ALL' && availableBrands.includes(brandFilter)) {
+        parts = parts.filter(p => getBrand(p) === brandFilter);
+    }
+
+    if (showAffordable) {
+        parts = parts.filter(p => getDiscountedPrice(p.price) <= money);
+    }
+
+    return parts.sort((a, b) => {
+        const priceA = getDiscountedPrice(a.price);
+        const priceB = getDiscountedPrice(b.price);
+        
+        switch (sortBy) {
+            case 'AGE_DESC': return (b.releaseYear || 2020) - (a.releaseYear || 2020);
+            case 'AGE_ASC': return (a.releaseYear || 2020) - (b.releaseYear || 2020);
+            case 'PERF_DESC': return (b.perf || 0) - (a.perf || 0);
+            case 'PRICE_ASC': return priceA - priceB;
+            case 'PRICE_DESC': return priceB - priceA;
+            default: return 0;
+        }
+    });
+  }, [shopCategory, brandFilter, showAffordable, sortBy, money, skills, availableBrands]);
+
   return (
     <section className={`rounded-2xl border overflow-hidden shadow-2xl transition-colors ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
       <div className={`p-6 ${darkMode ? 'bg-slate-800/50' : 'bg-slate-50'}`}>
@@ -75,6 +123,49 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet, sett
 
         {shopCategory !== 'MYSTERY' && (
         <CategoryTabs current={shopCategory} set={setShopCategory} types={{ PC: 'PC', ...PART_TYPES }} darkMode={darkMode} />
+        )}
+
+        {shopCategory !== 'MYSTERY' && (
+        <div className={`mt-4 flex flex-wrap gap-3 items-center p-3 rounded-xl border ${darkMode ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-100 border-slate-200'}`}>
+            <div className={`relative flex items-center px-3 py-2 rounded-lg border ${darkMode ? 'bg-slate-800 border-slate-700 hover:border-slate-600' : 'bg-white border-slate-200 hover:border-slate-300'} transition-colors`}>
+                <ArrowDownUp size={14} className={`mr-2 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`} />
+                <select 
+                    value={sortBy} 
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className={`bg-transparent text-xs font-bold uppercase outline-none cursor-pointer pr-2 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}
+                >
+                    <option value="AGE_DESC" className={darkMode ? 'bg-slate-800' : 'bg-white'}>Newest First</option>
+                    <option value="AGE_ASC" className={darkMode ? 'bg-slate-800' : 'bg-white'}>Oldest First</option>
+                    <option value="PERF_DESC" className={darkMode ? 'bg-slate-800' : 'bg-white'}>Performance</option>
+                    <option value="PRICE_ASC" className={darkMode ? 'bg-slate-800' : 'bg-white'}>Price: Low</option>
+                    <option value="PRICE_DESC" className={darkMode ? 'bg-slate-800' : 'bg-white'}>Price: High</option>
+                </select>
+            </div>
+
+            {availableBrands.length > 0 && (
+                <>
+                <div className={`w-px h-6 mx-1 ${darkMode ? 'bg-slate-700' : 'bg-slate-300'}`} />
+                <div className={`relative flex items-center px-3 py-2 rounded-lg border ${darkMode ? 'bg-slate-800 border-slate-700 hover:border-slate-600' : 'bg-white border-slate-200 hover:border-slate-300'} transition-colors`}>
+                    <Filter size={14} className={`mr-2 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`} />
+                    <select 
+                        value={brandFilter} 
+                        onChange={(e) => setBrandFilter(e.target.value)}
+                        className={`bg-transparent text-xs font-bold uppercase outline-none cursor-pointer pr-2 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}
+                    >
+                        <option value="ALL" className={darkMode ? 'bg-slate-800' : 'bg-white'}>All Brands</option>
+                        {availableBrands.map(b => <option key={b} value={b} className={darkMode ? 'bg-slate-800' : 'bg-white'}>{b}</option>)}
+                    </select>
+                </div>
+                </>
+            )}
+
+            <div className={`w-px h-6 mx-1 ${darkMode ? 'bg-slate-700' : 'bg-slate-300'}`} />
+            <label className={`flex items-center gap-2 text-xs font-bold px-3 py-2 rounded-lg border cursor-pointer transition-all select-none ${showAffordable ? 'bg-blue-600 border-blue-500 text-white' : (darkMode ? 'bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600' : 'bg-white border-slate-200 text-slate-600 hover:border-blue-300')}`}>
+                <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${showAffordable ? 'bg-blue-500 border-blue-500 text-white' : 'border-slate-400'}`}>{showAffordable && <Check size={12} />}</div>
+                <input type="checkbox" checked={showAffordable} onChange={e => setShowAffordable(e.target.checked)} className="hidden" />
+                Affordable Only
+            </label>
+        </div>
         )}
       </div>
       
@@ -119,7 +210,7 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet, sett
                 </div>
             </>
         ) : (
-            PARTS_CATALOG.filter(p => shopCategory === 'ALL' || p.type === shopCategory).map(part => {
+            filteredCatalog.map(part => {
             const finalPrice = getDiscountedPrice(part.price);
             const hasDiscount = finalPrice < part.price;
             
@@ -130,7 +221,10 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet, sett
                     <PartIcon type={part.type} />
                 </div>
                 <div>
-                    <p className="text-[10px] text-slate-500 font-bold uppercase">{part.type}</p>
+                    <p className="text-[10px] text-slate-500 font-bold uppercase">
+                      {part.type}
+                      {part.releaseYear && <span className="ml-2 opacity-50 font-normal">{part.releaseYear}</span>}
+                    </p>
                     <h4 className={`font-bold text-sm ${darkMode ? 'text-white' : 'text-slate-800'}`}>{part.name}</h4>
                     <div className="flex gap-2 text-[10px] font-mono mt-1">
                     {part.socket && <span className="text-blue-400 bg-blue-900/30 px-1 rounded">{part.socket}</span>}

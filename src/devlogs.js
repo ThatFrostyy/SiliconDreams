@@ -11,9 +11,14 @@ export const DEVLOGS = [
 - **New Categories**: **CPU Coolers** and **PC Cases** are now available in the shop.
 - **Dev Note**: These new parts are currently placeholders and don't affect stats yet. However, the next update will enable **Thermal Throttling** and **Form Factor Compatibility**!
 
+**Shop & UI:**
+- **Filters**: Added filters for Price, Age, Performance, and Brand in the Shop.
+- **Cancel Jobs**: Added a button to cancel active jobs (with a reputation penalty).
+
 **Jobs:**
 - **New Contracts**: Added many new job templates and customer requests to utilize the new hardware.
 - **Payouts**: Increased pay on some jobs.
+- **Fixes**: Fixed issues with some job generation logic.
 
 **Inventory Management:**
 - **Job Parts Tag**: Parts that belong to a customer's PC (from Repair/Upgrade jobs) are now clearly marked with a "Job Part" tag. This makes it much easier to keep track of original components and avoid accidentally selling them or mixing them up!`

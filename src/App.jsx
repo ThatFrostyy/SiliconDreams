@@ -71,6 +71,7 @@ export default function App() {
   const clearBuild = useGameStore(state => state.clearBuild);
   const saveBuildToInventory = useGameStore(state => state.saveBuildToInventory);
   const fulfillOrder = useGameStore(state => state.fulfillOrder);
+  const cancelJob = useGameStore(state => state.cancelJob);
   const buyUpgrade = useGameStore(state => state.buyUpgrade);
   const binPart = useGameStore(state => state.binPart);
   const unlockSkill = useGameStore(state => state.unlockSkill);
@@ -342,6 +343,7 @@ export default function App() {
           <JobBoard 
             activeOrders={orderTab === 'STANDARD' ? activeOrders : activeRequests} 
             fulfillOrder={fulfillOrder} 
+            cancelJob={cancelJob}
             view={view} 
             inventoryCount={inventory.length} 
             darkMode={settings.darkMode}

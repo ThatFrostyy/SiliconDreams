@@ -580,6 +580,34 @@ export const useGameStore = create(
         }, 2000);
       },
 
+      cancelJob: (jobId) => {
+        const { activeOrders, activeRequests, inventory, notify } = get();
+        
+        // Check if it's a request (Repair/Upgrade)
+        const request = activeRequests.find(r => r.id === jobId);
+        if (request) {
+             // If it was in progress, remove the customer PC from inventory
+             const customerPC = inventory.find(p => p.type === 'PC' && p.name.includes(request.title));
+             let newInventory = inventory;
+             if (customerPC) {
+                 newInventory = inventory.filter(p => p.invId !== customerPC.invId);
+             }
+
+             set(state => ({
+                 activeRequests: state.activeRequests.filter(r => r.id !== jobId),
+                 inventory: newInventory,
+                 reputation: Math.max(0, state.reputation - 5)
+             }));
+             notify("Job Cancelled. Reputation -5.", "info");
+        } else {
+            set(state => ({
+                activeOrders: state.activeOrders.filter(o => o.id !== jobId),
+                reputation: Math.max(0, state.reputation - 2)
+            }));
+            notify("Order Cancelled. Reputation -2.", "info");
+        }
+      },
+
       // Upgrades
       buyUpgrade: (upgrade) => {
         const { money, ownedUpgrades, notify } = get();

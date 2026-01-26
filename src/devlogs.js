@@ -1,5 +1,24 @@
 export const DEVLOGS = [
   {
+    id: 'patch_1_2',
+    title: "Patch 1.2: Hardware Expansion",
+    date: "Jan 27, 2026",
+    summary: "New parts, new jobs, and the arrival of Cases & Coolers.",
+    content: `**Patch 1.2 Changes**
+
+**Hardware Expansion:**
+- **New Parts**: Added a huge variety of new CPUs, GPUs, Motherboards, and RAM to the catalog.
+- **New Categories**: **CPU Coolers** and **PC Cases** are now available in the shop.
+- **Dev Note**: These new parts are currently placeholders and don't affect stats yet. However, the next update will enable **Thermal Throttling** and **Form Factor Compatibility**!
+
+**Jobs:**
+- **New Contracts**: Added many new job templates and customer requests to utilize the new hardware.
+- **Payouts**: Increased pay on some jobs.
+
+**Inventory Management:**
+- **Job Parts Tag**: Parts that belong to a customer's PC (from Repair/Upgrade jobs) are now clearly marked with a "Job Part" tag. This makes it much easier to keep track of original components and avoid accidentally selling them or mixing them up!`
+  },
+  {
     id: 'patch_1_1',
     title: "Patch 1.1: The Economy Update",
     date: "Jan 26, 2026",

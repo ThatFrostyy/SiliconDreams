@@ -6,7 +6,9 @@ export const PART_TYPES = {
   RAM: 'RAM',
   GPU: 'GPU',
   STORAGE: 'Storage',
-  PSU: 'PSU'
+  PSU: 'PSU',
+  COOLER: 'Cooler',
+  CASE: 'Case'
 };
 
 export const SOCKETS = {
@@ -18,6 +20,13 @@ export const SOCKETS = {
   LGA1700: 'LGA1700', // 2021+
   AM5: 'AM5',         // 2022+
   TR4: 'TR4'          // High-End Workstation
+};
+
+export const FORM_FACTORS = {
+  ITX: 'Mini-ITX',
+  mATX: 'Micro-ATX',
+  ATX: 'ATX',
+  EATX: 'E-ATX'
 };
 
 export const INTERFACES = {
@@ -136,22 +145,30 @@ export const PARTS_CATALOG = [
   { id: 'cpu_r7_9800x3d', type: PART_TYPES.CPU, name: 'Ryzen 7 9800X3D', price: 550, socket: SOCKETS.AM5, power: 120, perf: 165 },
   { id: 'cpu_i9_14900k', type: PART_TYPES.CPU, name: 'Intel i9-14900K', price: 580, socket: SOCKETS.LGA1700, power: 253, perf: 110 },
   { id: 'cpu_tr_5995wx', type: PART_TYPES.CPU, name: 'Threadripper 5995WX', price: 4200, socket: SOCKETS.TR4, power: 280, perf: 250 },
+  { id: 'cpu_e8400', type: PART_TYPES.CPU, name: 'Core 2 Duo E8400', price: 8, socket: SOCKETS.LGA775, power: 65, perf: 6 },
+  { id: 'cpu_i7_920', type: PART_TYPES.CPU, name: 'Intel i7-920 (First Gen)', price: 25, socket: SOCKETS.LGA1155, power: 130, perf: 18 }, // A bit of a stretch on socket logic but fits the vibe
+  { id: 'cpu_r9_3900x', type: PART_TYPES.CPU, name: 'Ryzen 9 3900X', price: 180, socket: SOCKETS.AM4, power: 105, perf: 80 },
+  { id: 'cpu_i7_14700k', type: PART_TYPES.CPU, name: 'Intel i7-14700K', price: 410, socket: SOCKETS.LGA1700, power: 253, perf: 105 },
+  { id: 'cpu_r9_9950x', type: PART_TYPES.CPU, name: 'Ryzen 9 9950X', price: 650, socket: SOCKETS.AM5, power: 170, perf: 180 },
 
   // --- MOTHERBOARDS (Chronological by Socket) ---
-  { id: 'mobo_865', type: PART_TYPES.MOTHERBOARD, name: '865PE Neo2', price: 20, socket: SOCKETS.LGA775, ramSlots: 4, maxRam: 4, memoryType: 'DDR2', sataSlots: 2, pataSlots: 2, m2Slots: 0, gpuInterface: GPU_INTERFACES.AGP },
-  { id: 'mobo_p45', type: PART_TYPES.MOTHERBOARD, name: 'Gigabyte GA-EP45-UD3P', price: 25, socket: SOCKETS.LGA775, ramSlots: 4, maxRam: 16, memoryType: 'DDR2', sataSlots: 6, pataSlots: 2, m2Slots: 0, gpuInterface: GPU_INTERFACES.PCIE },
-  { id: 'mobo_d2991', type: PART_TYPES.MOTHERBOARD, name: 'Fujitsu D2991-A1 (OEM)', price: 30, socket: SOCKETS.LGA1155, ramSlots: 2, maxRam: 16, memoryType: 'DDR3', sataSlots: 4, pataSlots: 0, m2Slots: 0, gpuInterface: GPU_INTERFACES.PCIE },
-  { id: 'mobo_970', type: PART_TYPES.MOTHERBOARD, name: '970A Chipset', price: 45, socket: SOCKETS.AM3, ramSlots: 4, maxRam: 32, memoryType: 'DDR3', sataSlots: 6, pataSlots: 0, m2Slots: 0, gpuInterface: GPU_INTERFACES.PCIE },
-  { id: 'mobo_a320', type: PART_TYPES.MOTHERBOARD, name: 'A320M-K', price: 50, socket: SOCKETS.AM4, ramSlots: 2, maxRam: 32, memoryType: 'DDR4', sataSlots: 4, pataSlots: 0, m2Slots: 1, gpuInterface: GPU_INTERFACES.PCIE },
-  { id: 'mobo_z77', type: PART_TYPES.MOTHERBOARD, name: 'Z77 Extreme', price: 70, socket: SOCKETS.LGA1155, ramSlots: 4, maxRam: 32, memoryType: 'DDR3', sataSlots: 4, pataSlots: 0, m2Slots: 0, gpuInterface: GPU_INTERFACES.PCIE },
-  { id: 'mobo1', type: PART_TYPES.MOTHERBOARD, name: 'B450 Budget Board', price: 75, socket: SOCKETS.AM4, ramSlots: 4, maxRam: 64, memoryType: 'DDR4', sataSlots: 4, pataSlots: 0, m2Slots: 1, gpuInterface: GPU_INTERFACES.PCIE },
-  { id: 'mobo2', type: PART_TYPES.MOTHERBOARD, name: 'H410M Entry', price: 85, socket: SOCKETS.LGA1200, ramSlots: 2, maxRam: 32, memoryType: 'DDR4', sataSlots: 4, pataSlots: 0, m2Slots: 0, gpuInterface: GPU_INTERFACES.PCIE },
-  { id: 'mobo_b660', type: PART_TYPES.MOTHERBOARD, name: 'B660M Pro', price: 120, socket: SOCKETS.LGA1700, ramSlots: 4, maxRam: 128, memoryType: 'DDR4', sataSlots: 4, pataSlots: 0, m2Slots: 2, gpuInterface: GPU_INTERFACES.PCIE },
-  { id: 'mobo_b650', type: PART_TYPES.MOTHERBOARD, name: 'B650 Gaming', price: 180, socket: SOCKETS.AM5, ramSlots: 4, maxRam: 128, memoryType: 'DDR5', sataSlots: 4, pataSlots: 0, m2Slots: 3, gpuInterface: GPU_INTERFACES.PCIE },
-  { id: 'mobo3', type: PART_TYPES.MOTHERBOARD, name: 'X570 Gaming Pro', price: 190, socket: SOCKETS.AM4, ramSlots: 4, maxRam: 128, memoryType: 'DDR4', sataSlots: 6, pataSlots: 0, m2Slots: 2, gpuInterface: GPU_INTERFACES.PCIE },
-  { id: 'mobo_z690', type: PART_TYPES.MOTHERBOARD, name: 'Z690 Aorus Elite', price: 210, socket: SOCKETS.LGA1700, ramSlots: 4, maxRam: 128, memoryType: 'DDR5', sataSlots: 6, pataSlots: 0, m2Slots: 3, gpuInterface: GPU_INTERFACES.PCIE },
-  { id: 'mobo4', type: PART_TYPES.MOTHERBOARD, name: 'X670E High-End', price: 400, socket: SOCKETS.AM5, ramSlots: 4, maxRam: 128, memoryType: 'DDR5', sataSlots: 6, pataSlots: 0, m2Slots: 4, gpuInterface: GPU_INTERFACES.PCIE },
-  { id: 'mobo_trx40', type: PART_TYPES.MOTHERBOARD, name: 'Zenith II Extreme Alpha', price: 850, socket: SOCKETS.TR4, ramSlots: 8, maxRam: 256, memoryType: 'DDR4', sataSlots: 8, pataSlots: 0, m2Slots: 4, gpuInterface: GPU_INTERFACES.PCIE },
+  { id: 'mobo_865', type: PART_TYPES.MOTHERBOARD, name: '865PE Neo2', price: 20, socket: SOCKETS.LGA775, formFactor: FORM_FACTORS.ATX, ramSlots: 4, maxRam: 4, memoryType: 'DDR2', sataSlots: 2, pataSlots: 2, m2Slots: 0, gpuInterface: GPU_INTERFACES.AGP },
+  { id: 'mobo_p45', type: PART_TYPES.MOTHERBOARD, name: 'Gigabyte GA-EP45-UD3P', price: 25, socket: SOCKETS.LGA775, formFactor: FORM_FACTORS.ATX, ramSlots: 4, maxRam: 16, memoryType: 'DDR2', sataSlots: 6, pataSlots: 2, m2Slots: 0, gpuInterface: GPU_INTERFACES.PCIE },
+  { id: 'mobo_d2991', type: PART_TYPES.MOTHERBOARD, name: 'Fujitsu D2991-A1 (OEM)', price: 30, socket: SOCKETS.LGA1155, formFactor: FORM_FACTORS.mATX, ramSlots: 2, maxRam: 16, memoryType: 'DDR3', sataSlots: 4, pataSlots: 0, m2Slots: 0, gpuInterface: GPU_INTERFACES.PCIE },
+  { id: 'mobo_970', type: PART_TYPES.MOTHERBOARD, name: '970A Chipset', price: 45, socket: SOCKETS.AM3, formFactor: FORM_FACTORS.ATX, ramSlots: 4, maxRam: 32, memoryType: 'DDR3', sataSlots: 6, pataSlots: 0, m2Slots: 0, gpuInterface: GPU_INTERFACES.PCIE },
+  { id: 'mobo_a320', type: PART_TYPES.MOTHERBOARD, name: 'A320M-K', price: 50, socket: SOCKETS.AM4, formFactor: FORM_FACTORS.mATX, ramSlots: 2, maxRam: 32, memoryType: 'DDR4', sataSlots: 4, pataSlots: 0, m2Slots: 1, gpuInterface: GPU_INTERFACES.PCIE },
+  { id: 'mobo_z77', type: PART_TYPES.MOTHERBOARD, name: 'Z77 Extreme', price: 70, socket: SOCKETS.LGA1155, formFactor: FORM_FACTORS.ATX, ramSlots: 4, maxRam: 32, memoryType: 'DDR3', sataSlots: 4, pataSlots: 0, m2Slots: 0, gpuInterface: GPU_INTERFACES.PCIE },
+  { id: 'mobo1', type: PART_TYPES.MOTHERBOARD, name: 'B450 Budget Board', price: 75, socket: SOCKETS.AM4, formFactor: FORM_FACTORS.mATX, ramSlots: 4, maxRam: 64, memoryType: 'DDR4', sataSlots: 4, pataSlots: 0, m2Slots: 1, gpuInterface: GPU_INTERFACES.PCIE },
+  { id: 'mobo2', type: PART_TYPES.MOTHERBOARD, name: 'H410M Entry', price: 85, socket: SOCKETS.LGA1200, formFactor: FORM_FACTORS.mATX, ramSlots: 2, maxRam: 32, memoryType: 'DDR4', sataSlots: 4, pataSlots: 0, m2Slots: 0, gpuInterface: GPU_INTERFACES.PCIE },
+  { id: 'mobo_b660', type: PART_TYPES.MOTHERBOARD, name: 'B660M Pro', price: 120, socket: SOCKETS.LGA1700, formFactor: FORM_FACTORS.mATX, ramSlots: 4, maxRam: 128, memoryType: 'DDR4', sataSlots: 4, pataSlots: 0, m2Slots: 2, gpuInterface: GPU_INTERFACES.PCIE },
+  { id: 'mobo_b650', type: PART_TYPES.MOTHERBOARD, name: 'B650 Gaming', price: 180, socket: SOCKETS.AM5, formFactor: FORM_FACTORS.ATX, ramSlots: 4, maxRam: 128, memoryType: 'DDR5', sataSlots: 4, pataSlots: 0, m2Slots: 3, gpuInterface: GPU_INTERFACES.PCIE },
+  { id: 'mobo3', type: PART_TYPES.MOTHERBOARD, name: 'X570 Gaming Pro', price: 190, socket: SOCKETS.AM4, formFactor: FORM_FACTORS.ATX, ramSlots: 4, maxRam: 128, memoryType: 'DDR4', sataSlots: 6, pataSlots: 0, m2Slots: 2, gpuInterface: GPU_INTERFACES.PCIE },
+  { id: 'mobo_z690', type: PART_TYPES.MOTHERBOARD, name: 'Z690 Aorus Elite', price: 210, socket: SOCKETS.LGA1700, formFactor: FORM_FACTORS.ATX, ramSlots: 4, maxRam: 128, memoryType: 'DDR5', sataSlots: 6, pataSlots: 0, m2Slots: 3, gpuInterface: GPU_INTERFACES.PCIE },
+  { id: 'mobo4', type: PART_TYPES.MOTHERBOARD, name: 'X670E High-End', price: 400, socket: SOCKETS.AM5, formFactor: FORM_FACTORS.EATX, ramSlots: 4, maxRam: 128, memoryType: 'DDR5', sataSlots: 6, pataSlots: 0, m2Slots: 4, gpuInterface: GPU_INTERFACES.PCIE },
+  { id: 'mobo_trx40', type: PART_TYPES.MOTHERBOARD, name: 'Zenith II Extreme Alpha', price: 850, socket: SOCKETS.TR4, formFactor: FORM_FACTORS.EATX, ramSlots: 8, maxRam: 256, memoryType: 'DDR4', sataSlots: 8, pataSlots: 0, m2Slots: 4, gpuInterface: GPU_INTERFACES.PCIE },
+  { id: 'mobo_g31', type: PART_TYPES.MOTHERBOARD, name: 'MSI G31M-P21 (Budget)', price: 15, socket: SOCKETS.LGA775, formFactor: FORM_FACTORS.mATX, ramSlots: 2, maxRam: 4, memoryType: 'DDR2', sataSlots: 4, pataSlots: 1, m2Slots: 0, gpuInterface: GPU_INTERFACES.PCIE },
+  { id: 'mobo_m5a97', type: PART_TYPES.MOTHERBOARD, name: 'ASUS M5A97 R2.0', price: 55, socket: SOCKETS.AM3, formFactor: FORM_FACTORS.ATX, ramSlots: 4, maxRam: 32, memoryType: 'DDR3', sataSlots: 6, pataSlots: 0, m2Slots: 0, gpuInterface: GPU_INTERFACES.PCIE },
+  { id: 'mobo_x670e_godlike', type: PART_TYPES.MOTHERBOARD, name: 'X670E GODLIKE', price: 700, socket: SOCKETS.AM5, formFactor: FORM_FACTORS.EATX, ramSlots: 4, maxRam: 192, memoryType: 'DDR5', sataSlots: 8, pataSlots: 0, m2Slots: 6, gpuInterface: GPU_INTERFACES.PCIE },
 
   // --- RAM (Chronological) ---
   { id: 'ram_ddr2_2', type: PART_TYPES.RAM, name: '2GB DDR2 800MHz', price: 5, power: 2, perf: 3, speed: 800, capacity: 2, memoryType: 'DDR2' },
@@ -181,6 +198,10 @@ export const PARTS_CATALOG = [
   { id: 'gpu_4080', type: PART_TYPES.GPU, name: 'RTX 4080 Super', price: 1050, power: 320, perf: 140, interface: GPU_INTERFACES.PCIE },
   { id: 'gpu3', type: PART_TYPES.GPU, name: 'RTX 4090', price: 1850, power: 450, perf: 180, interface: GPU_INTERFACES.PCIE },
   { id: 'gpu_a6000', type: PART_TYPES.GPU, name: 'NVIDIA RTX A6000', price: 4300, power: 300, perf: 220, interface: GPU_INTERFACES.PCIE },
+  { id: 'gpu_8800gt', type: PART_TYPES.GPU, name: 'GeForce 8800 GT', price: 20, power: 105, perf: 10, interface: GPU_INTERFACES.PCIE },
+  { id: 'gpu_gtx660', type: PART_TYPES.GPU, name: 'GTX 660 2GB', price: 35, power: 140, perf: 18, interface: GPU_INTERFACES.PCIE },
+  { id: 'gpu_rtx4070ti', type: PART_TYPES.GPU, name: 'RTX 4070 Ti Super', price: 800, power: 285, perf: 130, interface: GPU_INTERFACES.PCIE },
+  { id: 'gpu_titan_rtx', type: PART_TYPES.GPU, name: 'TITAN RTX (Collector Item)', price: 1200, power: 280, perf: 150, interface: GPU_INTERFACES.PCIE },
 
   // --- STORAGE ---
   { id: 'hdd_250', type: PART_TYPES.STORAGE, name: '250GB HDD', price: 10, power: 8, perf: 2, interface: INTERFACES.PATA, capacity: 250 },
@@ -198,6 +219,21 @@ export const PARTS_CATALOG = [
   { id: 'psu2', type: PART_TYPES.PSU, name: '750W Gold', price: 110, wattage: 750, sataConnectors: 8, molexConnectors: 4 },
   { id: 'psu_1000', type: PART_TYPES.PSU, name: '1000W Platinum', price: 220, wattage: 1000, sataConnectors: 12, molexConnectors: 6 },
   { id: 'psu3', type: PART_TYPES.PSU, name: '1600W Titanium', price: 480, wattage: 1600, sataConnectors: 16, molexConnectors: 8 },
+
+  // --- COOLERS ---
+  { id: 'cooler_stock', type: PART_TYPES.COOLER, name: 'Stock Cooler', price: 0, power: 5, perf: 1, cooling: 65, sockets: [SOCKETS.AM4, SOCKETS.LGA1155, SOCKETS.LGA1200, SOCKETS.AM5] },
+  { id: 'cooler_air_budget', type: PART_TYPES.COOLER, name: 'Hyper 212 Evo', price: 35, power: 5, perf: 2, cooling: 150, sockets: [SOCKETS.AM4, SOCKETS.LGA1155, SOCKETS.LGA1200, SOCKETS.LGA1700, SOCKETS.AM5, SOCKETS.AM3] },
+  { id: 'cooler_air_high', type: PART_TYPES.COOLER, name: 'Noctua NH-D15', price: 100, power: 5, perf: 5, cooling: 250, sockets: [SOCKETS.AM4, SOCKETS.LGA1700, SOCKETS.AM5, SOCKETS.TR4] },
+  { id: 'cooler_aio_240', type: PART_TYPES.COOLER, name: '240mm AIO Liquid', price: 120, power: 10, perf: 8, cooling: 280, sockets: [SOCKETS.AM4, SOCKETS.LGA1700, SOCKETS.AM5] },
+  { id: 'cooler_aio_360', type: PART_TYPES.COOLER, name: '360mm AIO Liquid', price: 180, power: 15, perf: 12, cooling: 350, sockets: [SOCKETS.AM4, SOCKETS.LGA1700, SOCKETS.AM5, SOCKETS.TR4] },
+
+  // --- CASES ---
+  { id: 'case_cardboard', type: PART_TYPES.CASE, name: 'Cardboard Box', price: 0, formFactors: [FORM_FACTORS.ITX, FORM_FACTORS.mATX, FORM_FACTORS.ATX, FORM_FACTORS.EATX], maxGpuLen: 999, airflow: 0 },
+  { id: 'case_office', type: PART_TYPES.CASE, name: 'Generic Office Case', price: 30, formFactors: [FORM_FACTORS.mATX, FORM_FACTORS.ATX], maxGpuLen: 250, airflow: 1 },
+  { id: 'case_gaming_mid', type: PART_TYPES.CASE, name: 'NZXT H510', price: 80, formFactors: [FORM_FACTORS.ITX, FORM_FACTORS.mATX, FORM_FACTORS.ATX], maxGpuLen: 320, airflow: 2 },
+  { id: 'case_gaming_full', type: PART_TYPES.CASE, name: 'Corsair 7000D', price: 200, formFactors: [FORM_FACTORS.ITX, FORM_FACTORS.mATX, FORM_FACTORS.ATX, FORM_FACTORS.EATX], maxGpuLen: 450, airflow: 4 },
+  { id: 'case_sff', type: PART_TYPES.CASE, name: 'Terra SFF', price: 180, formFactors: [FORM_FACTORS.ITX], maxGpuLen: 300, airflow: 1 },
+  { id: 'case_open_air', type: PART_TYPES.CASE, name: 'Open Air Test Bench', price: 150, formFactors: [FORM_FACTORS.ITX, FORM_FACTORS.mATX, FORM_FACTORS.ATX, FORM_FACTORS.EATX], maxGpuLen: 999, airflow: 5 },
 ];
 
 export const ORDER_TEMPLATES = [
@@ -210,7 +246,7 @@ export const ORDER_TEMPLATES = [
   { title: "Streaming Setup", minPerf: 200, budget: 2500, description: "Single PC setup for streaming and gaming at the same time." },
   { title: "Crypto Miner", minPerf: 220, budget: 3000, description: "I need raw GPU power and a PSU that won't melt." },
   { title: "Enthusiast Grade", minPerf: 300, budget: 4000, description: "High refresh rate 1440p/4K gaming is my life." },
-  { id: "workstation_01", title: "AI Training Station", minPerf: 400, budget: 11000, description: "I'm training local LLMs. Give me all the VRAM and threads you can find." },
+  { id: "workstation_01", title: "AI Training Station", minPerf: 400, budget: 12000, description: "I'm training local LLMs. Give me all the VRAM and threads you can find." },
   { id: "overkill_01", title: "The Overkill Rig", minPerf: 550, budget: 13000, description: "Price is a social construct. I want the absolute best parts in existence." },
 ];
 
@@ -233,6 +269,24 @@ export const REQUEST_TEMPLATES = [
     budget: 400, 
     description: "I need a basic machine for the accounting department. 8GB RAM is plenty.", 
     req: { minRam: 8, minPerf: 20 } 
+  },
+  { 
+    title: "The 'Craigslist' Specialist", 
+    budget: 200, 
+    description: "I just need it to run Google Chrome without exploding. Used parts are fine.", 
+    req: { minRam: 2, minPerf: 10 } 
+  },
+  { 
+    title: "League of Legends Addict", 
+    budget: 500, 
+    description: "I play League 14 hours a day. I don't need a 4090 just enough RAM for gaming, I just need it to stay above 144fps so I stop losing LP.", 
+    req: { minPerf: 40, minRam: 8 } 
+  },
+  { 
+    title: "The 'Used-to-be' Gamer", 
+    budget: 450, 
+    description: "I haven't gamed since 2007. Build me something that can run Crysis. I still have nightmares about that game.", 
+    req: { minPerf: 35, gpuInterface: GPU_INTERFACES.PCIE } 
   },
 
   // --- MID TIER / SPECIALIZED ---
@@ -269,14 +323,34 @@ export const REQUEST_TEMPLATES = [
 
   // --- UPGRADE / REPAIR REQUESTS ---
   {
+    title: "Repair: 'I Smelled Toast'",
+    type: 'REPAIR',
+    budget: 450,
+    description: "I tried to overclock my i3 and I heard a 'pop'. Now the room smells like burnt ozone. Help.",
+    req: { minPerf: 25 },
+    startingParts: [
+      { id: 'cpu_i3_2100', modifier: 'burnt', isJobPart: true }, { id: 'mobo_d2991', isJobPart: true }, { id: 'ram_ddr3_4', isJobPart: true }, { id: 'gpu_730', isJobPart: true }, { id: 'psu_generic', isJobPart: true }, { id: 'hdd_500', isJobPart: true }
+    ]
+  },
+  {
+    title: "Upgrade: The 'Bottleneck' Special",
+    type: 'UPGRADE',
+    budget: 1200,
+    description: "I put an RTX 3080 in my old PC and now it runs slower than before. Someone said my 'LGA775' CPU and RAM arethe problem? Fix it.",
+    req: { minPerf: 100, minRam: 16 },
+    startingParts: [
+      { id: 'cpu_q9550', isJobPart: true }, { id: 'mobo_p45', isJobPart: true }, { id: 'ram_ddr2_2', isJobPart: true }, { id: 'ram_ddr2_2', isJobPart: true }, { id: 'gpu_3080', isJobPart: true }, { id: 'psu2', isJobPart: true }, { id: 'ssd_sata', isJobPart: true }
+    ]
+  },
+  {
     title: "Repair: Dead GPU",
     type: 'REPAIR',
     budget: 400,
     description: "My PC won't display anything. I think the GPU is fried. Please swap it out.",
     req: { minPerf: 30, gpuInterface: GPU_INTERFACES.PCIE },
     startingParts: [
-      { id: 'cpu_i3_2100' }, { id: 'mobo_d2991' }, { id: 'ram_ddr3_4' }, { id: 'hdd_500' }, { id: 'psu_generic' },
-      { id: 'gpu_750ti', modifier: 'dud' } // The broken part
+      { id: 'cpu_i3_2100', isJobPart: true }, { id: 'mobo_d2991', isJobPart: true }, { id: 'ram_ddr3_4', isJobPart: true }, { id: 'hdd_500', isJobPart: true }, { id: 'psu_generic', isJobPart: true },
+      { id: 'gpu_750ti', modifier: 'dud', isJobPart: true } // The broken part
     ]
   },
   {
@@ -286,8 +360,8 @@ export const REQUEST_TEMPLATES = [
     description: "My computer keeps crashing. My nephew said the RAM is 'rusty'. Can you replace it?",
     req: { minRam: 8 },
     startingParts: [
-      { id: 'cpu_fx6300' }, { id: 'mobo_970' }, { id: 'gpu_730' }, { id: 'hdd_500' }, { id: 'psu_generic' },
-      { id: 'ram_ddr3_4', modifier: 'rusty' }, { id: 'ram_ddr3_4', modifier: 'rusty' }
+      { id: 'cpu_fx6300', isJobPart: true }, { id: 'mobo_970', isJobPart: true }, { id: 'gpu_730', isJobPart: true }, { id: 'hdd_500', isJobPart: true }, { id: 'psu_generic', isJobPart: true },
+      { id: 'ram_ddr3_4', modifier: 'rusty', isJobPart: true }, { id: 'ram_ddr3_4', modifier: 'rusty', isJobPart: true }
     ]
   },
   {
@@ -297,9 +371,9 @@ export const REQUEST_TEMPLATES = [
     description: "Lightning struck near my house. Now my PC won't turn on. I think the PSU and GPU are toast. (Requires 450W+ PSU)",
     req: { partId: 'psu1', minPerf: 40 },
     startingParts: [
-      { id: 'cpu_i5_2400' }, { id: 'mobo_d2991' }, { id: 'ram_ddr3_8' }, { id: 'hdd_500' },
-      { id: 'psu_generic', modifier: 'dud' }, // Dead PSU
-      { id: 'gpu_750ti', modifier: 'dud' } // Dead GPU
+      { id: 'cpu_i5_2400', isJobPart: true }, { id: 'mobo_d2991', isJobPart: true }, { id: 'ram_ddr3_8', isJobPart: true }, { id: 'hdd_500', isJobPart: true },
+      { id: 'psu_generic', modifier: 'dud', isJobPart: true }, // Dead PSU
+      { id: 'gpu_750ti', modifier: 'dud', isJobPart: true } // Dead GPU
     ]
   },
   {
@@ -309,8 +383,8 @@ export const REQUEST_TEMPLATES = [
     description: "I left my PC in the garage. It boots but crashes constantly. Can you replace the rusty RAM and add a bigger HDD?",
     req: { minRam: 8, minStorage: 500 },
     startingParts: [
-      { id: 'cpu_fx6300' }, { id: 'mobo_970' }, { id: 'gpu_730' }, { id: 'psu_generic' },
-      { id: 'ram_ddr3_4', modifier: 'rusty' }, { id: 'ram_ddr3_4', modifier: 'rusty' }, { id: 'hdd_250', modifier: 'rusty' }
+      { id: 'cpu_fx6300', isJobPart: true }, { id: 'mobo_970', isJobPart: true }, { id: 'gpu_730', isJobPart: true }, { id: 'psu_generic', isJobPart: true },
+      { id: 'ram_ddr3_4', modifier: 'rusty', isJobPart: true }, { id: 'ram_ddr3_4', modifier: 'rusty', isJobPart: true }, { id: 'hdd_250', modifier: 'rusty', isJobPart: true }
     ]
   },
 
@@ -322,8 +396,8 @@ export const REQUEST_TEMPLATES = [
     description: "My GTX 1080 Ti is legendary, but it lacks Ray Tracing features. Upgrade me to an RTX 3080. You can keep the old card.",
     req: { partId: 'gpu_3080' },
     startingParts: [
-      { id: 'cpu_i7_2600k' }, { id: 'mobo_z77' }, { id: 'ram_ddr3_8' }, { id: 'ram_ddr3_8' }, { id: 'ssd_sata' }, { id: 'psu2' },
-      { id: 'gpu_1080ti' }
+      { id: 'cpu_i7_2600k', isJobPart: true }, { id: 'mobo_z77', isJobPart: true }, { id: 'ram_ddr3_8', isJobPart: true }, { id: 'ram_ddr3_8', isJobPart: true }, { id: 'ssd_sata', isJobPart: true }, { id: 'psu2', isJobPart: true },
+      { id: 'gpu_1080ti', isJobPart: true }
     ]
   },
   {
@@ -333,8 +407,8 @@ export const REQUEST_TEMPLATES = [
     description: "I bought a fast GPU but my old Ryzen 5 1600 is holding it back. Upgrade me to a Ryzen 7 5800X.",
     req: { partId: 'cpu3' },
     startingParts: [
-      { id: 'cpu_r5_1600' }, { id: 'mobo3' }, { id: 'ram2' }, { id: 'ssd2' }, { id: 'psu1' },
-      { id: 'gpu2' }
+      { id: 'cpu_r5_1600', isJobPart: true }, { id: 'mobo3', isJobPart: true }, { id: 'ram2', isJobPart: true }, { id: 'ssd2', isJobPart: true }, { id: 'psu1', isJobPart: true },
+      { id: 'gpu2', isJobPart: true }
     ]
   },
   {
@@ -344,8 +418,8 @@ export const REQUEST_TEMPLATES = [
     description: "I want to move to the AM5 platform. I need a Ryzen 5 7600, and DDR5 RAM. (Requires minimum 16GB RAM)",
     req: { partId: 'cpu_r5_7600', minRam: 16 },
     startingParts: [
-      { id: 'cpu_r5_3600' }, { id: 'mobo1' }, { id: 'ram1' }, { id: 'ram1' }, { id: 'ssd2' }, { id: 'psu1' },
-      { id: 'gpu_1660s' }
+      { id: 'cpu_r5_3600', isJobPart: true }, { id: 'mobo1', isJobPart: true }, { id: 'ram1', isJobPart: true }, { id: 'ram1', isJobPart: true }, { id: 'ssd2', isJobPart: true }, { id: 'psu1', isJobPart: true },
+      { id: 'gpu_1660s', isJobPart: true }
     ]
   },
   {
@@ -355,8 +429,8 @@ export const REQUEST_TEMPLATES = [
     description: "My PC is running out of space and memory. I need 32GB of RAM and a 1TB NVMe SSD.",
     req: { minRam: 32, minStorage: 1000, interface: INTERFACES.M2 },
     startingParts: [
-      { id: 'cpu2' }, { id: 'mobo2' }, { id: 'ram1' }, { id: 'hdd_500' }, { id: 'psu_generic' },
-      { id: 'gpu_1050ti' }
+      { id: 'cpu2', isJobPart: true }, { id: 'mobo2', isJobPart: true }, { id: 'ram1', isJobPart: true }, { id: 'hdd_500', isJobPart: true }, { id: 'psu_generic', isJobPart: true },
+      { id: 'gpu_1050ti', isJobPart: true }
     ]
   },
 
@@ -387,7 +461,7 @@ export const REQUEST_TEMPLATES = [
   },
   { 
     title: "Virtualization Architect", 
-    budget: 7500, 
+    budget: 11000, 
     description: "I run 20 virtual machines at once. I need a Threadripper and 128GB of RAM. Do not fail me. (Requires Threadripper 5995WX)", 
     req: { partId: 'cpu_tr_5995wx', minRam: 128 } 
   },
@@ -396,6 +470,24 @@ export const REQUEST_TEMPLATES = [
     budget: 12000, 
     description: "We are rendering a feature film. We need the highest performance score possible (400+).", 
     req: { minPerf: 400 } 
+  },
+  { 
+    title: "The Failed Crypto Miner", 
+    budget: 2500, 
+    description: "I'm giving up on ETH. Turn this mining rig into a gaming beast so I can forget my financial losses. Needs at least 32GB of RAM.", 
+    req: { minPerf: 250, minRam: 32 } 
+  },
+  { 
+    title: "Competitive Sim-Racer", 
+    budget: 6000, 
+    description: "I'm running a triple 4K monitor setup for iRacing. If I see a single dropped frame, I'm sending it back. (Requires RTX 4090)", 
+    req: { partId: 'gpu3', minPerf: 400 } 
+  },
+  { 
+    title: "The 'Trust Fund' Kid", 
+    budget: 14000, 
+    description: "My dad said I can spend whatever I want for my birthday. I want the goldest, fastest, most expensive stuff you have. All of it. (Requires 64GB of RAM)", 
+    req: { minPerf: 580, minRam: 64 } 
   },
 
   // --- WEIRD / SPECIFIC CHALLENGES ---

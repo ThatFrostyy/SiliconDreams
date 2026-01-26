@@ -4,6 +4,7 @@ import { Box, DollarSign, AlertTriangle, Microscope, X } from 'lucide-react';
 import { PART_TYPES } from '../data/constants';
 import { CategoryTabs, PartIcon } from './Shared';
 import { getModifierById, isUnreliable, MODIFIERS } from '../utils/modifiers';
+import JobPartLabel from './JobPartLabel';
 import { useGameStore } from '../store/gameStore';
 import { playSound } from '../utils/sound';
 
@@ -109,7 +110,8 @@ export default function Inventory({ inventory, addToBuild, sellPart, binPart, mo
             const modifier = getModifierById(part.modifierId);
             
             return (
-            <div key={part.invId} className={`p-4 rounded-xl border flex justify-between items-center relative overflow-hidden ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
+            <div key={part.invId} className={`p-4 rounded-xl border flex justify-between items-center relative ${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
+              {part.isJobPart && <JobPartLabel />}
               <div className="flex items-center gap-3 min-w-0 flex-1">
                 <div className={`p-2 rounded-lg shrink-0 ${darkMode ? 'bg-slate-700' : 'bg-white shadow-sm'}`}><PartIcon type={part.type} /></div>
                 <div className="min-w-0">
@@ -154,8 +156,9 @@ export default function Inventory({ inventory, addToBuild, sellPart, binPart, mo
                 )}
                 <button
                   onClick={() => sellPart(part)}
-                  className="p-2 rounded-lg bg-rose-900/30 text-rose-500 hover:bg-rose-600 hover:text-white transition-colors"
-                  title={`Sell for $${getSellPrice(part)}`}
+                  disabled={part.isJobPart}
+                  className={`p-2 rounded-lg transition-colors ${part.isJobPart ? 'opacity-30 cursor-not-allowed bg-slate-500/10 text-slate-500' : 'bg-rose-900/30 text-rose-500 hover:bg-rose-600 hover:text-white'}`}
+                  title={part.isJobPart ? "Cannot sell Job Parts" : `Sell for $${getSellPrice(part)}`}
                 >
                   <DollarSign size={16} />
                 </button>

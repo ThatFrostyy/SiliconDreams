@@ -420,6 +420,10 @@ export const useGameStore = create(
                         part = applyModifier(part, MODIFIERS[def.modifier]);
                     }
 
+                    if (def.isJobPart) {
+                        part.isJobPart = true;
+                    }
+
                     // Assign to Slot
                     let key = part.type;
                     if (part.type === PART_TYPES.RAM) {

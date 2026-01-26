@@ -459,7 +459,11 @@ export const useGameStore = create(
         // Basic Validation
         if (stats.bottleneckPenalty > 0) notify(`Bottleneck detected! Perf reduced by ${stats.bottleneckPenalty}`, "error");
         
-        const missingParts = Object.values(PART_TYPES).filter(type => !Object.values(currentBuild).some(p => p.type === type));
+        const missingParts = Object.values(PART_TYPES).filter(type => {
+            // Coolers and Cases are currently optional/placeholders
+            if (type === PART_TYPES.COOLER || type === PART_TYPES.CASE) return false;
+            return !Object.values(currentBuild).some(p => p.type === type);
+        });
         if (missingParts.length > 0) { notify(`Missing parts: ${missingParts.join(', ')}`, "error"); return; }
 
         if (stats.totalPerf < order.minPerf) {

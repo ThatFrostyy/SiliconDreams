@@ -27,6 +27,8 @@ It also features a **Global Player Market** powered by Firebase. If you find a "
 * **Backend / DB:** Firebase (Firestore & Auth)
 * **Icons:** Lucide React
 
+**Sound:** Music made by me. SFX made with code.
+
 ## 🚀 Getting Started
 
 ### Prerequisites

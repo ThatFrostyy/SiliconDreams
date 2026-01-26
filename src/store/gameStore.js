@@ -446,7 +446,7 @@ export const useGameStore = create(
             // 2. Add to Inventory & Update Order Status
             set(state => ({
                 inventory: [...state.inventory, customerPC],
-                activeRequests: state.activeRequests.map(r => r.id === order.id ? { ...r, inProgress: true, description: "[IN PROGRESS] " + r.description } : r)
+                activeRequests: state.activeRequests.map(r => r.id === order.id ? { ...r, inProgress: true } : r)
             }));
             notify(`${order.type === 'REPAIR' ? 'Repair' : 'Upgrade'} Job Accepted! Customer PC added to Inventory. Load it from Inventory to start.`, "success");
             return;

@@ -1,6 +1,6 @@
 // src/components/JobBoard.jsx
 import React from 'react';
-import { ClipboardList, TrendingUp, Crown } from 'lucide-react';
+import { ClipboardList, TrendingUp, Crown, Hammer } from 'lucide-react';
 
 export default function JobBoard({ activeOrders, fulfillOrder, view, darkMode }) {
   return (
@@ -18,12 +18,26 @@ export default function JobBoard({ activeOrders, fulfillOrder, view, darkMode })
             const isRepairOrUpgrade = order.type === 'REPAIR' || order.type === 'UPGRADE';
             const isAccept = isRepairOrUpgrade && !order.inProgress;
             const isDisabled = !isAccept && view !== 'workshop';
+            const isInProgress = order.inProgress;
 
             return (
-            <div key={order.id} className={`border rounded-xl p-4 transition-colors group ${darkMode ? 'bg-slate-800/30 border-slate-700 hover:bg-slate-800/60' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'}`}>
-              {order.isVip && (
-                <div className="flex items-center gap-1 text-[10px] font-black uppercase tracking-tighter mb-2 text-amber-400">
-                  <Crown size={12} /> VIP Client
+            <div key={order.id} className={`border rounded-xl p-4 transition-colors group ${
+              isInProgress 
+                ? (darkMode ? 'bg-blue-500/10 border-blue-500/50' : 'bg-blue-50 border-blue-300')
+                : (darkMode ? 'bg-slate-800/30 border-slate-700 hover:bg-slate-800/60' : 'bg-slate-50 border-slate-200 hover:bg-slate-100')
+            }`}>
+              {(order.isVip || isInProgress) && (
+                <div className="flex flex-wrap gap-3 mb-2">
+                  {order.isVip && (
+                    <div className="flex items-center gap-1 text-[10px] font-black uppercase tracking-tighter text-amber-400">
+                      <Crown size={12} /> VIP Client
+                    </div>
+                  )}
+                  {isInProgress && (
+                    <div className="flex items-center gap-1 text-[10px] font-black uppercase tracking-tighter text-blue-400">
+                      <Hammer size={12} /> Active Job
+                    </div>
+                  )}
                 </div>
               )}
               <div className="flex justify-between items-start mb-2">

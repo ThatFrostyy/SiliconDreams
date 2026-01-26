@@ -305,7 +305,7 @@ export const REQUEST_TEMPLATES = [
     title: "Repair: Rusty Rig",
     type: 'REPAIR',
     budget: 250,
-    description: "I left my PC in the garage. It boots but crashes constantly. Can you replace the rusty RAM and HDD Wwith a bigger one? (Requires minimum 8GB RAM)",
+    description: "I left my PC in the garage. It boots but crashes constantly. Can you replace the rusty RAM and add a bigger HDD?",
     req: { minRam: 8, minStorage: 500 },
     startingParts: [
       { id: 'cpu_fx6300' }, { id: 'mobo_970' }, { id: 'gpu_730' }, { id: 'psu_generic' },

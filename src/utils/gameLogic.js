@@ -30,7 +30,7 @@ export const generateRequest = (reputation = 0, marketingLevel = 0) => {
   return {
     ...template,
     id: `req_${Math.random().toString(36).substr(2, 5)}`,
-    type: 'REQUEST',
+    type: template.type || 'REQUEST',
     minPerf: targetPerf,
     budget: Math.floor(template.budget * budgetMultiplier),
     isVip,

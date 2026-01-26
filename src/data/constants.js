@@ -244,7 +244,7 @@ export const REQUEST_TEMPLATES = [
   { 
     title: "The 'Silent' Accountant", 
     budget: 600, 
-    description: "I hate fan noise. Give me the 750W PSU so the fans barely spin.", 
+    description: "I hate fan noise. Give me the 750W Gold PSU so the fans barely spin.", 
     req: { partId: 'psu2' } // Requires the 750W Gold
   },
   { 
@@ -271,7 +271,7 @@ export const REQUEST_TEMPLATES = [
     title: "Repair: Dead GPU",
     type: 'REPAIR',
     budget: 400,
-    description: "My PC won't display anything. I think the GPU is fried. Please swap it out. (You keep the broken parts)",
+    description: "My PC won't display anything. I think the GPU is fried. Please swap it out.",
     req: { minPerf: 30, gpuInterface: GPU_INTERFACES.PCIE },
     startingParts: [
       { id: 'cpu_i3_2100' }, { id: 'mobo_d2991' }, { id: 'ram_ddr3_4' }, { id: 'hdd_500' }, { id: 'psu_generic' },
@@ -282,10 +282,10 @@ export const REQUEST_TEMPLATES = [
     title: "Repair: Blue Screen of Death",
     type: 'REPAIR',
     budget: 300,
-    description: "My computer keeps crashing. My nephew said the RAM is 'rusty'. Can you fix it?",
+    description: "My computer keeps crashing. My nephew said the RAM is 'rusty'. Can you replace it?",
     req: { minRam: 8 },
     startingParts: [
-      { id: 'cpu_fx6300' }, { id: 'mobo_970' }, { id: 'gpu_730' }, { id: 'hdd_250' }, { id: 'psu_generic' },
+      { id: 'cpu_fx6300' }, { id: 'mobo_970' }, { id: 'gpu_730' }, { id: 'hdd_500' }, { id: 'psu_generic' },
       { id: 'ram_ddr3_4', modifier: 'rusty' }, { id: 'ram_ddr3_4', modifier: 'rusty' }
     ]
   },
@@ -293,7 +293,7 @@ export const REQUEST_TEMPLATES = [
     title: "Repair: Power Surge Victim",
     type: 'REPAIR',
     budget: 600,
-    description: "Lightning struck near my house. Now my PC won't turn on. I think the PSU and GPU are toast.",
+    description: "Lightning struck near my house. Now my PC won't turn on. I think the PSU and GPU are toast. (Requires 450W+ PSU)",
     req: { partId: 'psu1', minPerf: 40 },
     startingParts: [
       { id: 'cpu_i5_2400' }, { id: 'mobo_d2991' }, { id: 'ram_ddr3_8' }, { id: 'hdd_500' },
@@ -305,7 +305,7 @@ export const REQUEST_TEMPLATES = [
     title: "Repair: Rusty Rig",
     type: 'REPAIR',
     budget: 250,
-    description: "I left my PC in the garage. It boots but crashes constantly. Can you replace the rusty RAM and HDD?",
+    description: "I left my PC in the garage. It boots but crashes constantly. Can you replace the rusty RAM and HDD Wwith a bigger one? (Requires minimum 8GB RAM)",
     req: { minRam: 8, minStorage: 500 },
     startingParts: [
       { id: 'cpu_fx6300' }, { id: 'mobo_970' }, { id: 'gpu_730' }, { id: 'psu_generic' },
@@ -340,7 +340,7 @@ export const REQUEST_TEMPLATES = [
     title: "Upgrade: Next Gen Jump",
     type: 'UPGRADE',
     budget: 1500,
-    description: "I want to move to the AM5 platform. I need a Ryzen 5 7600, a B650 motherboard, and DDR5 RAM.",
+    description: "I want to move to the AM5 platform. I need a Ryzen 5 7600, and DDR5 RAM. (Requires minimum 16GB RAM)",
     req: { partId: 'cpu_r5_7600', minRam: 16 },
     startingParts: [
       { id: 'cpu_r5_3600' }, { id: 'mobo1' }, { id: 'ram1' }, { id: 'ram1' }, { id: 'ssd2' }, { id: 'psu1' },
@@ -369,7 +369,7 @@ export const REQUEST_TEMPLATES = [
   { 
     title: "Deep Learning Researcher", 
     budget: 5500, 
-    description: "I'm training neural networks. I need the absolute maximum VRAM possible.", 
+    description: "I'm training neural networks. I need the absolute maximum VRAM possible (NVIDIA RTX A6000).", 
     req: { partId: 'gpu_a6000' } 
   },
   { 
@@ -387,7 +387,7 @@ export const REQUEST_TEMPLATES = [
   { 
     title: "Virtualization Architect", 
     budget: 7500, 
-    description: "I run 20 virtual machines at once. I need a Threadripper and 128GB of RAM. Do not fail me.", 
+    description: "I run 20 virtual machines at once. I need a Threadripper and 128GB of RAM. Do not fail me. (Requires Threadripper 5995WX)", 
     req: { partId: 'cpu_tr_5995wx', minRam: 128 } 
   },
   { 
@@ -415,25 +415,25 @@ export const REQUEST_TEMPLATES = [
   {
     title: "Pro Esports Arena",
     budget: 5000,
-    description: "We are outfitting a new arena. Need a demo unit that screams performance.",
+    description: "We are outfitting a new arena. Need a demo unit that screams performance. (Requires minimum 32GB RAM)",
     req: { minPerf: 250, minRam: 32 }
   },
   {
     title: "Celebrity Streamer",
     budget: 8000,
-    description: "I need the best of the best. If it lags, you're fired.",
+    description: "I need the best of the best. If it lags, you're fired. (Requires RTX 4090)",
     req: { partId: 'gpu3', minPerf: 350 }
   },
   {
     title: "Hollywood VFX Studio",
     budget: 15000,
-    description: "We need a workstation for rendering our next blockbuster. Money is no object, but performance is everything.",
+    description: "We need a workstation for rendering our next blockbuster. Money is no object, but performance is everything. (Requires minimum 128GB RAM)",
     req: { minPerf: 500, minRam: 128 }
   },
   {
     title: "Hedge Fund Algo Trader",
     budget: 10000,
-    description: "Milliseconds matter. I need the fastest single-core performance and zero bottlenecks.",
+    description: "Milliseconds matter. I need the fastest single-core performance and 64GB of RAM. (Requires i9-14900K)",
     req: { partId: 'cpu_i9_14900k', minRam: 64 }
   },
   {

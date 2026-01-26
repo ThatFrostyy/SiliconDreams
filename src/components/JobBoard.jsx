@@ -14,7 +14,12 @@ export default function JobBoard({ activeOrders, fulfillOrder, view, darkMode })
           <span className="text-[10px] bg-amber-500/10 px-2 py-0.5 rounded-full font-bold">LIVE</span>
         </div>
         <div className="p-4 space-y-4">
-          {activeOrders.map(order => (
+          {activeOrders.map(order => {
+            const isRepairOrUpgrade = order.type === 'REPAIR' || order.type === 'UPGRADE';
+            const isAccept = isRepairOrUpgrade && !order.inProgress;
+            const isDisabled = !isAccept && view !== 'workshop';
+
+            return (
             <div key={order.id} className={`border rounded-xl p-4 transition-colors group ${darkMode ? 'bg-slate-800/30 border-slate-700 hover:bg-slate-800/60' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'}`}>
               {order.isVip && (
                 <div className="flex items-center gap-1 text-[10px] font-black uppercase tracking-tighter mb-2 text-amber-400">
@@ -25,7 +30,7 @@ export default function JobBoard({ activeOrders, fulfillOrder, view, darkMode })
                 <h3 className={`font-bold text-sm ${darkMode ? 'text-white' : 'text-slate-800'}`}>{order.title}</h3>
                 <div className="text-emerald-400 font-black text-sm">${order.budget}</div>
               </div>
-              <p className="text-[11px] text-slate-400 mb-4 line-clamp-2 italic leading-relaxed">
+              <p className="text-[11px] text-slate-400 mb-4 italic leading-relaxed">
                 "{order.description}"
               </p>
               <div className="flex items-center gap-4 text-[9px] font-black uppercase tracking-tighter mb-4 text-slate-500">
@@ -35,17 +40,18 @@ export default function JobBoard({ activeOrders, fulfillOrder, view, darkMode })
               </div>
               
               <button 
-                disabled={view !== 'workshop'}
+                disabled={isDisabled}
                 onClick={() => fulfillOrder(order)}
                 className={`w-full py-2.5 rounded-lg font-black text-[10px] uppercase tracking-widest transition-all transform active:scale-95
-                  ${view === 'workshop' 
+                  ${!isDisabled 
                     ? 'bg-amber-500 hover:bg-amber-400 text-slate-900 shadow-lg shadow-amber-500/20' 
                     : `${darkMode ? 'bg-slate-800 text-slate-500' : 'bg-slate-200 text-slate-400'} cursor-not-allowed`}`}
               >
-                DELIVER RIG
+                {isAccept ? 'ACCEPT JOB' : (order.type === 'REPAIR' ? 'DELIVER REPAIR' : 'DELIVER RIG')}
               </button>
             </div>
-          ))}
+            );
+          })}
         </div>
       </section>
     </div>

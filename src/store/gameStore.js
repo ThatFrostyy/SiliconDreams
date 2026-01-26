@@ -61,10 +61,14 @@ export const useGameStore = create(
         const { activeOrders, activeRequests, reputation, skills } = get();
         if (activeOrders.length === 0) {
            const o1 = generateOrderLocal([], 'LOW');
-           const o2 = generateOrderLocal([o1], 'MID');
-           const o3 = generateOrderLocal([o1, o2], 'HIGH');
-           const o4 = generateOrderLocal([o1, o2, o3], 'ANY');
-           set({ activeOrders: [o1, o2, o3, o4] });
+           const o2 = generateOrderLocal([o1], 'LOW');
+           const o3 = generateOrderLocal([o1, o2], 'MID');
+           const o4 = generateOrderLocal([o1, o2, o3], 'MID');
+           const o5 = generateOrderLocal([o1, o2, o3, o4], 'HIGH');
+           const o6 = generateOrderLocal([o1, o2, o3, o4, o5], 'HIGH');
+           const o7 = generateOrderLocal([o1, o2, o3, o4, o5, o6], 'ANY');
+           const o8 = generateOrderLocal([o1, o2, o3, o4, o5, o6, o7], 'ANY');
+           set({ activeOrders: [o1, o2, o3, o4, o5, o6, o7, o8] });
         }
         if (activeRequests.length === 0) {
            set({ activeRequests: [
@@ -444,7 +448,7 @@ export const useGameStore = create(
                 inventory: [...state.inventory, customerPC],
                 activeRequests: state.activeRequests.map(r => r.id === order.id ? { ...r, inProgress: true, description: "[IN PROGRESS] " + r.description } : r)
             }));
-            notify(`${order.type === 'REPAIR' ? 'Repair' : 'Upgrade'} Job Accepted! Customer PC added to Inventory.`, "success");
+            notify(`${order.type === 'REPAIR' ? 'Repair' : 'Upgrade'} Job Accepted! Customer PC added to Inventory. Load it from Inventory to start.`, "success");
             return;
         }
 
@@ -463,7 +467,8 @@ export const useGameStore = create(
         const penalties = [];
         if (order.req) {
             if (order.req.partId && !parts.some(p => p.id === order.req.partId)) {
-                penalties.push("Incorrect Part Model");
+                const requiredPart = PARTS_CATALOG.find(p => p.id === order.req.partId);
+                penalties.push(`Incorrect Part Model (Required: ${requiredPart ? requiredPart.name : order.req.partId})`);
             }
             if (order.req.minRam) {
                 const totalRam = parts.filter(p => p.type === PART_TYPES.RAM).reduce((sum, p) => sum + (p.capacity || 0), 0);
@@ -549,7 +554,7 @@ export const useGameStore = create(
         // Refresh Job
         setTimeout(() => {
             const { reputation, skills } = get();
-            if (order.type === 'REQUEST') {
+            if (['REQUEST', 'REPAIR', 'UPGRADE'].includes(order.type)) {
                 set(state => ({ activeRequests: [...state.activeRequests.filter(o => o.id !== order.id), generateRequest(reputation, skills.marketing)] }));
             } else {
                 set(state => ({ activeOrders: [...state.activeOrders.filter(o => o.id !== order.id), generateOrderLocal(get().activeOrders)] }));

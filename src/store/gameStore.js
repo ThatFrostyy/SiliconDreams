@@ -520,6 +520,19 @@ export const useGameStore = create(
         let review = REVIEW_TEMPLATES[stars][Math.floor(Math.random() * REVIEW_TEMPLATES[stars].length)];
         if (penalties.length > 0) {
             review = `Disappointed: ${penalties.join(', ')}.`;
+        } else if (stars < 5) {
+            const cpu = parts.find(p => p.type === PART_TYPES.CPU);
+            const gpu = parts.find(p => p.type === PART_TYPES.GPU);
+
+            if (stats.bottleneckPenalty > 0) {
+                review = "The CPU is bottlenecking the GPU. Performance is wasted.";
+            } else if (gpu && cpu && gpu.perf < cpu.perf * 0.75) {
+                review += " The GPU is a bit weak compared to the rest of the system.";
+            } else if (gpu && cpu && cpu.perf < gpu.perf * 0.75) {
+                review += " The CPU is a bit underpowered for this graphics card.";
+            } else if (perfRatio < 1.1) {
+                review += " It barely meets the performance requirements.";
+            }
         }
 
         // Update State
@@ -541,7 +554,8 @@ export const useGameStore = create(
                 stars,
                 review,
                 date: new Date().toLocaleDateString(),
-                penalties: penalties.length > 0 ? penalties : null
+                penalties: penalties.length > 0 ? penalties : null,
+                build: parts.map(p => p.name)
             }, ...state.jobHistory].slice(0, 10)
         }));
 

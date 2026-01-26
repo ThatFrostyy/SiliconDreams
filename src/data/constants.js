@@ -184,6 +184,7 @@ export const PARTS_CATALOG = [
 
   // --- STORAGE ---
   { id: 'hdd_250', type: PART_TYPES.STORAGE, name: '250GB HDD', price: 10, power: 8, perf: 2, interface: INTERFACES.PATA, capacity: 250 },
+  { id: 'hdd_250_sata', type: PART_TYPES.STORAGE, name: '250GB HDD', price: 14, power: 8, perf: 3, interface: INTERFACES.SATA, capacity: 250 },
   { id: 'hdd_500', type: PART_TYPES.STORAGE, name: '500GB HDD', price: 18, power: 8, perf: 5, interface: INTERFACES.SATA, capacity: 500 },
   { id: 'hdd_1tb', type: PART_TYPES.STORAGE, name: '1TB HDD', price: 30, power: 9, perf: 10, interface: INTERFACES.SATA, capacity: 1000 },
   { id: 'ssd_sata', type: PART_TYPES.STORAGE, name: '500GB SATA SSD', price: 40, power: 4, perf: 15, interface: INTERFACES.SATA, capacity: 500 },
@@ -224,8 +225,8 @@ export const REQUEST_TEMPLATES = [
   { 
     title: "Retro XP", 
     budget: 350, 
-    description: "I need to run Windows XP and my old AGP capture card. Must have an AGP slot!", 
-    req: { gpuInterface: GPU_INTERFACES.AGP } 
+    description: "I need to run Windows XP. Must have an AGP slot!", 
+    req: { gpuInterface: GPU_INTERFACES.AGP, minPerf: 20 } 
   },
   { 
     title: "Office Fleet Manager", 
@@ -402,7 +403,7 @@ export const REQUEST_TEMPLATES = [
     title: "The Sleeper Build", 
     budget: 1000, 
     description: "I want a modern PC, but it must use an old-school 250GB HDD as the boot drive for the 'aesthetic' noise.", 
-    req: { partId: 'hdd_250', minPerf: 80 } 
+    req: { partId: 'hdd_250_sata', minPerf: 80 } 
   },
   { 
     title: "Data Hoarder", 

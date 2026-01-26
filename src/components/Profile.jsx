@@ -129,6 +129,11 @@ export default function Profile({ user, money, reputation, jobsCompleted, darkMo
                         <span className="text-[10px] opacity-50">{job.date}</span>
                     </div>
                     <p className="text-xs italic opacity-70 mt-2">"{job.review}"</p>
+                    {job.build && (
+                        <div className="mt-2 text-[10px] opacity-60 border-t border-dashed border-slate-500/30 pt-2">
+                            <span className="font-bold">Parts Used:</span> {job.build.join(', ')}
+                        </div>
+                    )}
                     {job.penalties && (
                         <div className="mt-2 text-[10px] text-rose-500 font-bold flex items-center gap-1">
                             <AlertTriangle size={10} /> Penalty: {job.penalties.join(', ')}

@@ -150,8 +150,14 @@ export const PARTS_CATALOG = [
   { id: 'cpu_r9_3900x', type: PART_TYPES.CPU, name: 'Ryzen 9 3900X', price: 180, socket: SOCKETS.AM4, power: 105, perf: 80 },
   { id: 'cpu_i7_14700k', type: PART_TYPES.CPU, name: 'Intel i7-14700K', price: 410, socket: SOCKETS.LGA1700, power: 253, perf: 105 },
   { id: 'cpu_r9_9950x', type: PART_TYPES.CPU, name: 'Ryzen 9 9950X', price: 650, socket: SOCKETS.AM5, power: 170, perf: 180 },
+  { id: 'cpu_p4_530', type: PART_TYPES.CPU, name: 'Pentium 4 530 (3.0GHz)', price: 10, socket: SOCKETS.LGA775, power: 84, perf: 5 },
+  { id: 'cpu_p4_670', type: PART_TYPES.CPU, name: 'Pentium 4 670 (3.8GHz)', price: 18, socket: SOCKETS.LGA775, power: 115, perf: 8 }, // Hot and loud
+  { id: 'cpu_e6600', type: PART_TYPES.CPU, name: 'Core 2 Duo E6600', price: 12, socket: SOCKETS.LGA775, power: 65, perf: 10 },
+  { id: 'cpu_q6600', type: PART_TYPES.CPU, name: 'Core 2 Quad Q6600', price: 20, socket: SOCKETS.LGA775, power: 95, perf: 18 }, // The legend
 
   // --- MOTHERBOARDS (Chronological by Socket) ---
+  { id: 'mobo_p5pe', type: PART_TYPES.MOTHERBOARD, name: 'ASUS P5PE-VM', price: 25, socket: SOCKETS.LGA775, ramSlots: 2, maxRam: 2, memoryType: 'DDR', sataSlots: 2, pataSlots: 2, m2Slots: 0, gpuInterface: GPU_INTERFACES.AGP },
+  { id: 'mobo_k8v', type: PART_TYPES.MOTHERBOARD, name: 'ASUS K8V-X SE', price: 30, socket: SOCKETS.AM3, ramSlots: 2, maxRam: 2, memoryType: 'DDR', sataSlots: 2, pataSlots: 2, m2Slots: 0, gpuInterface: GPU_INTERFACES.AGP },
   { id: 'mobo_865', type: PART_TYPES.MOTHERBOARD, name: '865PE Neo2', price: 20, socket: SOCKETS.LGA775, formFactor: FORM_FACTORS.ATX, ramSlots: 4, maxRam: 4, memoryType: 'DDR2', sataSlots: 2, pataSlots: 2, m2Slots: 0, gpuInterface: GPU_INTERFACES.AGP },
   { id: 'mobo_p45', type: PART_TYPES.MOTHERBOARD, name: 'Gigabyte GA-EP45-UD3P', price: 25, socket: SOCKETS.LGA775, formFactor: FORM_FACTORS.ATX, ramSlots: 4, maxRam: 16, memoryType: 'DDR2', sataSlots: 6, pataSlots: 2, m2Slots: 0, gpuInterface: GPU_INTERFACES.PCIE },
   { id: 'mobo_d2991', type: PART_TYPES.MOTHERBOARD, name: 'Fujitsu D2991-A1 (OEM)', price: 30, socket: SOCKETS.LGA1155, formFactor: FORM_FACTORS.mATX, ramSlots: 2, maxRam: 16, memoryType: 'DDR3', sataSlots: 4, pataSlots: 0, m2Slots: 0, gpuInterface: GPU_INTERFACES.PCIE },
@@ -171,6 +177,10 @@ export const PARTS_CATALOG = [
   { id: 'mobo_x670e_godlike', type: PART_TYPES.MOTHERBOARD, name: 'X670E GODLIKE', price: 700, socket: SOCKETS.AM5, formFactor: FORM_FACTORS.EATX, ramSlots: 4, maxRam: 192, memoryType: 'DDR5', sataSlots: 8, pataSlots: 0, m2Slots: 6, gpuInterface: GPU_INTERFACES.PCIE },
 
   // --- RAM (Chronological) ---
+  { id: 'ram_ddr_512', type: PART_TYPES.RAM, name: '512MB DDR 400MHz', price: 3, power: 2, perf: 1, speed: 400, capacity: 0.5, memoryType: 'DDR' },
+  { id: 'ram_ddr_1', type: PART_TYPES.RAM, name: '1GB DDR 400MHz', price: 7, power: 2, perf: 2, speed: 400, capacity: 1, memoryType: 'DDR' },
+  { id: 'ram_ddr2_1', type: PART_TYPES.RAM, name: '1GB DDR2 667MHz', price: 4, power: 2, perf: 2, speed: 667, capacity: 1, memoryType: 'DDR2' },
+  { id: 'ram_ddr2_4', type: PART_TYPES.RAM, name: '4GB DDR2 800MHz', price: 15, power: 3, perf: 5, speed: 800, capacity: 4, memoryType: 'DDR2' },
   { id: 'ram_ddr2_2', type: PART_TYPES.RAM, name: '2GB DDR2 800MHz', price: 5, power: 2, perf: 3, speed: 800, capacity: 2, memoryType: 'DDR2' },
   { id: 'ram_ddr3_4', type: PART_TYPES.RAM, name: '4GB DDR3 1600MHz', price: 10, power: 3, perf: 5, speed: 1600, capacity: 4, memoryType: 'DDR3' },
   { id: 'ram_ddr3_8', type: PART_TYPES.RAM, name: '8GB DDR3 1866MHz', price: 20, power: 4, perf: 8, speed: 1866, capacity: 8, memoryType: 'DDR3' },
@@ -181,6 +191,10 @@ export const PARTS_CATALOG = [
   { id: 'ram_workstation', type: PART_TYPES.RAM, name: '128GB DDR4 ECC Kit', price: 600, power: 30, perf: 80, speed: 3200, capacity: 128, memoryType: 'DDR4' },
 
   // --- GPUs (Chronological) ---
+  { id: 'gpu_9800pro', type: PART_TYPES.GPU, name: 'Radeon 9800 Pro', price: 35, power: 47, perf: 12, interface: GPU_INTERFACES.AGP },
+  { id: 'gpu_fx5900', type: PART_TYPES.GPU, name: 'GeForce FX 5900 Ultra', price: 40, power: 59, perf: 14, interface: GPU_INTERFACES.AGP },
+  { id: 'gpu_6800gt', type: PART_TYPES.GPU, name: 'GeForce 6800 GT', price: 55, power: 67, perf: 20, interface: GPU_INTERFACES.AGP },
+  { id: 'gpu_hd3850', type: PART_TYPES.GPU, name: 'Radeon HD 3850 (AGP)', price: 70, power: 75, perf: 28, interface: GPU_INTERFACES.AGP }, // Final boss of AGP
   { id: 'gpu_fx5200', type: PART_TYPES.GPU, name: 'GeForce FX 5200', price: 15, power: 20, perf: 4, interface: GPU_INTERFACES.AGP },
   { id: 'gpu_730', type: PART_TYPES.GPU, name: 'GT 730 1GB GDDR5', price: 25, power: 38, perf: 8, interface: GPU_INTERFACES.PCIE },
   { id: 'gpu_gt1030', type: PART_TYPES.GPU, name: 'GT 1030', price: 40, power: 30, perf: 12, interface: GPU_INTERFACES.PCIE },
@@ -204,6 +218,9 @@ export const PARTS_CATALOG = [
   { id: 'gpu_titan_rtx', type: PART_TYPES.GPU, name: 'TITAN RTX (Collector Item)', price: 1200, power: 280, perf: 150, interface: GPU_INTERFACES.PCIE },
 
   // --- STORAGE ---
+  { id: 'hdd_40_pata', type: PART_TYPES.STORAGE, name: '40GB Quantum Fireball', price: 5, power: 10, perf: 1, interface: INTERFACES.PATA, capacity: 40 },
+  { id: 'hdd_80_pata', type: PART_TYPES.STORAGE, name: '80GB Maxtor DiamondMax', price: 8, power: 10, perf: 2, interface: INTERFACES.PATA, capacity: 80 },
+  { id: 'hdd_160_sata', type: PART_TYPES.STORAGE, name: '160GB WD Blue', price: 12, power: 8, perf: 3, interface: INTERFACES.SATA, capacity: 160 },
   { id: 'hdd_250', type: PART_TYPES.STORAGE, name: '250GB HDD', price: 10, power: 8, perf: 2, interface: INTERFACES.PATA, capacity: 250 },
   { id: 'hdd_250_sata', type: PART_TYPES.STORAGE, name: '250GB HDD', price: 14, power: 8, perf: 3, interface: INTERFACES.SATA, capacity: 250 },
   { id: 'hdd_500', type: PART_TYPES.STORAGE, name: '500GB HDD', price: 18, power: 8, perf: 5, interface: INTERFACES.SATA, capacity: 500 },
@@ -252,6 +269,24 @@ export const ORDER_TEMPLATES = [
 
 export const REQUEST_TEMPLATES = [
   // --- LOW TIER / BUDGET CHALLENGES ---
+  { 
+    title: "The 'Doom 3' Nostalgic", 
+    budget: 450, 
+    description: "I want to play Doom 3 like it's 2004. I need a GeForce 6800 GT and a Pentium 4. If it doesn't sound like a jet engine, you didn't do it right.", 
+    req: { partId: 'gpu_6800gt', minPerf: 15 } 
+  },
+  { 
+    title: "Grandpa's Word Processor", 
+    budget: 150, 
+    description: "My grandson said I need a 'new' computer for my memoirs. I only have $150.", 
+    req: { minRam: 1, minStorage: 40 } 
+  },
+  { 
+    title: "The 'Legacy' Lab", 
+    budget: 300, 
+    description: "We have some ancient scientific software that only runs on PATA drives. Build us a reliable workstation with at least 80GB of 'old school' storage.", 
+    req: { interface: INTERFACES.PATA, minStorage: 80 } 
+  },
   { 
     title: "The 'My Son's First PC' Mom", 
     budget: 300, 
@@ -322,6 +357,17 @@ export const REQUEST_TEMPLATES = [
   },
 
   // --- UPGRADE / REPAIR REQUESTS ---
+  {
+    title: "Repair: The 'Garage Find'",
+    type: 'REPAIR',
+    budget: 200,
+    description: "I found this in my dad's garage. It has an AGP slot! The hard drive makes a clicking sound like a woodpecker. Please fix it.",
+    req: { minStorage: 80, gpuInterface: GPU_INTERFACES.AGP },
+    startingParts: [
+      { id: 'cpu_p4_530' }, { id: 'mobo_p5pe' }, { id: 'ram_ddr_512' }, { id: 'gpu_fx5200' }, { id: 'psu_generic' },
+      { id: 'hdd_80_pata', modifier: 'clicking' } 
+    ]
+  },
   {
     title: "Repair: 'I Smelled Toast'",
     type: 'REPAIR',

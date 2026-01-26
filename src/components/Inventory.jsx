@@ -24,6 +24,7 @@ export default function Inventory({ inventory, addToBuild, sellPart, binPart, mo
   const setCelebration = useGameStore(state => state.setCelebration);
   const skills = useGameStore(state => state.skills);
   const ownedUpgrades = useGameStore(state => state.ownedUpgrades);
+  const notify = useGameStore(state => state.notify);
 
   const getSellPrice = (part) => {
     const dealmakerBonus = 1 + ((skills?.dealmaker || 0) * 0.05);
@@ -40,7 +41,7 @@ export default function Inventory({ inventory, addToBuild, sellPart, binPart, mo
   };
 
   const startSpin = () => {
-    const result = binPart(binningItem);
+    const result = binPart(binningItem, true); // Silent binning
     if (!result) return; // Failed (money etc)
     
     setSpinResult(result);
@@ -76,6 +77,7 @@ export default function Inventory({ inventory, addToBuild, sellPart, binPart, mo
         } else {
              playSound('success', settings?.sfx);
         }
+        notify(`Binning Result: ${result.label}`, "success");
     }, 4000);
   };
 
@@ -197,8 +199,8 @@ export default function Inventory({ inventory, addToBuild, sellPart, binPart, mo
                             
                             {/* Strip */}
                             <div 
-                                className="flex items-center h-full transition-transform duration-[4000ms] ease-[cubic-bezier(0.1,0,0.2,1)]"
-                                style={{ transform: spinState === 'SPINNING' || spinState === 'RESULT' ? `translateX(calc(50% - ${50 * 136 + 68}px))` : 'translateX(0)' }}
+                                className="absolute left-1/2 top-0 flex items-center h-full transition-transform duration-[4000ms] ease-[cubic-bezier(0.1,0,0.2,1)]"
+                                style={{ transform: spinState === 'SPINNING' || spinState === 'RESULT' ? `translateX(-429.25rem)` : 'translateX(0)' }}
                             >
                                 {spinItems.map((item, i) => (
                                     <div key={i} className={`flex-shrink-0 w-32 h-24 mx-1 rounded-lg flex flex-col items-center justify-center text-center p-2 border border-slate-800 ${darkMode ? 'bg-slate-900' : 'bg-slate-100'}`}>

@@ -191,31 +191,31 @@ export const PARTS_CATALOG = [
   { id: 'ram_workstation', type: PART_TYPES.RAM, name: '128GB DDR4 ECC Kit', price: 600, power: 30, perf: 80, speed: 3200, capacity: 128, memoryType: 'DDR4', releaseYear: 2019 },
 
   // --- GPUs (Chronological) ---
-  { id: 'gpu_9800pro', type: PART_TYPES.GPU, name: 'Radeon 9800 Pro', price: 35, power: 47, perf: 12, interface: GPU_INTERFACES.AGP, releaseYear: 2003 },
-  { id: 'gpu_fx5900', type: PART_TYPES.GPU, name: 'GeForce FX 5900 Ultra', price: 40, power: 59, perf: 14, interface: GPU_INTERFACES.AGP, releaseYear: 2003 },
-  { id: 'gpu_6800gt', type: PART_TYPES.GPU, name: 'GeForce 6800 GT', price: 55, power: 67, perf: 20, interface: GPU_INTERFACES.AGP, releaseYear: 2004 },
-  { id: 'gpu_hd3850', type: PART_TYPES.GPU, name: 'Radeon HD 3850 (AGP)', price: 70, power: 75, perf: 28, interface: GPU_INTERFACES.AGP, releaseYear: 2007 },
-  { id: 'gpu_fx5200', type: PART_TYPES.GPU, name: 'GeForce FX 5200', price: 15, power: 20, perf: 4, interface: GPU_INTERFACES.AGP, releaseYear: 2003 },
-  { id: 'gpu_730', type: PART_TYPES.GPU, name: 'GT 730 1GB GDDR5', price: 25, power: 38, perf: 8, interface: GPU_INTERFACES.PCIE, releaseYear: 2014 },
-  { id: 'gpu_gt1030', type: PART_TYPES.GPU, name: 'GT 1030', price: 40, power: 30, perf: 12, interface: GPU_INTERFACES.PCIE, releaseYear: 2017 },
-  { id: 'gpu_750ti', type: PART_TYPES.GPU, name: 'GTX 750 Ti', price: 50, power: 60, perf: 25, interface: GPU_INTERFACES.PCIE, releaseYear: 2014 },
-  { id: 'gpu_1050ti', type: PART_TYPES.GPU, name: 'GTX 1050 Ti', price: 75, power: 75, perf: 30, interface: GPU_INTERFACES.PCIE, releaseYear: 2016 },
-  { id: 'gpu_970', type: PART_TYPES.GPU, name: 'GTX 970', price: 80, power: 145, perf: 45, interface: GPU_INTERFACES.PCIE, releaseYear: 2014 },
-  { id: 'gpu_rx580', type: PART_TYPES.GPU, name: 'RX 580 8GB', price: 100, power: 185, perf: 35, interface: GPU_INTERFACES.PCIE, releaseYear: 2017 },
-  { id: 'gpu_rx6600', type: PART_TYPES.GPU, name: 'Radeon RX 6600', price: 210, power: 132, perf: 68, interface: GPU_INTERFACES.PCIE, releaseYear: 2021 },
-  { id: 'gpu_1660s', type: PART_TYPES.GPU, name: 'GTX 1660 Super', price: 160, power: 125, perf: 55, interface: GPU_INTERFACES.PCIE, releaseYear: 2019 },
-  { id: 'gpu_rtx2060', type: PART_TYPES.GPU, name: 'RTX 2060', price: 200, power: 160, perf: 60, interface: GPU_INTERFACES.PCIE, releaseYear: 2019 },
-  { id: 'gpu_1080ti', type: PART_TYPES.GPU, name: 'GTX 1080 Ti', price: 250, power: 250, perf: 95, interface: GPU_INTERFACES.PCIE, releaseYear: 2017 },
-  { id: 'gpu2', type: PART_TYPES.GPU, name: 'RTX 3060', price: 290, power: 170, perf: 75, interface: GPU_INTERFACES.PCIE, releaseYear: 2021 },
-  { id: 'gpu_rx7800xt', type: PART_TYPES.GPU, name: 'RX 7800 XT', price: 500, power: 263, perf: 120, interface: GPU_INTERFACES.PCIE, releaseYear: 2023 },
-  { id: 'gpu_3080', type: PART_TYPES.GPU, name: 'RTX 3080', price: 550, power: 320, perf: 110, interface: GPU_INTERFACES.PCIE, releaseYear: 2020 },
-  { id: 'gpu_4080', type: PART_TYPES.GPU, name: 'RTX 4080 Super', price: 1050, power: 320, perf: 140, interface: GPU_INTERFACES.PCIE, releaseYear: 2024 },
-  { id: 'gpu3', type: PART_TYPES.GPU, name: 'RTX 4090', price: 1850, power: 450, perf: 180, interface: GPU_INTERFACES.PCIE, releaseYear: 2022 },
-  { id: 'gpu_a6000', type: PART_TYPES.GPU, name: 'NVIDIA RTX A6000', price: 4300, power: 300, perf: 220, interface: GPU_INTERFACES.PCIE, releaseYear: 2020 },
-  { id: 'gpu_8800gt', type: PART_TYPES.GPU, name: 'GeForce 8800 GT', price: 20, power: 105, perf: 10, interface: GPU_INTERFACES.PCIE, releaseYear: 2007 },
-  { id: 'gpu_gtx660', type: PART_TYPES.GPU, name: 'GTX 660 2GB', price: 35, power: 140, perf: 18, interface: GPU_INTERFACES.PCIE, releaseYear: 2012 },
-  { id: 'gpu_rtx4070ti', type: PART_TYPES.GPU, name: 'RTX 4070 Ti Super', price: 800, power: 285, perf: 130, interface: GPU_INTERFACES.PCIE, releaseYear: 2024 },
-  { id: 'gpu_titan_rtx', type: PART_TYPES.GPU, name: 'TITAN RTX (Collector Item)', price: 1200, power: 280, perf: 150, interface: GPU_INTERFACES.PCIE, releaseYear: 2018 },
+  { id: 'gpu_9800pro', type: PART_TYPES.GPU, name: 'Radeon 9800 Pro', price: 35, power: 47, perf: 12, interface: GPU_INTERFACES.AGP, len: 190, releaseYear: 2003 },
+  { id: 'gpu_fx5900', type: PART_TYPES.GPU, name: 'GeForce FX 5900 Ultra', price: 40, power: 59, perf: 14, interface: GPU_INTERFACES.AGP, len: 210, releaseYear: 2003 },
+  { id: 'gpu_6800gt', type: PART_TYPES.GPU, name: 'GeForce 6800 GT', price: 55, power: 67, perf: 20, interface: GPU_INTERFACES.AGP, len: 215, releaseYear: 2004 },
+  { id: 'gpu_hd3850', type: PART_TYPES.GPU, name: 'Radeon HD 3850 (AGP)', price: 70, power: 75, perf: 28, interface: GPU_INTERFACES.AGP, len: 230, releaseYear: 2007 },
+  { id: 'gpu_fx5200', type: PART_TYPES.GPU, name: 'GeForce FX 5200', price: 15, power: 20, perf: 4, interface: GPU_INTERFACES.AGP, len: 170, releaseYear: 2003 },
+  { id: 'gpu_730', type: PART_TYPES.GPU, name: 'GT 730 1GB GDDR5', price: 25, power: 38, perf: 8, interface: GPU_INTERFACES.PCIE, len: 150, releaseYear: 2014 },
+  { id: 'gpu_gt1030', type: PART_TYPES.GPU, name: 'GT 1030', price: 40, power: 30, perf: 12, interface: GPU_INTERFACES.PCIE, len: 150, releaseYear: 2017 },
+  { id: 'gpu_750ti', type: PART_TYPES.GPU, name: 'GTX 750 Ti', price: 50, power: 60, perf: 25, interface: GPU_INTERFACES.PCIE, len: 175, releaseYear: 2014 },
+  { id: 'gpu_1050ti', type: PART_TYPES.GPU, name: 'GTX 1050 Ti', price: 75, power: 75, perf: 30, interface: GPU_INTERFACES.PCIE, len: 180, releaseYear: 2016 },
+  { id: 'gpu_970', type: PART_TYPES.GPU, name: 'GTX 970', price: 80, power: 145, perf: 45, interface: GPU_INTERFACES.PCIE, len: 265, releaseYear: 2014 },
+  { id: 'gpu_rx580', type: PART_TYPES.GPU, name: 'RX 580 8GB', price: 100, power: 185, perf: 35, interface: GPU_INTERFACES.PCIE, len: 240, releaseYear: 2017 },
+  { id: 'gpu_rx6600', type: PART_TYPES.GPU, name: 'Radeon RX 6600', price: 210, power: 132, perf: 68, interface: GPU_INTERFACES.PCIE, len: 200, releaseYear: 2021 },
+  { id: 'gpu_1660s', type: PART_TYPES.GPU, name: 'GTX 1660 Super', price: 160, power: 125, perf: 55, interface: GPU_INTERFACES.PCIE, len: 230, releaseYear: 2019 },
+  { id: 'gpu_rtx2060', type: PART_TYPES.GPU, name: 'RTX 2060', price: 200, power: 160, perf: 60, interface: GPU_INTERFACES.PCIE, len: 230, releaseYear: 2019 },
+  { id: 'gpu_1080ti', type: PART_TYPES.GPU, name: 'GTX 1080 Ti', price: 250, power: 250, perf: 95, interface: GPU_INTERFACES.PCIE, len: 270, releaseYear: 2017 },
+  { id: 'gpu2', type: PART_TYPES.GPU, name: 'RTX 3060', price: 290, power: 170, perf: 75, interface: GPU_INTERFACES.PCIE, len: 240, releaseYear: 2021 },
+  { id: 'gpu_rx7800xt', type: PART_TYPES.GPU, name: 'RX 7800 XT', price: 500, power: 263, perf: 120, interface: GPU_INTERFACES.PCIE, len: 280, releaseYear: 2023 },
+  { id: 'gpu_3080', type: PART_TYPES.GPU, name: 'RTX 3080', price: 550, power: 320, perf: 110, interface: GPU_INTERFACES.PCIE, len: 300, releaseYear: 2020 },
+  { id: 'gpu_4080', type: PART_TYPES.GPU, name: 'RTX 4080 Super', price: 1050, power: 320, perf: 140, interface: GPU_INTERFACES.PCIE, len: 330, releaseYear: 2024 },
+  { id: 'gpu3', type: PART_TYPES.GPU, name: 'RTX 4090', price: 1850, power: 450, perf: 180, interface: GPU_INTERFACES.PCIE, len: 358, releaseYear: 2022 },
+  { id: 'gpu_a6000', type: PART_TYPES.GPU, name: 'NVIDIA RTX A6000', price: 4300, power: 300, perf: 220, interface: GPU_INTERFACES.PCIE, len: 267, releaseYear: 2020 },
+  { id: 'gpu_8800gt', type: PART_TYPES.GPU, name: 'GeForce 8800 GT', price: 20, power: 105, perf: 10, interface: GPU_INTERFACES.PCIE, len: 230, releaseYear: 2007 },
+  { id: 'gpu_gtx660', type: PART_TYPES.GPU, name: 'GTX 660 2GB', price: 35, power: 140, perf: 18, interface: GPU_INTERFACES.PCIE, len: 240, releaseYear: 2012 },
+  { id: 'gpu_rtx4070ti', type: PART_TYPES.GPU, name: 'RTX 4070 Ti Super', price: 800, power: 285, perf: 130, interface: GPU_INTERFACES.PCIE, len: 310, releaseYear: 2024 },
+  { id: 'gpu_titan_rtx', type: PART_TYPES.GPU, name: 'TITAN RTX (Collector Item)', price: 1200, power: 280, perf: 150, interface: GPU_INTERFACES.PCIE, len: 267, releaseYear: 2018 },
 
   // --- STORAGE ---
   { id: 'hdd_40_pata', type: PART_TYPES.STORAGE, name: '40GB Quantum Fireball', price: 5, power: 10, perf: 1, interface: INTERFACES.PATA, capacity: 40, releaseYear: 2001 },
@@ -238,19 +238,19 @@ export const PARTS_CATALOG = [
   { id: 'psu3', type: PART_TYPES.PSU, name: '1600W Titanium', price: 480, wattage: 1600, sataConnectors: 16, molexConnectors: 8, releaseYear: 2022 },
 
   // --- COOLERS ---
-  { id: 'cooler_stock', type: PART_TYPES.COOLER, name: 'Stock Cooler', price: 0, power: 5, perf: 1, cooling: 65, sockets: [SOCKETS.AM4, SOCKETS.LGA1155, SOCKETS.LGA1200, SOCKETS.AM5], releaseYear: 2010 },
-  { id: 'cooler_air_budget', type: PART_TYPES.COOLER, name: 'Hyper 212 Evo', price: 35, power: 5, perf: 2, cooling: 150, sockets: [SOCKETS.AM4, SOCKETS.LGA1155, SOCKETS.LGA1200, SOCKETS.LGA1700, SOCKETS.AM5, SOCKETS.AM3], releaseYear: 2011 },
-  { id: 'cooler_air_high', type: PART_TYPES.COOLER, name: 'Noctua NH-D15', price: 100, power: 5, perf: 5, cooling: 250, sockets: [SOCKETS.AM4, SOCKETS.LGA1700, SOCKETS.AM5, SOCKETS.TR4], releaseYear: 2014 },
-  { id: 'cooler_aio_240', type: PART_TYPES.COOLER, name: '240mm AIO Liquid', price: 120, power: 10, perf: 8, cooling: 280, sockets: [SOCKETS.AM4, SOCKETS.LGA1700, SOCKETS.AM5], releaseYear: 2018 },
-  { id: 'cooler_aio_360', type: PART_TYPES.COOLER, name: '360mm AIO Liquid', price: 180, power: 15, perf: 12, cooling: 350, sockets: [SOCKETS.AM4, SOCKETS.LGA1700, SOCKETS.AM5, SOCKETS.TR4], releaseYear: 2020 },
+  { id: 'cooler_stock', type: PART_TYPES.COOLER, name: 'Stock Cooler', price: 0, power: 5, perf: 1, cooling: 65, height: 50, radSize: 0, sockets: [SOCKETS.AM4, SOCKETS.LGA1155, SOCKETS.LGA1200, SOCKETS.AM5], releaseYear: 2010 },
+  { id: 'cooler_air_budget', type: PART_TYPES.COOLER, name: 'Hyper 212 Evo', price: 35, power: 5, perf: 2, cooling: 150, height: 159, radSize: 0, sockets: [SOCKETS.AM4, SOCKETS.LGA1155, SOCKETS.LGA1200, SOCKETS.LGA1700, SOCKETS.AM5, SOCKETS.AM3], releaseYear: 2011 },
+  { id: 'cooler_air_high', type: PART_TYPES.COOLER, name: 'Noctua NH-D15', price: 100, power: 5, perf: 5, cooling: 250, height: 165, radSize: 0, sockets: [SOCKETS.AM4, SOCKETS.LGA1700, SOCKETS.AM5, SOCKETS.TR4], releaseYear: 2014 },
+  { id: 'cooler_aio_240', type: PART_TYPES.COOLER, name: '240mm AIO Liquid', price: 120, power: 10, perf: 8, cooling: 280, height: 30, radSize: 240, sockets: [SOCKETS.AM4, SOCKETS.LGA1700, SOCKETS.AM5], releaseYear: 2018 },
+  { id: 'cooler_aio_360', type: PART_TYPES.COOLER, name: '360mm AIO Liquid', price: 180, power: 15, perf: 12, cooling: 350, height: 30, radSize: 360, sockets: [SOCKETS.AM4, SOCKETS.LGA1700, SOCKETS.AM5, SOCKETS.TR4], releaseYear: 2020 },
 
   // --- CASES ---
-  { id: 'case_cardboard', type: PART_TYPES.CASE, name: 'Cardboard Box', price: 0, formFactors: [FORM_FACTORS.ITX, FORM_FACTORS.mATX, FORM_FACTORS.ATX, FORM_FACTORS.EATX], maxGpuLen: 999, airflow: 0, releaseYear: 1900 },
-  { id: 'case_office', type: PART_TYPES.CASE, name: 'Generic Office Case', price: 30, formFactors: [FORM_FACTORS.mATX, FORM_FACTORS.ATX], maxGpuLen: 250, airflow: 1, releaseYear: 2005 },
-  { id: 'case_gaming_mid', type: PART_TYPES.CASE, name: 'NZXT H510', price: 80, formFactors: [FORM_FACTORS.ITX, FORM_FACTORS.mATX, FORM_FACTORS.ATX], maxGpuLen: 320, airflow: 2, releaseYear: 2019 },
-  { id: 'case_gaming_full', type: PART_TYPES.CASE, name: 'Corsair 7000D', price: 200, formFactors: [FORM_FACTORS.ITX, FORM_FACTORS.mATX, FORM_FACTORS.ATX, FORM_FACTORS.EATX], maxGpuLen: 450, airflow: 4, releaseYear: 2021 },
-  { id: 'case_sff', type: PART_TYPES.CASE, name: 'Terra SFF', price: 180, formFactors: [FORM_FACTORS.ITX], maxGpuLen: 300, airflow: 1, releaseYear: 2023 },
-  { id: 'case_open_air', type: PART_TYPES.CASE, name: 'Open Air Test Bench', price: 150, formFactors: [FORM_FACTORS.ITX, FORM_FACTORS.mATX, FORM_FACTORS.ATX, FORM_FACTORS.EATX], maxGpuLen: 999, airflow: 5, releaseYear: 2015 },
+  { id: 'case_cardboard', type: PART_TYPES.CASE, name: 'Cardboard Box', price: 0, formFactors: [FORM_FACTORS.ITX, FORM_FACTORS.mATX, FORM_FACTORS.ATX, FORM_FACTORS.EATX], maxGpuLen: 999, maxCoolerHeight: 999, maxRadSize: 999, storageSlots: 999, airflow: 0, releaseYear: 1900 },
+  { id: 'case_office', type: PART_TYPES.CASE, name: 'Generic Office Case', price: 30, formFactors: [FORM_FACTORS.mATX, FORM_FACTORS.ATX], maxGpuLen: 250, maxCoolerHeight: 150, maxRadSize: 0, storageSlots: 2, airflow: 1, releaseYear: 2005 },
+  { id: 'case_gaming_mid', type: PART_TYPES.CASE, name: 'NZXT H510', price: 80, formFactors: [FORM_FACTORS.ITX, FORM_FACTORS.mATX, FORM_FACTORS.ATX], maxGpuLen: 320, maxCoolerHeight: 165, maxRadSize: 240, storageSlots: 3, airflow: 2, releaseYear: 2019 },
+  { id: 'case_gaming_full', type: PART_TYPES.CASE, name: 'Corsair 7000D', price: 200, formFactors: [FORM_FACTORS.ITX, FORM_FACTORS.mATX, FORM_FACTORS.ATX, FORM_FACTORS.EATX], maxGpuLen: 450, maxCoolerHeight: 190, maxRadSize: 360, storageSlots: 6, airflow: 4, releaseYear: 2021 },
+  { id: 'case_sff', type: PART_TYPES.CASE, name: 'Terra SFF', price: 180, formFactors: [FORM_FACTORS.ITX], maxGpuLen: 300, maxCoolerHeight: 50, maxRadSize: 0, storageSlots: 2, airflow: 1, releaseYear: 2023 },
+  { id: 'case_open_air', type: PART_TYPES.CASE, name: 'Open Air Test Bench', price: 150, formFactors: [FORM_FACTORS.ITX, FORM_FACTORS.mATX, FORM_FACTORS.ATX, FORM_FACTORS.EATX], maxGpuLen: 999, maxCoolerHeight: 999, maxRadSize: 999, storageSlots: 10, airflow: 5, releaseYear: 2015 },
 ];
 
 export const ORDER_TEMPLATES = [
@@ -352,8 +352,14 @@ export const REQUEST_TEMPLATES = [
   { 
     title: "X3D Gaming", 
     budget: 2000, 
-    description: "I heard the Ryzen 7 7800X3D cpu is the best for gaming. I want one!", 
-    req: { partId: 'cpu_r7_7800x3d', minPerf: 200 } 
+    description: "I heard the Ryzen 7 7800X3D cpu is the best for gaming. I want one! Please use a 240mm AIO for cooling.",
+    req: { partId: 'cpu_r7_7800x3d', minPerf: 200, radSize: 240 }
+  },
+  {
+    title: "SFF Enthusiast",
+    budget: 2500,
+    description: "I need a high-end PC in the smallest case possible. Must use the Terra SFF case and an air cooler that fits.",
+    req: { partId: 'case_sff', minPerf: 150 }
   },
 
   // --- UPGRADE / REPAIR REQUESTS ---
@@ -365,6 +371,7 @@ export const REQUEST_TEMPLATES = [
     req: { minStorage: 80, gpuInterface: GPU_INTERFACES.AGP },
     startingParts: [
       { id: 'cpu_p4_530' }, { id: 'mobo_p5pe' }, { id: 'ram_ddr_512' }, { id: 'gpu_fx5200' }, { id: 'psu_generic' },
+      { id: 'case_office' }, { id: 'cooler_stock' },
       { id: 'hdd_80_pata', modifier: 'clicking' } 
     ]
   },
@@ -375,17 +382,19 @@ export const REQUEST_TEMPLATES = [
     description: "I tried to overclock my i3 and I heard a 'pop'. Now the room smells like burnt ozone. Help.",
     req: { minPerf: 25 },
     startingParts: [
-      { id: 'cpu_i3_2100', modifier: 'burnt', isJobPart: true }, { id: 'mobo_d2991', isJobPart: true }, { id: 'ram_ddr3_4', isJobPart: true }, { id: 'gpu_730', isJobPart: true }, { id: 'psu_generic', isJobPart: true }, { id: 'hdd_500', isJobPart: true }
+      { id: 'cpu_i3_2100', modifier: 'burnt', isJobPart: true }, { id: 'mobo_d2991', isJobPart: true }, { id: 'ram_ddr3_4', isJobPart: true }, { id: 'gpu_730', isJobPart: true }, { id: 'psu_generic', isJobPart: true }, { id: 'hdd_500', isJobPart: true },
+      { id: 'case_office' }, { id: 'cooler_stock' }
     ]
   },
   {
     title: "Upgrade: The 'Bottleneck' Special",
     type: 'UPGRADE',
     budget: 1200,
-    description: "I put an RTX 3080 in my old PC and now it runs slower than before. Someone said my 'LGA775' CPU and RAM arethe problem? Fix it.",
-    req: { minPerf: 100, minRam: 16 },
+    description: "I put an RTX 3080 in my old PC and now it runs slower than before. Someone said my 'LGA775' CPU and RAM arethe problem? Fix it. (Must include a case with better airflow)",
+    req: { minPerf: 100, minRam: 16, minAirflow: 2 },
     startingParts: [
-      { id: 'cpu_q9550', isJobPart: true }, { id: 'mobo_p45', isJobPart: true }, { id: 'ram_ddr2_2', isJobPart: true }, { id: 'ram_ddr2_2', isJobPart: true }, { id: 'gpu_3080', isJobPart: true }, { id: 'psu2', isJobPart: true }, { id: 'ssd_sata', isJobPart: true }
+      { id: 'cpu_q9550', isJobPart: true }, { id: 'mobo_p45', isJobPart: true }, { id: 'ram_ddr2_2', isJobPart: true }, { id: 'ram_ddr2_2', isJobPart: true }, { id: 'gpu_3080', isJobPart: true }, { id: 'psu2', isJobPart: true }, { id: 'ssd_sata', isJobPart: true },
+      { id: 'case_office', isJobPart: true }, { id: 'cooler_air_budget', isJobPart: true }
     ]
   },
   {
@@ -396,6 +405,7 @@ export const REQUEST_TEMPLATES = [
     req: { minPerf: 30, gpuInterface: GPU_INTERFACES.PCIE },
     startingParts: [
       { id: 'cpu_i3_2100', isJobPart: true }, { id: 'mobo_d2991', isJobPart: true }, { id: 'ram_ddr3_4', isJobPart: true }, { id: 'hdd_500', isJobPart: true }, { id: 'psu_generic', isJobPart: true },
+      { id: 'case_office' }, { id: 'cooler_stock' },
       { id: 'gpu_750ti', modifier: 'dud', isJobPart: true } // The broken part
     ]
   },
@@ -407,6 +417,7 @@ export const REQUEST_TEMPLATES = [
     req: { minRam: 8 },
     startingParts: [
       { id: 'cpu_fx6300', isJobPart: true }, { id: 'mobo_970', isJobPart: true }, { id: 'gpu_730', isJobPart: true }, { id: 'hdd_500', isJobPart: true }, { id: 'psu_generic', isJobPart: true },
+      { id: 'case_office' }, { id: 'cooler_stock' },
       { id: 'ram_ddr3_4', modifier: 'rusty', isJobPart: true }, { id: 'ram_ddr3_4', modifier: 'rusty', isJobPart: true }
     ]
   },
@@ -418,6 +429,7 @@ export const REQUEST_TEMPLATES = [
     req: { partId: 'psu1', minPerf: 40 },
     startingParts: [
       { id: 'cpu_i5_2400', isJobPart: true }, { id: 'mobo_d2991', isJobPart: true }, { id: 'ram_ddr3_8', isJobPart: true }, { id: 'hdd_500', isJobPart: true },
+      { id: 'case_office' }, { id: 'cooler_stock' },
       { id: 'psu_generic', modifier: 'dud', isJobPart: true }, // Dead PSU
       { id: 'gpu_750ti', modifier: 'dud', isJobPart: true } // Dead GPU
     ]
@@ -430,6 +442,7 @@ export const REQUEST_TEMPLATES = [
     req: { minRam: 8, minStorage: 500 },
     startingParts: [
       { id: 'cpu_fx6300', isJobPart: true }, { id: 'mobo_970', isJobPart: true }, { id: 'gpu_730', isJobPart: true }, { id: 'psu_generic', isJobPart: true },
+      { id: 'case_office' }, { id: 'cooler_stock' },
       { id: 'ram_ddr3_4', modifier: 'rusty', isJobPart: true }, { id: 'ram_ddr3_4', modifier: 'rusty', isJobPart: true }, { id: 'hdd_250', modifier: 'rusty', isJobPart: true }
     ]
   },
@@ -443,6 +456,7 @@ export const REQUEST_TEMPLATES = [
     req: { partId: 'gpu_3080' },
     startingParts: [
       { id: 'cpu_i7_2600k', isJobPart: true }, { id: 'mobo_z77', isJobPart: true }, { id: 'ram_ddr3_8', isJobPart: true }, { id: 'ram_ddr3_8', isJobPart: true }, { id: 'ssd_sata', isJobPart: true }, { id: 'psu2', isJobPart: true },
+      { id: 'case_gaming_mid', isJobPart: true }, { id: 'cooler_air_high', isJobPart: true },
       { id: 'gpu_1080ti', isJobPart: true }
     ]
   },
@@ -454,6 +468,7 @@ export const REQUEST_TEMPLATES = [
     req: { partId: 'cpu3' },
     startingParts: [
       { id: 'cpu_r5_1600', isJobPart: true }, { id: 'mobo3', isJobPart: true }, { id: 'ram2', isJobPart: true }, { id: 'ssd2', isJobPart: true }, { id: 'psu1', isJobPart: true },
+      { id: 'case_gaming_mid', isJobPart: true }, { id: 'cooler_air_budget', isJobPart: true },
       { id: 'gpu2', isJobPart: true }
     ]
   },
@@ -465,6 +480,7 @@ export const REQUEST_TEMPLATES = [
     req: { partId: 'cpu_r5_7600', minRam: 16 },
     startingParts: [
       { id: 'cpu_r5_3600', isJobPart: true }, { id: 'mobo1', isJobPart: true }, { id: 'ram1', isJobPart: true }, { id: 'ram1', isJobPart: true }, { id: 'ssd2', isJobPart: true }, { id: 'psu1', isJobPart: true },
+      { id: 'case_gaming_mid', isJobPart: true }, { id: 'cooler_air_budget', isJobPart: true },
       { id: 'gpu_1660s', isJobPart: true }
     ]
   },
@@ -476,6 +492,7 @@ export const REQUEST_TEMPLATES = [
     req: { minRam: 32, minStorage: 1000, interface: INTERFACES.M2 },
     startingParts: [
       { id: 'cpu2', isJobPart: true }, { id: 'mobo2', isJobPart: true }, { id: 'ram1', isJobPart: true }, { id: 'hdd_500', isJobPart: true }, { id: 'psu_generic', isJobPart: true },
+      { id: 'case_office', isJobPart: true }, { id: 'cooler_stock', isJobPart: true },
       { id: 'gpu_1050ti', isJobPart: true }
     ]
   },
@@ -496,20 +513,20 @@ export const REQUEST_TEMPLATES = [
   { 
     title: "The 'Price is No Object' Gamer", 
     budget: 4500, 
-    description: "I just won the lottery. Give me an RTX 4090 and don't care about the bill.", 
-    req: { partId: 'gpu3' } 
+    description: "I just won the lottery. Give me an RTX 4090 and don't care about the bill. (Must use 360mm AIO)",
+    req: { partId: 'gpu3', radSize: 360 }
   },
   { 
     title: "Next Gen Upgrade",
     budget: 3500,
-    description: "I want the new 9000 series Ryzen. Make it happen.",
-    req: { partId: 'cpu_r7_9800x3d' }
+    description: "I want the new 9000 series Ryzen. Make it happen. (Requires High Airflow Case)",
+    req: { partId: 'cpu_r7_9800x3d', minAirflow: 3 }
   },
   { 
     title: "Virtualization Architect", 
     budget: 11000, 
-    description: "I run 20 virtual machines at once. I need a Threadripper and 128GB of RAM. Do not fail me. (Requires Threadripper 5995WX)", 
-    req: { partId: 'cpu_tr_5995wx', minRam: 128 } 
+    description: "I run 20 virtual machines at once. I need a Threadripper and 128GB of RAM. Do not fail me. (Requires Threadripper 5995WX and 360mm AIO)",
+    req: { partId: 'cpu_tr_5995wx', minRam: 128, radSize: 360 }
   },
   { 
     title: "CGI Render Farm Node", 
@@ -572,8 +589,8 @@ export const REQUEST_TEMPLATES = [
   {
     title: "Hedge Fund Algo Trader",
     budget: 10000,
-    description: "Milliseconds matter. I need the fastest single-core performance and 64GB of RAM. (Requires i9-14900K)",
-    req: { partId: 'cpu_i9_14900k', minRam: 64 }
+    description: "Milliseconds matter. I need the fastest single-core performance and 64GB of RAM. (Requires i9-14900K and liquid cooling)",
+    req: { partId: 'cpu_i9_14900k', minRam: 64, minRadSize: 240 }
   },
   {
     title: "Top Secret Gov Contract",

@@ -263,8 +263,54 @@ export const useGameStore = create(
 
         // --- VALIDATION LOGIC ---
         
+        // 0. Case Compatibility Checks
+        const pcCase = currentBuild[PART_TYPES.CASE];
+        if (part.type === PART_TYPES.GPU && pcCase && part.len > pcCase.maxGpuLen) {
+            notify(`GPU is too long! (${part.len}mm > ${pcCase.maxGpuLen}mm)`, 'error'); return;
+        }
+        if (part.type === PART_TYPES.COOLER && pcCase) {
+            if (part.radSize > 0 && part.radSize > pcCase.maxRadSize) {
+                notify(`Radiator is too large for this case!`, 'error'); return;
+            }
+            if (part.radSize === 0 && part.height > pcCase.maxCoolerHeight) {
+                notify(`Cooler is too tall for this case!`, 'error'); return;
+            }
+        }
+        if (part.type === PART_TYPES.STORAGE && pcCase) {
+            const storageCount = Object.values(currentBuild).filter(p => p.type === PART_TYPES.STORAGE).length;
+            if (storageCount >= pcCase.storageSlots) {
+                notify(`No more storage slots available in this case!`, 'error'); return;
+            }
+        }
+        if (part.type === PART_TYPES.MOTHERBOARD && pcCase && !pcCase.formFactors.includes(part.formFactor)) {
+            notify(`Motherboard form factor (${part.formFactor}) not supported by case!`, 'error'); return;
+        }
+        if (part.type === PART_TYPES.CASE) {
+            const mobo = currentBuild[PART_TYPES.MOTHERBOARD];
+            if (mobo && !part.formFactors.includes(mobo.formFactor)) {
+                notify(`Current motherboard won't fit in this case!`, 'error'); return;
+            }
+            const gpu = currentBuild[PART_TYPES.GPU];
+            if (gpu && gpu.len > part.maxGpuLen) {
+                notify(`Current GPU is too long for this case!`, 'error'); return;
+            }
+            const cooler = currentBuild[PART_TYPES.COOLER];
+            if (cooler) {
+                if (cooler.radSize > 0 && cooler.radSize > part.maxRadSize) {
+                    notify(`Current radiator won't fit in this case!`, 'error'); return;
+                }
+                if (cooler.radSize === 0 && cooler.height > part.maxCoolerHeight) {
+                    notify(`Current air cooler is too tall for this case!`, 'error'); return;
+                }
+            }
+            const storageCount = Object.values(currentBuild).filter(p => p.type === PART_TYPES.STORAGE).length;
+            if (storageCount > part.storageSlots) {
+                notify(`Too many storage drives for this case!`, 'error'); return;
+            }
+        }
+
         // 1. Motherboard Dependency
-        if (part.type !== PART_TYPES.MOTHERBOARD && !currentBuild[PART_TYPES.MOTHERBOARD]) {
+        if (part.type !== PART_TYPES.MOTHERBOARD && part.type !== PART_TYPES.CASE && !currentBuild[PART_TYPES.MOTHERBOARD]) {
              notify("Install a motherboard first.", "error"); return;
         }
 
@@ -460,11 +506,14 @@ export const useGameStore = create(
         if (stats.bottleneckPenalty > 0) notify(`Bottleneck detected! Perf reduced by ${stats.bottleneckPenalty}`, "error");
         
         const missingParts = Object.values(PART_TYPES).filter(type => {
-            // Coolers and Cases are currently optional/placeholders
-            if (type === PART_TYPES.COOLER || type === PART_TYPES.CASE) return false;
             return !Object.values(currentBuild).some(p => p.type === type);
         });
         if (missingParts.length > 0) { notify(`Missing parts: ${missingParts.join(', ')}`, "error"); return; }
+
+        if (currentBuild[PART_TYPES.CASE]?.id === 'case_cardboard') {
+            notify("You cannot deliver a build in a Cardboard Box!", "error");
+            return;
+        }
 
         if (stats.totalPerf < order.minPerf) {
             notify(`Performance too low (${stats.totalPerf}/${order.minPerf})`, "error");
@@ -492,6 +541,22 @@ export const useGameStore = create(
             }
             if (order.req.interface && !parts.some(p => p.interface === order.req.interface)) {
                 penalties.push(`Missing ${order.req.interface} component`);
+            }
+            if (order.req.radSize) {
+                const cooler = parts.find(p => p.type === PART_TYPES.COOLER);
+                if (!cooler || cooler.radSize !== order.req.radSize) penalties.push(`Incorrect Radiator Size (Required: ${order.req.radSize}mm)`);
+            }
+            if (order.req.minRadSize) {
+                const cooler = parts.find(p => p.type === PART_TYPES.COOLER);
+                if (!cooler || cooler.radSize < order.req.minRadSize) penalties.push(`Insufficient Radiator Size (Minimum: ${order.req.minRadSize}mm)`);
+            }
+            if (order.req.minAirflow) {
+                const pcCase = parts.find(p => p.type === PART_TYPES.CASE);
+                if (!pcCase || pcCase.airflow < order.req.minAirflow) penalties.push("Insufficient Case Airflow");
+            }
+            if (order.req.minCooling) {
+                const cooler = parts.find(p => p.type === PART_TYPES.COOLER);
+                if (!cooler || cooler.cooling < order.req.minCooling) penalties.push("Insufficient Cooling Capacity");
             }
         }
 
@@ -585,7 +650,7 @@ export const useGameStore = create(
       },
 
       cancelJob: (jobId) => {
-        const { activeOrders, activeRequests, inventory, notify } = get();
+        const { activeRequests, inventory, notify } = get();
         
         // Check if it's a request (Repair/Upgrade)
         const request = activeRequests.find(r => r.id === jobId);

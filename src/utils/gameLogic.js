@@ -83,15 +83,33 @@ export const calculateBuildStats = (build, skills = {}) => {
   
   const cpu = parts.find(p => p.type === PART_TYPES.CPU);
   const gpu = parts.find(p => p.type === PART_TYPES.GPU);
+  const cooler = parts.find(p => p.type === PART_TYPES.COOLER);
+  const pcCase = parts.find(p => p.type === PART_TYPES.CASE);
+
   let bottleneckPenalty = 0;
+  let thermalPenalty = 0;
   
-  // Bottleneck Logic: GPU cannot exceed 1.5x CPU performance
+  // 1. Thermal Throttling Logic
+  if (cpu && cooler) {
+    if (cpu.power > cooler.cooling) {
+      thermalPenalty = Math.floor((cpu.power - cooler.cooling) * 0.5);
+      rawPerf = Math.max(5, rawPerf - thermalPenalty);
+    }
+  }
+
+  // 2. Airflow Impact Logic
+  if (pcCase) {
+    // Airflow baseline is 2. Range 0-5. -2% to +3% impact.
+    perfMultiplier *= (1 + (pcCase.airflow - 2) * 0.01);
+  }
+
+  // 3. Bottleneck Logic: GPU cannot exceed 1.5x CPU performance
   if (cpu && gpu) {
-      const cpuPerf = cpu.perf || 0;
+      const cpuPerf = (cpu.perf || 0) - (thermalPenalty > 0 ? thermalPenalty * 0.8 : 0); // Thermal affects CPU perf more
       const gpuPerf = gpu.perf || 0;
       if (gpuPerf > cpuPerf * 1.5) {
-           bottleneckPenalty = gpuPerf - (cpuPerf * 1.5);
-           rawPerf -= bottleneckPenalty;
+           bottleneckPenalty = Math.floor(gpuPerf - (cpuPerf * 1.5));
+           rawPerf = Math.max(5, rawPerf - bottleneckPenalty);
       }
   }
 
@@ -101,5 +119,5 @@ export const calculateBuildStats = (build, skills = {}) => {
   const ocBonus = 1 + ((skills.overclocking || 0) * 0.01);
   const finalPerf = Math.floor(totalPerf * ocBonus);
   
-  return { totalPower, totalPerf: finalPerf, bottleneckPenalty, ramBonus };
+  return { totalPower, totalPerf: finalPerf, bottleneckPenalty, thermalPenalty, ramBonus };
 };

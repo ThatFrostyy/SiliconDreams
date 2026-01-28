@@ -45,6 +45,7 @@ export default function App() {
   const unreadSales = useGameStore(state => state.unreadSales);
   const binningHistory = useGameStore(state => state.binningHistory);
   const celebration = useGameStore(state => state.celebration);
+  const cleaningBench = useGameStore(state => state.cleaningBench);
   
   // --- STORE ACTIONS ---
   const setMoney = useGameStore(state => state.setMoney);
@@ -75,6 +76,10 @@ export default function App() {
   const buyUpgrade = useGameStore(state => state.buyUpgrade);
   const binPart = useGameStore(state => state.binPart);
   const unlockSkill = useGameStore(state => state.unlockSkill);
+  const setCleaningTool = useGameStore(state => state.setCleaningTool);
+  const placeOnCleaningMat = useGameStore(state => state.placeOnCleaningMat);
+  const removeCleaningPart = useGameStore(state => state.removeCleaningPart);
+  const cleanSpot = useGameStore(state => state.cleanSpot);
 
   const [showSettings, setShowSettings] = useState(false);
   const [inventoryCategory, setInventoryCategory] = useState('ALL');
@@ -323,6 +328,11 @@ export default function App() {
               onDisassemble={disassembleBuild}
               onSellBuild={sellBuildInstant}
               sellMarkup={sellMarkup}
+              cleaningBench={cleaningBench}
+              setCleaningTool={setCleaningTool}
+              placeOnCleaningMat={placeOnCleaningMat}
+              removeCleaningPart={removeCleaningPart}
+              cleanSpot={cleanSpot}
             />
           )}
           {view === 'shop' && <Shop buyPart={buyPart} money={money} darkMode={settings.darkMode} settings={settings} skills={skills} buyPallet={buyPallet} />}

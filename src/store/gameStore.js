@@ -29,6 +29,7 @@ export const useGameStore = create(
       user: null,
       message: { text: '', type: '' }, // Notification state
       celebration: null, // 'GOLDEN' or null
+      cleaningBench: { part: null, dust: [], stains: [], activeTool: null },
 
       // --- SETTERS ---
       setMoney: (val) => set(state => ({ money: typeof val === 'function' ? val(state.money) : val })),
@@ -459,7 +460,7 @@ export const useGameStore = create(
             startingPartsDef.forEach(def => {
                 const catalogPart = PARTS_CATALOG.find(p => p.id === def.id);
                 if (catalogPart) {
-                    let part = { ...catalogPart, invId: Math.random().toString(36).substr(2, 9) };
+                    let part = { ...catalogPart, invId: Math.random().toString(36).substr(2, 9), jobId: order.id };
                     
                     // Apply Modifier (e.g. 'dud', 'rusty')
                     if (def.modifier && MODIFIERS[def.modifier]) {
@@ -650,24 +651,61 @@ export const useGameStore = create(
       },
 
       cancelJob: (jobId) => {
-        const { activeRequests, inventory, notify } = get();
+        const { activeRequests, inventory, builds, notify } = get();
         
         // Check if it's a request (Repair/Upgrade)
         const request = activeRequests.find(r => r.id === jobId);
         if (request) {
-             // If it was in progress, remove the customer PC from inventory
-             const customerPC = inventory.find(p => p.type === 'PC' && p.name.includes(request.title));
-             let newInventory = inventory;
-             if (customerPC) {
-                 newInventory = inventory.filter(p => p.invId !== customerPC.invId);
-             }
+             let currentJobParts = [];
+
+             // 1. Find parts in inventory (including inside PCs)
+             const newInventory = inventory.filter(p => {
+                 if (p.jobId === jobId) {
+                     currentJobParts.push(p);
+                     return false;
+                 }
+                 if (p.type === 'PC' && p.parts) {
+                     const pcParts = Object.values(p.parts);
+                     if (pcParts.some(pp => pp.jobId === jobId)) {
+                         pcParts.forEach(pp => { if (pp.jobId === jobId) currentJobParts.push(pp); });
+                         return false; // Remove the whole PC if it contains customer parts
+                     }
+                 }
+                 return true;
+             });
+
+             // 2. Find parts in builds
+             const newBuilds = { ...builds };
+             Object.keys(newBuilds).forEach(benchId => {
+                 const build = { ...newBuilds[benchId] };
+                 let changed = false;
+                 Object.keys(build).forEach(slot => {
+                     if (build[slot].jobId === jobId) {
+                         currentJobParts.push(build[slot]);
+                         delete build[slot];
+                         changed = true;
+                     }
+                 });
+                 if (changed) newBuilds[benchId] = build;
+             });
+
+             // 3. Calculate Reputation Penalty
+             const originalCount = request.startingParts?.length || 0;
+             const missingCount = Math.max(0, originalCount - currentJobParts.length);
+             const extraPenalty = missingCount * 10;
 
              set(state => ({
                  activeRequests: state.activeRequests.filter(r => r.id !== jobId),
                  inventory: newInventory,
-                 reputation: Math.max(0, state.reputation - 5)
+                 builds: newBuilds,
+                 reputation: Math.max(0, state.reputation - 5 - extraPenalty)
              }));
-             notify("Job Cancelled. Reputation -5.", "info");
+
+             if (missingCount > 0) {
+                 notify(`Job Cancelled. You lost ${missingCount} customer parts! Rep -${5 + extraPenalty}`, "error");
+             } else {
+                 notify("Job Cancelled. All parts returned. Reputation -5.", "info");
+             }
         } else {
             set(state => ({
                 activeOrders: state.activeOrders.filter(o => o.id !== jobId),
@@ -689,6 +727,106 @@ export const useGameStore = create(
             notify(`Purchased ${upgrade.name}!`, "success");
         } else {
             notify("Not enough money!", "error");
+        }
+      },
+
+      // Cleaning Bench Actions
+      setCleaningTool: (tool) => set(state => ({ cleaningBench: { ...state.cleaningBench, activeTool: tool } })),
+
+      placeOnCleaningMat: (part) => {
+        const { notify } = get();
+        if (['CPU', 'GPU', 'Motherboard', 'RAM', 'Storage'].indexOf(part.type) === -1) {
+            notify("Only core components can be cleaned.", "error");
+            return;
+        }
+
+        const dust = [];
+        const stains = [];
+        const count = 10 + Math.floor(Math.random() * 10);
+
+        for (let i = 0; i < count; i++) {
+            dust.push({ id: i, x: Math.random() * 80 + 10, y: Math.random() * 80 + 10, size: 15 + Math.random() * 15, opacity: 0.6 + Math.random() * 0.4 });
+        }
+
+        if (part.modifierId === 'corroded' || part.modifierId === 'gunked_up') {
+            for (let i = 0; i < 5; i++) {
+                stains.push({ id: i + 100, x: Math.random() * 70 + 15, y: Math.random() * 70 + 15, size: 20 + Math.random() * 10, sprayed: false });
+            }
+        }
+
+        set(state => ({
+            inventory: state.inventory.filter(p => p.invId !== part.invId),
+            cleaningBench: { part, dust, stains, activeTool: null }
+        }));
+      },
+
+      removeCleaningPart: () => {
+        const { cleaningBench, inventory } = get();
+        if (!cleaningBench.part) return;
+
+        set({
+            inventory: [...inventory, cleaningBench.part],
+            cleaningBench: { part: null, dust: [], stains: [], activeTool: null }
+        });
+      },
+
+      cleanSpot: (x, y) => {
+        const { cleaningBench, settings } = get();
+        const { activeTool, dust, stains } = cleaningBench;
+        if (!activeTool) return;
+
+        let newDust = [...dust];
+        let newStains = [...stains];
+        let changed = false;
+
+        if (activeTool === 'BRUSH') {
+            newDust = dust.filter(d => {
+                const dist = Math.sqrt(Math.pow(d.x - x, 2) + Math.pow(d.y - y, 2));
+                if (dist < 10) { changed = true; return false; }
+                return true;
+            });
+            // Also brush away sprayed stains
+            newStains = stains.filter(s => {
+                const dist = Math.sqrt(Math.pow(s.x - x, 2) + Math.pow(s.y - y, 2));
+                if (dist < 10 && s.sprayed) { changed = true; return false; }
+                return true;
+            });
+        } else if (activeTool === 'SPRAY') {
+            newStains = stains.map(s => {
+                const dist = Math.sqrt(Math.pow(s.x - x, 2) + Math.pow(s.y - y, 2));
+                if (dist < 12 && !s.sprayed) { changed = true; return { ...s, sprayed: true }; }
+                return s;
+            });
+        }
+
+        if (changed) {
+            set(state => ({ cleaningBench: { ...state.cleaningBench, dust: newDust, stains: newStains } }));
+            if (newDust.length === 0 && newStains.length === 0) {
+                // Finished!
+                const part = cleaningBench.part;
+                let newModifierId = null;
+
+                // Modifier Improvement Logic
+                if (part.modifierId === 'corroded') newModifierId = 'rusty';
+                else if (part.modifierId === 'rusty') newModifierId = 'used';
+                else if (part.modifierId === 'gunked_up') newModifierId = 'used';
+                else if (part.modifierId === 'dusty') newModifierId = null;
+                else if (part.modifierId === 'used') newModifierId = null;
+
+                const basePart = PARTS_CATALOG.find(p => p.id === part.id);
+                let cleanedPart = { ...basePart, invId: part.invId, jobId: part.jobId, isJobPart: part.isJobPart };
+                if (newModifierId) {
+                    cleanedPart = applyModifier(cleanedPart, MODIFIERS[newModifierId]);
+                }
+
+                get().notify(`Cleaning Complete! ${part.name} improved.`, "success");
+                playSound('success', settings.sfx);
+
+                set(state => ({
+                    inventory: [...state.inventory, cleanedPart],
+                    cleaningBench: { part: null, dust: [], stains: [], activeTool: null }
+                }));
+            }
         }
       },
 

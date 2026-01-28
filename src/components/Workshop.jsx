@@ -4,6 +4,7 @@ import { Wrench, XCircle, ChevronRight, TrendingUp, Zap, ClipboardList, CheckCir
 import { PART_TYPES } from '../data/constants';
 import { PartIcon } from './Shared';
 import { calculateBuildStats } from '../utils/gameLogic';
+import CleaningBench from './CleaningBench';
 
 const Slot = ({ type, label, slotKey, className = "", currentBuild, handleSlotClick, darkMode, removeFromBuild }) => {
   const key = slotKey || type;
@@ -47,7 +48,7 @@ const Slot = ({ type, label, slotKey, className = "", currentBuild, handleSlotCl
   );
 };
 
-export default function Workshop({ currentBuild, removeFromBuild, clearBuild, handleSlotClick, darkMode, buildStats: propStats, onSaveBuild, activeBench, setActiveBench, ownedUpgrades, achievements, sellMarkup = 1.15 }) {
+export default function Workshop({ currentBuild, removeFromBuild, clearBuild, handleSlotClick, darkMode, buildStats: propStats, onSaveBuild, activeBench, setActiveBench, ownedUpgrades, achievements, sellMarkup = 1.15, cleaningBench, setCleaningTool, placeOnCleaningMat, removeCleaningPart, cleanSpot, inventory }) {
   
   const mobo = currentBuild[PART_TYPES.MOTHERBOARD];
   const ramSlotCount = mobo?.ramSlots || 4;
@@ -90,16 +91,31 @@ export default function Workshop({ currentBuild, removeFromBuild, clearBuild, ha
 
   return (
     <div className="space-y-6">
-      {ownedUpgrades && ownedUpgrades.includes('bench_2') && (
-        <div className="flex gap-2">
-            <button onClick={() => setActiveBench(0)} className={`flex-1 py-2 rounded-lg font-bold text-xs uppercase tracking-wider transition-all ${activeBench === 0 ? 'bg-blue-600 text-white shadow-lg' : 'bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-400'}`}>
-                Workbench 1
-            </button>
-            <button onClick={() => setActiveBench(1)} className={`flex-1 py-2 rounded-lg font-bold text-xs uppercase tracking-wider transition-all ${activeBench === 1 ? 'bg-blue-600 text-white shadow-lg' : 'bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-400'}`}>
-                Workbench 2
-            </button>
-        </div>
-      )}
+      <div className="flex gap-2">
+          <button onClick={() => setActiveBench(0)} className={`flex-1 py-2 rounded-lg font-bold text-xs uppercase tracking-wider transition-all ${activeBench === 0 ? 'bg-blue-600 text-white shadow-lg' : 'bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-400'}`}>
+              Workbench 1
+          </button>
+          {ownedUpgrades && ownedUpgrades.includes('bench_2') && (
+          <button onClick={() => setActiveBench(1)} className={`flex-1 py-2 rounded-lg font-bold text-xs uppercase tracking-wider transition-all ${activeBench === 1 ? 'bg-blue-600 text-white shadow-lg' : 'bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-400'}`}>
+              Workbench 2
+          </button>
+          )}
+          <button onClick={() => setActiveBench('CLEANING')} className={`flex-1 py-2 rounded-lg font-bold text-xs uppercase tracking-wider transition-all ${activeBench === 'CLEANING' ? 'bg-emerald-600 text-white shadow-lg' : 'bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-400'}`}>
+              Cleaning Bench
+          </button>
+      </div>
+
+      {activeBench === 'CLEANING' ? (
+        <CleaningBench
+          cleaningBench={cleaningBench}
+          setCleaningTool={setCleaningTool}
+          cleanSpot={cleanSpot}
+          inventory={inventory}
+          placeOnCleaningMat={placeOnCleaningMat}
+          removeCleaningPart={removeCleaningPart}
+          darkMode={darkMode}
+        />
+      ) : (
       <section className={`rounded-2xl border overflow-hidden shadow-2xl transition-colors ${darkMode ? 'bg-slate-950 border-slate-800' : 'bg-white border-slate-200'}`}>
         <div className={`p-6 border-b flex justify-between items-center ${darkMode ? 'border-slate-800 bg-slate-900' : 'border-slate-200 bg-slate-50'}`}>
           <h2 className={`text-xl font-bold flex items-center gap-2 italic ${isGold ? 'text-amber-400' : (darkMode ? 'text-slate-100' : 'text-slate-800')}`}>
@@ -227,6 +243,7 @@ export default function Workshop({ currentBuild, removeFromBuild, clearBuild, ha
           </div>
         </div>
       </section>
+      )}
 
       {/* Checklist */}
       <div className={`p-5 rounded-xl border ${darkMode ? 'bg-slate-900/50 border-slate-800/50' : 'bg-white border-slate-200'}`}>

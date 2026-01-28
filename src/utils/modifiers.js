@@ -9,6 +9,9 @@ export const MODIFIERS = {
   'dud': { id: 'dud', label: 'Dud', color: 'text-amber-700', perfMult: 0.95, priceMult: 0.8 },
   'unstable': { id: 'unstable', label: 'Unstable', color: 'text-red-600', perfMult: 1.15, priceMult: 0.5, unreliable: true },
   'rusty': { id: 'rusty', label: 'Rusty', color: 'text-orange-800', perfMult: 0.8, priceMult: 0.4, unreliable: true },
+  'dusty': { id: 'dusty', label: 'Dusty', color: 'text-slate-400', perfMult: 0.95, priceMult: 0.9 },
+  'corroded': { id: 'corroded', label: 'Corroded', color: 'text-emerald-800', perfMult: 0.75, priceMult: 0.4, unreliable: true },
+  'gunked_up': { id: 'gunked_up', label: 'Gunked Up', color: 'text-yellow-900', perfMult: 0.85, priceMult: 0.6 },
 };
 
 export const getRandomModifier = (tier = 'STANDARD') => {
@@ -19,25 +22,31 @@ export const getRandomModifier = (tier = 'STANDARD') => {
     if (roll > 0.65) return MODIFIERS['overclocked']; // 20%
     if (roll > 0.50) return MODIFIERS['silver_sample']; // 15%
     if (roll > 0.45) return MODIFIERS['used']; // 5%
-    return null; // 45% Clean
+    if (roll > 0.40) return MODIFIERS['dusty']; // 5%
+    return null; // 40% Clean
   }
   
   if (tier === 'MEDIUM') {
     if (roll > 0.95) return MODIFIERS['golden_chip']; // 5%
     if (roll > 0.85) return MODIFIERS['overclocked']; // 10%
     if (roll > 0.75) return MODIFIERS['used']; // 10%
-    if (roll > 0.70) return MODIFIERS['dud']; // 5%
-    return null;
+    if (roll > 0.65) return MODIFIERS['dusty']; // 10%
+    if (roll > 0.60) return MODIFIERS['gunked_up']; // 5%
+    if (roll > 0.55) return MODIFIERS['dud']; // 5%
+    return null; // 55% Clean
   }
 
-  // Standard (Low Tier - More bad stuff)
+  // Standard (Low Tier - More bad stuff ~70% modified)
   if (roll > 0.98) return MODIFIERS['golden_chip']; // 2% Jackpot
   if (roll > 0.90) return MODIFIERS['overclocked']; // 8%
-  if (roll > 0.60) return MODIFIERS['used']; // 30%
-  if (roll > 0.40) return MODIFIERS['dud']; // 20%
-  if (roll > 0.30) return MODIFIERS['rusty']; // 10%
-  if (roll > 0.25) return MODIFIERS['unstable']; // 5%
-  return null;
+  if (roll > 0.75) return MODIFIERS['used']; // 15%
+  if (roll > 0.60) return MODIFIERS['dusty']; // 15%
+  if (roll > 0.50) return MODIFIERS['gunked_up']; // 10%
+  if (roll > 0.45) return MODIFIERS['corroded']; // 5%
+  if (roll > 0.40) return MODIFIERS['rusty']; // 5%
+  if (roll > 0.35) return MODIFIERS['dud']; // 5%
+  if (roll > 0.30) return MODIFIERS['unstable']; // 5%
+  return null; // 30% Clean
 };
 
 export const getBinningResult = (skillLevel = 0) => {

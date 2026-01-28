@@ -14,11 +14,11 @@ const SprayMist = ({ x, y }) => (
 
 const BrushSprite = ({ isInteracting }) => (
   <div className={`pointer-events-none transition-transform ${isInteracting ? 'rotate-[-45deg] translate-y-[-10px]' : 'rotate-[-20deg]'}`}>
-    <div className="w-12 h-32 bg-amber-800 rounded-t-lg border-2 border-amber-900 relative">
-      <div className="absolute bottom-0 left-0 w-full h-12 bg-slate-300 border-t-2 border-slate-400 flex flex-wrap gap-0.5 p-1">
-        {[...Array(20)].map((_, i) => <div key={i} className="w-0.5 h-full bg-slate-500/50" />)}
+    <div className="w-12 h-32 bg-amber-900 rounded-t-lg border-2 border-amber-950 relative">
+      <div className="absolute bottom-0 left-0 w-full h-12 bg-slate-800 border-t-2 border-slate-700 flex flex-wrap gap-0.5 p-1">
+        {[...Array(20)].map((_, i) => <div key={i} className="w-0.5 h-full bg-slate-950/40" />)}
       </div>
-      <div className="absolute -bottom-8 left-0 w-full h-8 bg-amber-200/40 rounded-b-lg blur-[1px]" />
+      <div className="absolute -bottom-4 left-0 w-full h-4 bg-slate-800/30 rounded-b-lg blur-[2px]" />
     </div>
   </div>
 );
@@ -174,7 +174,7 @@ export default function CleaningBench({ cleaningBench, setCleaningTool, cleanSpo
         y -= 10;
     } else if (activeTool === 'BRUSH') {
         // Clean with the bristles (bottom of the tool)
-        y += 10;
+        y += 25;
     }
 
     cleanSpot(x, y);
@@ -203,7 +203,7 @@ export default function CleaningBench({ cleaningBench, setCleaningTool, cleanSpo
         let ix = x;
         let iy = y;
         if (activeTool === 'SPRAY') { ix += 15; iy -= 10; }
-        else if (activeTool === 'BRUSH') { iy += 10; }
+        else if (activeTool === 'BRUSH') { iy += 25; }
         cleanSpot(ix, iy);
     }
   };

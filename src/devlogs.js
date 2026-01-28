@@ -1,5 +1,30 @@
 export const DEVLOGS = [
   {
+    id: 'patch_1_3',
+    title: "Patch 1.3: The Cleaning & Compatibility Update",
+    date: "Jan 28, 2026",
+    summary: "Physical compatibility, thermal throttling, and the arrival of the Cleaning Bench.",
+    content: `**Patch 1.3 Changes**
+
+**Cleaning & Restoration:**
+- **The Cleaning Bench**: A new workshop module is now active! Move dirty components here to restore them to their former glory.
+- **Interactive Minigame**: Use the **Alcohol Spray** (with physical travel distance) and the **ESD Brush** to manually scrub away grime.
+- **Component Visuals**: Core components (CPU, GPU, RAM, Mobo, Storage) now have detailed graphical representations with visible PCBs and textures.
+- **Containment**: Grime and cleaning effects are now contained strictly within the component sprites.
+
+**Hardware & Physics:**
+- **Physical Compatibility**: Cases now enforce strict limits on **GPU Length**, **Cooler Height**, **Radiator Size**, and **Motherboard Form Factor**.
+- **Thermal Throttling**: If a CPU's power draw exceeds your cooler's capacity, the system will now throttle performance.
+- **Airflow**: Case airflow ratings now provide a secondary modifier to overall system efficiency.
+- **New Modifiers**: Added **'Dusty'**, **'Corroded'**, and **'Gunked Up'** conditions to parts.
+
+**Economy & Quality of Life:**
+- **Job Returns**: Customer hardware is now tracked by Job ID. Canceling a job will automatically return all specific parts to the customer.
+- **Reputation Penalty**: Be warned: if you've sold or misplaced a customer's original part, you'll face an extra reputation penalty upon cancellation!
+- **Pallet Rework**: Standard pallets now yield ~70% modified parts, making the Cleaning Bench a essential tool for profit.
+- **Mobile Support**: Added full touch event support for the Cleaning Bench and Workshop interactions.`
+  },
+  {
     id: 'patch_1_2',
     title: "Patch 1.2: Hardware Expansion",
     date: "Jan 27, 2026",

@@ -34,7 +34,7 @@ const SpraySprite = ({ isInteracting }) => (
   </div>
 );
 
-const ComponentGraphic = ({ type, name, jiggle, dust = [], stains = [] }) => {
+const ComponentGraphic = ({ type, name, dust = [], stains = [] }) => {
   const pcbColor = "#1a3a3a"; // Dark forest green/teal PCB
   const traceColor = "#2d5a5a";
 
@@ -45,10 +45,10 @@ const ComponentGraphic = ({ type, name, jiggle, dust = [], stains = [] }) => {
           key={s.id}
           cx={`${s.x}%`}
           cy={`${s.y}%`}
-          r={s.size / 2}
-          fill={s.sprayed ? "#60a5fa" : "#064e3b"}
-          fillOpacity={s.sprayed ? 0.6 : 0.9}
-          filter="blur(4px)"
+          r={s.size / 4}
+          fill={s.sprayed ? "#3b82f6" : "#064e3b"}
+          fillOpacity={s.sprayed ? 0.8 : 1}
+          filter="blur(2px)"
         />
       ))}
       {dust.map(d => (
@@ -56,10 +56,10 @@ const ComponentGraphic = ({ type, name, jiggle, dust = [], stains = [] }) => {
           key={d.id}
           cx={`${d.x}%`}
           cy={`${d.y}%`}
-          r={d.size / 1.5}
-          fill="#94a3b8"
-          fillOpacity={d.opacity * 1.2}
-          filter="blur(8px)"
+          r={d.size / 4}
+          fill="#475569"
+          fillOpacity={1}
+          filter="blur(1px)"
         />
       ))}
     </g>
@@ -149,7 +149,7 @@ const ComponentGraphic = ({ type, name, jiggle, dust = [], stains = [] }) => {
   };
 
   return (
-    <div className={`transition-transform duration-75 ${jiggle ? 'animate-bounce' : ''}`} style={{ width: type === 'GPU' || type === 'RAM' ? '400px' : '300px' }}>
+    <div style={{ width: type === 'GPU' || type === 'RAM' ? '400px' : '300px' }}>
       {graphics[type] || motherboard}
     </div>
   );
@@ -172,6 +172,9 @@ export default function CleaningBench({ cleaningBench, setCleaningTool, cleanSpo
         // Spray travels! Lands to the right and slightly up from nozzle
         x += 15;
         y -= 10;
+    } else if (activeTool === 'BRUSH') {
+        // Clean with the bristles (bottom of the tool)
+        y += 10;
     }
 
     cleanSpot(x, y);
@@ -200,6 +203,7 @@ export default function CleaningBench({ cleaningBench, setCleaningTool, cleanSpo
         let ix = x;
         let iy = y;
         if (activeTool === 'SPRAY') { ix += 15; iy -= 10; }
+        else if (activeTool === 'BRUSH') { iy += 10; }
         cleanSpot(ix, iy);
     }
   };
@@ -315,7 +319,7 @@ export default function CleaningBench({ cleaningBench, setCleaningTool, cleanSpo
                 >
                   {/* The Part */}
                   <div className={`transition-all duration-500 transform ${isInteracting ? 'scale-[1.02]' : 'scale-100'}`}>
-                     <ComponentGraphic type={part.type} name={part.name} jiggle={isInteracting && activeTool === 'BRUSH'} dust={dust} stains={stains} />
+                     <ComponentGraphic type={part.type} name={part.name} dust={dust} stains={stains} />
                      <div className="text-center mt-4">
                         <p className="text-xs font-black uppercase tracking-widest text-slate-500">{part.name}</p>
                      </div>

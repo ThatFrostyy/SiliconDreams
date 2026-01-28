@@ -34,9 +34,36 @@ const SpraySprite = ({ isInteracting }) => (
   </div>
 );
 
-const ComponentGraphic = ({ type, name, jiggle }) => {
+const ComponentGraphic = ({ type, name, jiggle, dust = [], stains = [] }) => {
   const pcbColor = "#1a3a3a"; // Dark forest green/teal PCB
   const traceColor = "#2d5a5a";
+
+  const grimeOverlay = (
+    <g>
+      {stains.map(s => (
+        <circle
+          key={s.id}
+          cx={`${s.x}%`}
+          cy={`${s.y}%`}
+          r={s.size / 2}
+          fill={s.sprayed ? "#60a5fa" : "#064e3b"}
+          fillOpacity={s.sprayed ? 0.6 : 0.9}
+          filter="blur(4px)"
+        />
+      ))}
+      {dust.map(d => (
+        <circle
+          key={d.id}
+          cx={`${d.x}%`}
+          cy={`${d.y}%`}
+          r={d.size / 1.5}
+          fill="#94a3b8"
+          fillOpacity={d.opacity * 1.2}
+          filter="blur(8px)"
+        />
+      ))}
+    </g>
+  );
 
   const motherboard = (
     <svg viewBox="0 0 200 200" className="w-full h-full drop-shadow-2xl">
@@ -55,6 +82,7 @@ const ComponentGraphic = ({ type, name, jiggle }) => {
       <circle cx="50" cy="60" r="4" fill="#555" />
       <circle cx="50" cy="75" r="4" fill="#555" />
       <circle cx="50" cy="90" r="4" fill="#555" />
+      {grimeOverlay}
     </svg>
   );
 
@@ -70,6 +98,7 @@ const ComponentGraphic = ({ type, name, jiggle }) => {
       <path d="M215 45 L215 105 M185 75 L245 75" stroke="#222" strokeWidth="4" />
       {/* Backplate connector */}
       <rect x="50" y="120" width="150" height="5" fill="#c5a059" />
+      {grimeOverlay}
     </svg>
   );
 
@@ -79,6 +108,7 @@ const ComponentGraphic = ({ type, name, jiggle }) => {
       <rect x="20" y="20" width="60" height="60" fill="#e0e0e0" rx="1" />
       <text x="50" y="55" fontSize="8" fontWeight="bold" fill="#999" textAnchor="middle" fontFamily="monospace">{name?.substring(0, 10)}</text>
       <path d="M15 15 L25 15 M15 15 L15 25" stroke="#999" strokeWidth="1" fill="none" />
+      {grimeOverlay}
     </svg>
   );
 
@@ -91,6 +121,7 @@ const ComponentGraphic = ({ type, name, jiggle }) => {
       ))}
       {/* Contacts */}
       <rect x="10" y="45" width="220" height="4" fill="#c5a059" />
+      {grimeOverlay}
     </svg>
   );
 
@@ -105,6 +136,7 @@ const ComponentGraphic = ({ type, name, jiggle }) => {
       <circle cx="100" cy="20" r="2" fill="#555" />
       <circle cx="20" cy="140" r="2" fill="#555" />
       <circle cx="100" cy="140" r="2" fill="#555" />
+      {grimeOverlay}
     </svg>
   );
 
@@ -153,6 +185,23 @@ export default function CleaningBench({ cleaningBench, setCleaningTool, cleanSpo
     setMousePos({ x, y });
 
     if (isInteracting) handleInteraction(e);
+  };
+
+  const onTouchMove = (e) => {
+    if (!matRef.current || !e.touches[0]) return;
+    const touch = e.touches[0];
+    const rect = matRef.current.getBoundingClientRect();
+    const x = ((touch.clientX - rect.left) / rect.width) * 100;
+    const y = ((touch.clientY - rect.top) / rect.height) * 100;
+    setMousePos({ x, y });
+
+    if (isInteracting) {
+        // Handle physical interaction for touch
+        let ix = x;
+        let iy = y;
+        if (activeTool === 'SPRAY') { ix += 15; iy -= 10; }
+        cleanSpot(ix, iy);
+    }
   };
 
   const dirtyParts = inventory.filter(p =>
@@ -249,54 +298,39 @@ export default function CleaningBench({ cleaningBench, setCleaningTool, cleanSpo
                   onMouseUp={() => setIsInteracting(false)}
                   onMouseLeave={() => setIsInteracting(false)}
                   onMouseMove={onMouseMove}
-                  className={`relative w-full h-full flex items-center justify-center cursor-none z-10`}
+                  onTouchStart={(e) => {
+                    setIsInteracting(true);
+                    if (matRef.current && e.touches[0]) {
+                        const touch = e.touches[0];
+                        const rect = matRef.current.getBoundingClientRect();
+                        setMousePos({
+                            x: ((touch.clientX - rect.left) / rect.width) * 100,
+                            y: ((touch.clientY - rect.top) / rect.height) * 100
+                        });
+                    }
+                  }}
+                  onTouchEnd={() => setIsInteracting(false)}
+                  onTouchMove={onTouchMove}
+                  className={`relative w-full h-full flex items-center justify-center cursor-none z-10 touch-none`}
                 >
                   {/* The Part */}
                   <div className={`transition-all duration-500 transform ${isInteracting ? 'scale-[1.02]' : 'scale-100'}`}>
-                     <ComponentGraphic type={part.type} name={part.name} jiggle={isInteracting && activeTool === 'BRUSH'} />
+                     <ComponentGraphic type={part.type} name={part.name} jiggle={isInteracting && activeTool === 'BRUSH'} dust={dust} stains={stains} />
                      <div className="text-center mt-4">
                         <p className="text-xs font-black uppercase tracking-widest text-slate-500">{part.name}</p>
                      </div>
                   </div>
 
-                  {/* Stains */}
-                  {stains.map(s => (
-                    <div
-                      key={s.id}
-                      style={{
-                        left: `${s.x}%`,
-                        top: `${s.y}%`,
-                        width: `${s.size}px`,
-                        height: `${s.size}px`,
-                      }}
-                      className={`absolute rounded-full blur-md transition-opacity duration-300 pointer-events-none
-                        ${s.sprayed ? 'bg-blue-400/40' : 'bg-emerald-900/60'}
-                      `}
-                    />
-                  ))}
-
-                  {/* Dust */}
-                  {dust.map(d => (
-                    <div
-                      key={d.id}
-                      style={{
-                        left: `${d.x}%`,
-                        top: `${d.y}%`,
-                        width: `${d.size}px`,
-                        height: `${d.size}px`,
-                        opacity: d.opacity
-                      }}
-                      className="absolute bg-slate-400/40 rounded-full blur-xl pointer-events-none"
-                    />
-                  ))}
-
                   {/* Targeting Crosshair for Spray */}
                   {activeTool === 'SPRAY' && (
                     <div
-                      className={`absolute pointer-events-none w-8 h-8 border-2 border-dashed border-blue-400/50 rounded-full flex items-center justify-center transition-opacity ${isInteracting ? 'opacity-100' : 'opacity-20'}`}
+                      className={`absolute pointer-events-none w-14 h-14 border-4 border-dashed border-blue-300 rounded-full flex items-center justify-center transition-opacity ${isInteracting ? 'opacity-100 scale-90' : 'opacity-80 scale-100'} filter drop-shadow-[0_0_8px_rgba(96,165,250,0.8)]`}
                       style={{ left: `${mousePos.x + 15}%`, top: `${mousePos.y - 10}%`, transform: 'translate(-50%, -50%)' }}
                     >
-                        <div className="w-1 h-1 bg-blue-400 rounded-full" />
+                        <div className="w-3 h-3 bg-blue-400 rounded-full border-2 border-white shadow-[0_0_10px_rgba(255,255,255,1)]" />
+                        {/* Crosshair Lines */}
+                        <div className="absolute w-full h-0.5 bg-blue-300/30" />
+                        <div className="absolute h-full w-0.5 bg-blue-300/30" />
                     </div>
                   )}
 

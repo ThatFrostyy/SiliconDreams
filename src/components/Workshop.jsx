@@ -172,8 +172,10 @@ export default function Workshop({ currentBuild, removeFromBuild, clearBuild, ha
 
             {/* Right Column: Expansion & Power */}
             <div className="lg:col-span-4 space-y-4">
+                <Slot {...slotProps} type={PART_TYPES.CASE} label="PC Case" className="h-32 border-dashed border-emerald-500/20" />
                 <Slot {...slotProps} type={PART_TYPES.GPU} label="Graphics Card" className="h-48" />
                 <div className="grid grid-cols-2 lg:grid-cols-1 gap-4">
+                    <Slot {...slotProps} type={PART_TYPES.COOLER} label="CPU Cooler" className="h-32" />
                     <Slot {...slotProps} type={PART_TYPES.PSU} label="Power Supply" className="h-32" />
                 </div>
             </div>
@@ -190,6 +192,11 @@ export default function Workshop({ currentBuild, removeFromBuild, clearBuild, ha
                 {buildStats.bottleneckPenalty > 0 && (
                   <div className="text-[10px] text-rose-500 font-bold flex items-center gap-1">
                     <AlertTriangle size={10} /> -{buildStats.bottleneckPenalty} (Bottleneck)
+                  </div>
+                )}
+                {buildStats.thermalPenalty > 0 && (
+                  <div className="text-[10px] text-orange-500 font-bold flex items-center gap-1">
+                    <Zap size={10} className="animate-pulse" /> -{buildStats.thermalPenalty} (Throttling)
                   </div>
                 )}
               </div>

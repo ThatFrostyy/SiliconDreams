@@ -3,6 +3,126 @@ import React, { useState, useRef } from 'react';
 import { Eraser, Wind, CheckCircle2, AlertTriangle, MousePointer2 } from 'lucide-react';
 import { PartIcon } from './Shared';
 
+const SprayMist = ({ x, y }) => (
+  <div
+    className="absolute pointer-events-none animate-ping origin-center"
+    style={{ left: `${x}%`, top: `${y}%`, width: '100px', height: '100px', transform: 'translate(-50%, -50%)' }}
+  >
+    <div className="w-full h-full bg-blue-400/20 rounded-full blur-xl" />
+  </div>
+);
+
+const BrushSprite = ({ isInteracting }) => (
+  <div className={`pointer-events-none transition-transform ${isInteracting ? 'rotate-[-45deg] translate-y-[-10px]' : 'rotate-[-20deg]'}`}>
+    <div className="w-12 h-32 bg-amber-800 rounded-t-lg border-2 border-amber-900 relative">
+      <div className="absolute bottom-0 left-0 w-full h-12 bg-slate-300 border-t-2 border-slate-400 flex flex-wrap gap-0.5 p-1">
+        {[...Array(20)].map((_, i) => <div key={i} className="w-0.5 h-full bg-slate-500/50" />)}
+      </div>
+      <div className="absolute -bottom-8 left-0 w-full h-8 bg-amber-200/40 rounded-b-lg blur-[1px]" />
+    </div>
+  </div>
+);
+
+const SpraySprite = ({ isInteracting }) => (
+  <div className={`pointer-events-none transition-transform ${isInteracting ? 'scale-95 translate-y-1' : ''}`}>
+    <div className="w-16 h-28 bg-blue-600 rounded-lg border-2 border-blue-800 relative">
+      <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-6 h-10 bg-slate-700 rounded-t-md">
+        <div className="absolute top-2 -right-4 w-4 h-2 bg-slate-800 rounded-full" /> {/* Nozzle */}
+      </div>
+      <div className="absolute top-4 left-2 right-2 h-10 bg-white/20 rounded font-black text-[8px] text-white flex items-center justify-center text-center leading-none">TECH<br/>CLEAN</div>
+    </div>
+  </div>
+);
+
+const ComponentGraphic = ({ type, name, jiggle }) => {
+  const pcbColor = "#1a3a3a"; // Dark forest green/teal PCB
+  const traceColor = "#2d5a5a";
+
+  const motherboard = (
+    <svg viewBox="0 0 200 200" className="w-full h-full drop-shadow-2xl">
+      <rect x="10" y="10" width="180" height="180" fill={pcbColor} rx="4" />
+      {/* PCB Traces */}
+      <path d="M20 20 L50 20 M20 30 L60 30 M150 150 L180 150" stroke={traceColor} strokeWidth="0.5" fill="none" />
+      {/* CPU Socket */}
+      <rect x="70" y="50" width="60" height="60" fill="#222" rx="2" />
+      <rect x="75" y="55" width="50" height="50" fill="#333" rx="1" />
+      {/* RAM Slots */}
+      <rect x="140" y="40" width="8" height="80" fill="#111" />
+      <rect x="155" y="40" width="8" height="80" fill="#111" />
+      {/* PCIe Slots */}
+      <rect x="30" y="140" width="120" height="10" fill="#111" />
+      {/* Capacitors */}
+      <circle cx="50" cy="60" r="4" fill="#555" />
+      <circle cx="50" cy="75" r="4" fill="#555" />
+      <circle cx="50" cy="90" r="4" fill="#555" />
+    </svg>
+  );
+
+  const gpu = (
+    <svg viewBox="0 0 300 150" className="w-full h-full">
+      <rect x="10" y="30" width="280" height="90" fill="#111" rx="4" />
+      <rect x="20" y="40" width="260" height="70" fill="#222" rx="2" />
+      {/* Fans */}
+      <circle cx="85" cy="75" r="30" fill="#151515" stroke="#333" strokeWidth="2" />
+      <circle cx="215" cy="75" r="30" fill="#151515" stroke="#333" strokeWidth="2" />
+      {/* Fan Blades */}
+      <path d="M85 45 L85 105 M55 75 L115 75" stroke="#222" strokeWidth="4" />
+      <path d="M215 45 L215 105 M185 75 L245 75" stroke="#222" strokeWidth="4" />
+      {/* Backplate connector */}
+      <rect x="50" y="120" width="150" height="5" fill="#c5a059" />
+    </svg>
+  );
+
+  const cpu = (
+    <svg viewBox="0 0 100 100" className="w-full h-full">
+      <rect x="10" y="10" width="80" height="80" fill="#c0c0c0" rx="2" />
+      <rect x="20" y="20" width="60" height="60" fill="#e0e0e0" rx="1" />
+      <text x="50" y="55" fontSize="8" fontWeight="bold" fill="#999" textAnchor="middle" fontFamily="monospace">{name?.substring(0, 10)}</text>
+      <path d="M15 15 L25 15 M15 15 L15 25" stroke="#999" strokeWidth="1" fill="none" />
+    </svg>
+  );
+
+  const ram = (
+    <svg viewBox="0 0 240 60" className="w-full h-full">
+      <rect x="5" y="15" width="230" height="30" fill={pcbColor} rx="2" />
+      {/* Memory Chips */}
+      {[0,1,2,3,4,5,6,7].map(i => (
+        <rect key={i} x={20 + i*25} y="20" width="15" height="20" fill="#111" rx="1" />
+      ))}
+      {/* Contacts */}
+      <rect x="10" y="45" width="220" height="4" fill="#c5a059" />
+    </svg>
+  );
+
+  const storage = (
+    <svg viewBox="0 0 120 160" className="w-full h-full">
+      <rect x="10" y="10" width="100" height="140" fill="#333" rx="4" />
+      <rect x="15" y="15" width="90" height="130" fill="#222" rx="2" />
+      <rect x="25" y="30" width="70" height="40" fill="#444" rx="2" />
+      <text x="60" y="55" fontSize="8" fill="#666" textAnchor="middle" fontFamily="monospace">HIGH SPEED SSD</text>
+      {/* Screws */}
+      <circle cx="20" cy="20" r="2" fill="#555" />
+      <circle cx="100" cy="20" r="2" fill="#555" />
+      <circle cx="20" cy="140" r="2" fill="#555" />
+      <circle cx="100" cy="140" r="2" fill="#555" />
+    </svg>
+  );
+
+  const graphics = {
+    'Motherboard': motherboard,
+    'GPU': gpu,
+    'CPU': cpu,
+    'RAM': ram,
+    'Storage': storage
+  };
+
+  return (
+    <div className={`transition-transform duration-75 ${jiggle ? 'animate-bounce' : ''}`} style={{ width: type === 'GPU' || type === 'RAM' ? '400px' : '300px' }}>
+      {graphics[type] || motherboard}
+    </div>
+  );
+};
+
 export default function CleaningBench({ cleaningBench, setCleaningTool, cleanSpot, inventory, placeOnCleaningMat, removeCleaningPart, darkMode }) {
   const { part, dust, stains, activeTool } = cleaningBench;
   const matRef = useRef(null);
@@ -13,8 +133,14 @@ export default function CleaningBench({ cleaningBench, setCleaningTool, cleanSpo
     if (!part || !activeTool || !matRef.current) return;
 
     const rect = matRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    let x = ((e.clientX - rect.left) / rect.width) * 100;
+    let y = ((e.clientY - rect.top) / rect.height) * 100;
+
+    if (activeTool === 'SPRAY') {
+        // Spray travels! Lands to the right and slightly up from nozzle
+        x += 15;
+        y -= 10;
+    }
 
     cleanSpot(x, y);
   };
@@ -79,28 +205,33 @@ export default function CleaningBench({ cleaningBench, setCleaningTool, cleanSpo
           <div className={`relative aspect-square sm:aspect-video rounded-3xl border-4 border-dashed transition-all overflow-hidden flex flex-col items-center justify-center
             ${darkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-100 border-slate-300'}
           `}>
+            {/* Mat Grid Overlay */}
+            <div className="absolute inset-0 opacity-10 pointer-events-none" style={{
+                backgroundImage: `linear-gradient(#444 1px, transparent 1px), linear-gradient(90deg, #444 1px, transparent 1px)`,
+                backgroundSize: '40px 40px'
+            }} />
 
             {part ? (
               <>
                 {/* Tools Overlay */}
-                <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">
+                <div className="absolute top-4 left-4 z-20 flex flex-col gap-3">
                    <button
                      onClick={() => setCleaningTool(activeTool === 'SPRAY' ? null : 'SPRAY')}
-                     className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-1
-                       ${activeTool === 'SPRAY' ? 'bg-blue-600 border-blue-400 text-white scale-110 shadow-lg' : 'bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600'}
+                     className={`w-20 h-20 rounded-2xl border-b-4 transition-all flex flex-col items-center justify-center gap-1
+                       ${activeTool === 'SPRAY' ? 'bg-blue-600 border-blue-400 text-white translate-y-1 shadow-inner' : 'bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700 shadow-lg'}
                      `}
                    >
                      <Wind size={24} />
-                     <span className="text-[8px] font-black tracking-tighter">ALCOHOL SPRAY</span>
+                     <span className="text-[8px] font-black tracking-tighter uppercase">Spray</span>
                    </button>
                    <button
                      onClick={() => setCleaningTool(activeTool === 'BRUSH' ? null : 'BRUSH')}
-                     className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-1
-                       ${activeTool === 'BRUSH' ? 'bg-amber-600 border-amber-400 text-white scale-110 shadow-lg' : 'bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600'}
+                     className={`w-20 h-20 rounded-2xl border-b-4 transition-all flex flex-col items-center justify-center gap-1
+                       ${activeTool === 'BRUSH' ? 'bg-amber-600 border-amber-400 text-white translate-y-1 shadow-inner' : 'bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700 shadow-lg'}
                      `}
                    >
                      <Eraser size={24} />
-                     <span className="text-[8px] font-black tracking-tighter">ESD BRUSH</span>
+                     <span className="text-[8px] font-black tracking-tighter uppercase">Brush</span>
                    </button>
                 </div>
 
@@ -122,7 +253,7 @@ export default function CleaningBench({ cleaningBench, setCleaningTool, cleanSpo
                 >
                   {/* The Part */}
                   <div className={`transition-all duration-500 transform ${isInteracting ? 'scale-[1.02]' : 'scale-100'}`}>
-                     <PartIcon type={part.type} size={180} className="opacity-80 grayscale-[0.5]" />
+                     <ComponentGraphic type={part.type} name={part.name} jiggle={isInteracting && activeTool === 'BRUSH'} />
                      <div className="text-center mt-4">
                         <p className="text-xs font-black uppercase tracking-widest text-slate-500">{part.name}</p>
                      </div>
@@ -159,6 +290,16 @@ export default function CleaningBench({ cleaningBench, setCleaningTool, cleanSpo
                     />
                   ))}
 
+                  {/* Targeting Crosshair for Spray */}
+                  {activeTool === 'SPRAY' && (
+                    <div
+                      className={`absolute pointer-events-none w-8 h-8 border-2 border-dashed border-blue-400/50 rounded-full flex items-center justify-center transition-opacity ${isInteracting ? 'opacity-100' : 'opacity-20'}`}
+                      style={{ left: `${mousePos.x + 15}%`, top: `${mousePos.y - 10}%`, transform: 'translate(-50%, -50%)' }}
+                    >
+                        <div className="w-1 h-1 bg-blue-400 rounded-full" />
+                    </div>
+                  )}
+
                   {/* Custom Cursor */}
                   <div
                     className="absolute pointer-events-none z-50 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center"
@@ -169,16 +310,12 @@ export default function CleaningBench({ cleaningBench, setCleaningTool, cleanSpo
                   >
                     {activeTool === 'SPRAY' && (
                         <div className="relative">
-                            <Wind size={32} className="text-blue-400 drop-shadow-lg rotate-12" />
-                            {isInteracting && (
-                                <div className="absolute top-0 right-0 w-20 h-20 bg-blue-400/20 rounded-full animate-ping blur-sm" />
-                            )}
+                            <SpraySprite isInteracting={isInteracting} />
+                            {isInteracting && <SprayMist x={100} y={-50} />}
                         </div>
                     )}
                     {activeTool === 'BRUSH' && (
-                        <div className={`transition-transform ${isInteracting ? 'animate-bounce' : ''}`}>
-                            <Eraser size={32} className="text-amber-500 drop-shadow-lg -rotate-12" />
-                        </div>
+                        <BrushSprite isInteracting={isInteracting} />
                     )}
                     {!activeTool && <MousePointer2 size={24} className="text-white drop-shadow-lg" />}
                   </div>

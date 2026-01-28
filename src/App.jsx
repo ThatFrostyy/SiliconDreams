@@ -80,6 +80,7 @@ export default function App() {
   const placeOnCleaningMat = useGameStore(state => state.placeOnCleaningMat);
   const removeCleaningPart = useGameStore(state => state.removeCleaningPart);
   const cleanSpot = useGameStore(state => state.cleanSpot);
+  const setActiveBench = useGameStore(state => state.setActiveBench);
 
   const [showSettings, setShowSettings] = useState(false);
   const [inventoryCategory, setInventoryCategory] = useState('ALL');
@@ -328,6 +329,10 @@ export default function App() {
               onDisassemble={disassembleBuild}
               onSellBuild={sellBuildInstant}
               sellMarkup={sellMarkup}
+              activeBench={activeBench}
+              setActiveBench={setActiveBench}
+              ownedUpgrades={ownedUpgrades}
+              achievements={achievements}
               cleaningBench={cleaningBench}
               setCleaningTool={setCleaningTool}
               placeOnCleaningMat={placeOnCleaningMat}

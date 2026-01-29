@@ -143,8 +143,8 @@ export default function CleaningBench({ cleaningBench, setCleaningTool, cleanSpo
         y -= 8;
     } else if (activeTool === 'BRUSH') {
         // Clean with the physical tip (bristles)
-        // Adjust for sprite height
-        y += 12;
+        // Adjust for sprite height (center to bottom edge)
+        y += 10.5;
     }
 
     cleanSpot(x, y);
@@ -173,7 +173,7 @@ export default function CleaningBench({ cleaningBench, setCleaningTool, cleanSpo
         let ix = x;
         let iy = y;
         if (activeTool === 'SPRAY') { ix += 12; iy -= 8; }
-        else if (activeTool === 'BRUSH') { iy += 12; }
+        else if (activeTool === 'BRUSH') { iy += 10.5; }
         cleanSpot(ix, iy);
     }
   };
@@ -184,7 +184,7 @@ export default function CleaningBench({ cleaningBench, setCleaningTool, cleanSpo
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 select-none">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
         {/* Inventory Column */}
@@ -236,34 +236,34 @@ export default function CleaningBench({ cleaningBench, setCleaningTool, cleanSpo
 
             {part ? (
               <>
-                {/* Tools Overlay */}
-                <div className="absolute top-4 left-4 z-20 flex flex-col gap-3">
+                {/* Tools Overlay - Moved to bottom */}
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-4">
                    <button
                      onClick={() => setCleaningTool(activeTool === 'SPRAY' ? null : 'SPRAY')}
-                     className={`w-20 h-20 rounded-2xl border-b-4 transition-all flex flex-col items-center justify-center gap-1
-                       ${activeTool === 'SPRAY' ? 'bg-blue-600 border-blue-400 text-white translate-y-1 shadow-inner' : 'bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700 shadow-lg'}
+                     className={`w-14 h-14 rounded-xl border-b-2 transition-all flex flex-col items-center justify-center gap-0.5
+                       ${activeTool === 'SPRAY' ? 'bg-blue-600 border-blue-400 text-white translate-y-0.5 shadow-inner' : 'bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700 shadow-lg'}
                      `}
                    >
-                     <Wind size={24} />
-                     <span className="text-[8px] font-black tracking-tighter uppercase">Spray</span>
+                     <Wind size={18} />
+                     <span className="text-[7px] font-black tracking-tighter uppercase">Spray</span>
                    </button>
                    <button
                      onClick={() => setCleaningTool(activeTool === 'BRUSH' ? null : 'BRUSH')}
-                     className={`w-20 h-20 rounded-2xl border-b-4 transition-all flex flex-col items-center justify-center gap-1
-                       ${activeTool === 'BRUSH' ? 'bg-amber-600 border-amber-400 text-white translate-y-1 shadow-inner' : 'bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700 shadow-lg'}
+                     className={`w-14 h-14 rounded-xl border-b-2 transition-all flex flex-col items-center justify-center gap-0.5
+                       ${activeTool === 'BRUSH' ? 'bg-amber-600 border-amber-400 text-white translate-y-0.5 shadow-inner' : 'bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700 shadow-lg'}
                      `}
                    >
-                     <Eraser size={24} />
-                     <span className="text-[8px] font-black tracking-tighter uppercase">Brush</span>
+                     <Eraser size={18} />
+                     <span className="text-[7px] font-black tracking-tighter uppercase">Brush</span>
+                   </button>
+                   <button
+                     onClick={removeCleaningPart}
+                     className="w-14 h-14 rounded-xl border-b-2 bg-rose-900 border-rose-700 text-rose-300 hover:bg-rose-800 transition-all flex flex-col items-center justify-center gap-0.5 shadow-lg"
+                   >
+                     <MousePointer2 size={18} />
+                     <span className="text-[7px] font-black tracking-tighter uppercase">Exit</span>
                    </button>
                 </div>
-
-                <button
-                  onClick={removeCleaningPart}
-                  className="absolute top-4 right-4 z-20 p-2 rounded-lg bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white transition-colors text-[10px] font-bold"
-                >
-                  CANCEL
-                </button>
 
                 {/* Interaction Layer */}
                 <div

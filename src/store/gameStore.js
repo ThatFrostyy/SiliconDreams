@@ -782,19 +782,19 @@ export const useGameStore = create(
         if (activeTool === 'BRUSH') {
             newDust = dust.filter(d => {
                 const dist = Math.sqrt(Math.pow(d.x - x, 2) + Math.pow(d.y - y, 2));
-                if (dist < 8) { changed = true; return false; }
+                if (dist < 4) { changed = true; return false; }
                 return true;
             });
             // Also brush away sprayed stains
             newStains = stains.filter(s => {
                 const dist = Math.sqrt(Math.pow(s.x - x, 2) + Math.pow(s.y - y, 2));
-                if (dist < 8 && s.sprayed) { changed = true; return false; }
+                if (dist < 4 && s.sprayed) { changed = true; return false; }
                 return true;
             });
         } else if (activeTool === 'SPRAY') {
             newStains = stains.map(s => {
                 const dist = Math.sqrt(Math.pow(s.x - x, 2) + Math.pow(s.y - y, 2));
-                if (dist < 12 && !s.sprayed) { changed = true; return { ...s, sprayed: true }; }
+                if (dist < 6 && !s.sprayed) { changed = true; return { ...s, sprayed: true }; }
                 return s;
             });
         }

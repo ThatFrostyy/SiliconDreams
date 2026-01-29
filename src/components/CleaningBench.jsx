@@ -14,11 +14,11 @@ const SprayMist = ({ x, y }) => (
 
 const BrushSprite = ({ isInteracting }) => (
   <div className={`pointer-events-none transition-transform ${isInteracting ? 'rotate-[-45deg] translate-y-[-10px]' : 'rotate-[-20deg]'}`}>
-    <div className="w-12 h-32 bg-amber-900 rounded-t-lg border-2 border-amber-950 relative">
-      <div className="absolute bottom-0 left-0 w-full h-12 bg-slate-800 border-t-2 border-slate-700 flex flex-wrap gap-0.5 p-1">
-        {[...Array(20)].map((_, i) => <div key={i} className="w-0.5 h-full bg-slate-950/40" />)}
-      </div>
-      <div className="absolute -bottom-4 left-0 w-full h-4 bg-slate-800/30 rounded-b-lg blur-[2px]" />
+    <div className="w-10 h-32 bg-amber-950 rounded-t-lg border-2 border-slate-900 relative">
+      {/* Handle Grip */}
+      <div className="absolute top-4 left-1 right-1 h-12 bg-slate-800/50 rounded-sm" />
+      {/* Brush Head (Solid block) */}
+      <div className="absolute bottom-0 left-[-4px] right-[-4px] h-14 bg-slate-800 border-2 border-slate-700 rounded-sm shadow-xl" />
     </div>
   </div>
 );
@@ -149,7 +149,7 @@ const ComponentGraphic = ({ type, name, dust = [], stains = [] }) => {
   };
 
   return (
-    <div style={{ width: type === 'GPU' || type === 'RAM' ? '400px' : '300px' }}>
+    <div className="w-full max-w-[80%] flex items-center justify-center">
       {graphics[type] || motherboard}
     </div>
   );
@@ -174,7 +174,9 @@ export default function CleaningBench({ cleaningBench, setCleaningTool, cleanSpo
         y -= 10;
     } else if (activeTool === 'BRUSH') {
         // Clean with the bristles (bottom of the tool)
-        y += 25;
+        // Brush height is ~128px. In a ~600px mat, that's ~21%.
+        // Center to bottom is ~10.5%.
+        y += 11;
     }
 
     cleanSpot(x, y);
@@ -203,7 +205,7 @@ export default function CleaningBench({ cleaningBench, setCleaningTool, cleanSpo
         let ix = x;
         let iy = y;
         if (activeTool === 'SPRAY') { ix += 15; iy -= 10; }
-        else if (activeTool === 'BRUSH') { iy += 25; }
+        else if (activeTool === 'BRUSH') { iy += 11; }
         cleanSpot(ix, iy);
     }
   };
@@ -254,8 +256,8 @@ export default function CleaningBench({ cleaningBench, setCleaningTool, cleanSpo
         </div>
 
         {/* Cleaning Mat Column */}
-        <div className="lg:col-span-8">
-          <div className={`relative aspect-square sm:aspect-video rounded-3xl border-4 border-dashed transition-all overflow-hidden flex flex-col items-center justify-center
+        <div className="lg:col-span-8 flex flex-col gap-4">
+          <div className={`relative min-h-[500px] sm:min-h-[600px] rounded-3xl border-4 border-dashed transition-all overflow-hidden flex flex-col items-center justify-center select-none
             ${darkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-100 border-slate-300'}
           `}>
             {/* Mat Grid Overlay */}
@@ -318,11 +320,8 @@ export default function CleaningBench({ cleaningBench, setCleaningTool, cleanSpo
                   className={`relative w-full h-full flex items-center justify-center cursor-none z-10 touch-none`}
                 >
                   {/* The Part */}
-                  <div className={`transition-all duration-500 transform ${isInteracting ? 'scale-[1.02]' : 'scale-100'}`}>
+                  <div className={`transition-all duration-500 transform ${isInteracting ? 'scale-[1.02]' : 'scale-100'} w-full h-full flex items-center justify-center`}>
                      <ComponentGraphic type={part.type} name={part.name} dust={dust} stains={stains} />
-                     <div className="text-center mt-4">
-                        <p className="text-xs font-black uppercase tracking-widest text-slate-500">{part.name}</p>
-                     </div>
                   </div>
 
                   {/* Targeting Crosshair for Spray */}
@@ -359,29 +358,6 @@ export default function CleaningBench({ cleaningBench, setCleaningTool, cleanSpo
                   </div>
                 </div>
 
-                {/* Progress Indicators */}
-                <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-8">
-                    <div className="flex flex-col items-center">
-                        <div className="text-[10px] font-black text-slate-500 uppercase mb-1">Dust Level</div>
-                        <div className="w-32 h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                            <div
-                              className="h-full bg-slate-400 transition-all duration-300"
-                              style={{ width: `${(dust.length / 20) * 100}%` }}
-                            />
-                        </div>
-                    </div>
-                    {stains.length > 0 && (
-                    <div className="flex flex-col items-center">
-                        <div className="text-[10px] font-black text-slate-500 uppercase mb-1">Stain Removal</div>
-                        <div className="w-32 h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                            <div
-                              className="h-full bg-emerald-500 transition-all duration-300"
-                              style={{ width: `${(stains.filter(s => s.sprayed).length / stains.length) * 100}%` }}
-                            />
-                        </div>
-                    </div>
-                    )}
-                </div>
               </>
             ) : (
               <div className="text-center space-y-4">
@@ -395,6 +371,39 @@ export default function CleaningBench({ cleaningBench, setCleaningTool, cleanSpo
               </div>
             )}
           </div>
+
+          {/* New Footer Info Area */}
+          {part && (
+            <div className={`p-4 rounded-2xl border flex flex-wrap justify-between items-center gap-6 ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+                <div>
+                    <h4 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">Restoring Component</h4>
+                    <p className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-slate-800'}`}>{part.name}</p>
+                </div>
+
+                <div className="flex gap-8">
+                    <div className="flex flex-col items-center">
+                        <div className="text-[10px] font-black text-slate-500 uppercase mb-1">Dust Level</div>
+                        <div className="w-32 h-2 bg-slate-800 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-slate-400 transition-all duration-300"
+                              style={{ width: `${(dust.length / 20) * 100}%` }}
+                            />
+                        </div>
+                    </div>
+                    {stains.length > 0 && (
+                    <div className="flex flex-col items-center">
+                        <div className="text-[10px] font-black text-slate-500 uppercase mb-1">Stain Removal</div>
+                        <div className="w-32 h-2 bg-slate-800 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-emerald-500 transition-all duration-300"
+                              style={{ width: `${(stains.filter(s => s.sprayed).length / stains.length) * 100}%` }}
+                            />
+                        </div>
+                    </div>
+                    )}
+                </div>
+            </div>
+          )}
 
           {/* Instructions */}
           <div className={`mt-6 p-4 rounded-xl border ${darkMode ? 'bg-blue-500/5 border-blue-500/10' : 'bg-blue-50 border-blue-100'} flex items-start gap-4`}>

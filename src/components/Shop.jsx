@@ -1,5 +1,5 @@
 // src/components/Shop.jsx
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { ShoppingBag, Package, HelpCircle, X, PackageOpen, Filter, ArrowDownUp, Check } from 'lucide-react';
 import { PARTS_CATALOG, PART_TYPES } from '../data/constants';
 import { CategoryTabs, PartIcon } from './Shared';
@@ -26,7 +26,7 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet, sett
   const [showAffordable, setShowAffordable] = useState(false);
   const [brandFilter, setBrandFilter] = useState('ALL');
   
-  const getDiscountedPrice = (price) => Math.floor(price * (1 - ((skills?.barter || 0) * 0.03)));
+  const getDiscountedPrice = useCallback((price) => Math.floor(price * (1 - ((skills?.barter || 0) * 0.03))), [skills?.barter]);
 
   const handleBuyPallet = (type) => {
     const items = buyPallet(type);
@@ -107,7 +107,7 @@ export default function Shop({ buyPart, money, darkMode, skills, buyPallet, sett
             default: return 0;
         }
     });
-  }, [shopCategory, brandFilter, showAffordable, sortBy, money, skills, availableBrands]);
+  }, [shopCategory, brandFilter, showAffordable, sortBy, money, availableBrands, getDiscountedPrice]);
 
   return (
     <section className={`rounded-2xl border overflow-hidden shadow-2xl transition-colors ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>

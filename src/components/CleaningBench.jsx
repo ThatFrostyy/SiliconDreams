@@ -14,11 +14,12 @@ const SprayMist = ({ x, y }) => (
 
 const BrushSprite = ({ isInteracting }) => (
   <div className={`pointer-events-none transition-transform ${isInteracting ? 'rotate-[-45deg] translate-y-[-10px]' : 'rotate-[-20deg]'}`}>
-    <div className="w-10 h-32 bg-amber-950 rounded-t-lg border-2 border-slate-900 relative">
-      {/* Handle Grip */}
-      <div className="absolute top-4 left-1 right-1 h-12 bg-slate-800/50 rounded-sm" />
-      {/* Brush Head (Solid block) */}
-      <div className="absolute bottom-0 left-[-4px] right-[-4px] h-14 bg-slate-800 border-2 border-slate-700 rounded-sm shadow-xl" />
+    {/* Blue Handle */}
+    <div className="w-10 h-32 bg-blue-600 rounded-t-lg border-2 border-blue-800 relative">
+      {/* Handle Grip (Visual Detail) */}
+      <div className="absolute top-4 left-1 right-1 h-12 bg-blue-500/50 rounded-sm" />
+      {/* Light Brown Head/Top */}
+      <div className="absolute bottom-0 left-[-4px] right-[-4px] h-14 bg-[#d2b48c] border-2 border-[#b89b74] rounded-sm shadow-xl" />
     </div>
   </div>
 );
@@ -34,36 +35,9 @@ const SpraySprite = ({ isInteracting }) => (
   </div>
 );
 
-const ComponentGraphic = ({ type, name, dust = [], stains = [] }) => {
+const ComponentGraphic = ({ type, name }) => {
   const pcbColor = "#1a3a3a"; // Dark forest green/teal PCB
   const traceColor = "#2d5a5a";
-
-  const grimeOverlay = (
-    <g>
-      {stains.map(s => (
-        <circle
-          key={s.id}
-          cx={`${s.x}%`}
-          cy={`${s.y}%`}
-          r={s.size / 4}
-          fill={s.sprayed ? "#3b82f6" : "#064e3b"}
-          fillOpacity={s.sprayed ? 0.8 : 1}
-          filter="blur(2px)"
-        />
-      ))}
-      {dust.map(d => (
-        <circle
-          key={d.id}
-          cx={`${d.x}%`}
-          cy={`${d.y}%`}
-          r={d.size / 4}
-          fill="#475569"
-          fillOpacity={1}
-          filter="blur(1px)"
-        />
-      ))}
-    </g>
-  );
 
   const motherboard = (
     <svg viewBox="0 0 200 200" className="w-full h-full drop-shadow-2xl">
@@ -82,7 +56,6 @@ const ComponentGraphic = ({ type, name, dust = [], stains = [] }) => {
       <circle cx="50" cy="60" r="4" fill="#555" />
       <circle cx="50" cy="75" r="4" fill="#555" />
       <circle cx="50" cy="90" r="4" fill="#555" />
-      {grimeOverlay}
     </svg>
   );
 
@@ -98,7 +71,6 @@ const ComponentGraphic = ({ type, name, dust = [], stains = [] }) => {
       <path d="M215 45 L215 105 M185 75 L245 75" stroke="#222" strokeWidth="4" />
       {/* Backplate connector */}
       <rect x="50" y="120" width="150" height="5" fill="#c5a059" />
-      {grimeOverlay}
     </svg>
   );
 
@@ -108,7 +80,6 @@ const ComponentGraphic = ({ type, name, dust = [], stains = [] }) => {
       <rect x="20" y="20" width="60" height="60" fill="#e0e0e0" rx="1" />
       <text x="50" y="55" fontSize="8" fontWeight="bold" fill="#999" textAnchor="middle" fontFamily="monospace">{name?.substring(0, 10)}</text>
       <path d="M15 15 L25 15 M15 15 L15 25" stroke="#999" strokeWidth="1" fill="none" />
-      {grimeOverlay}
     </svg>
   );
 
@@ -121,7 +92,6 @@ const ComponentGraphic = ({ type, name, dust = [], stains = [] }) => {
       ))}
       {/* Contacts */}
       <rect x="10" y="45" width="220" height="4" fill="#c5a059" />
-      {grimeOverlay}
     </svg>
   );
 
@@ -136,7 +106,6 @@ const ComponentGraphic = ({ type, name, dust = [], stains = [] }) => {
       <circle cx="100" cy="20" r="2" fill="#555" />
       <circle cx="20" cy="140" r="2" fill="#555" />
       <circle cx="100" cy="140" r="2" fill="#555" />
-      {grimeOverlay}
     </svg>
   );
 
@@ -170,13 +139,12 @@ export default function CleaningBench({ cleaningBench, setCleaningTool, cleanSpo
 
     if (activeTool === 'SPRAY') {
         // Spray travels! Lands to the right and slightly up from nozzle
-        x += 15;
-        y -= 10;
+        x += 12;
+        y -= 8;
     } else if (activeTool === 'BRUSH') {
-        // Clean with the bristles (bottom of the tool)
-        // Brush height is ~128px. In a ~600px mat, that's ~21%.
-        // Center to bottom is ~10.5%.
-        y += 11;
+        // Clean with the physical tip (bristles)
+        // Adjust for sprite height
+        y += 12;
     }
 
     cleanSpot(x, y);
@@ -204,8 +172,8 @@ export default function CleaningBench({ cleaningBench, setCleaningTool, cleanSpo
         // Handle physical interaction for touch
         let ix = x;
         let iy = y;
-        if (activeTool === 'SPRAY') { ix += 15; iy -= 10; }
-        else if (activeTool === 'BRUSH') { iy += 11; }
+        if (activeTool === 'SPRAY') { ix += 12; iy -= 8; }
+        else if (activeTool === 'BRUSH') { iy += 12; }
         cleanSpot(ix, iy);
     }
   };
@@ -321,14 +289,34 @@ export default function CleaningBench({ cleaningBench, setCleaningTool, cleanSpo
                 >
                   {/* The Part */}
                   <div className={`transition-all duration-500 transform ${isInteracting ? 'scale-[1.02]' : 'scale-100'} w-full h-full flex items-center justify-center`}>
-                     <ComponentGraphic type={part.type} name={part.name} dust={dust} stains={stains} />
+                     <ComponentGraphic type={part.type} name={part.name} />
+                  </div>
+
+                  {/* Grime Overlay Layer (Aligned with hit detection) */}
+                  <div className="absolute inset-0 pointer-events-none">
+                    {stains.map(s => (
+                      <div
+                        key={s.id}
+                        style={{ left: `${s.x}%`, top: `${s.y}%`, width: `${s.size/2}px`, height: `${s.size/2}px` }}
+                        className={`absolute rounded-full transition-opacity duration-300 blur-[2px]
+                          ${s.sprayed ? 'bg-blue-500/80 shadow-[0_0_8px_rgba(59,130,246,0.5)]' : 'bg-emerald-950'}
+                        `}
+                      />
+                    ))}
+                    {dust.map(d => (
+                      <div
+                        key={d.id}
+                        style={{ left: `${d.x}%`, top: `${d.y}%`, width: `${d.size/2}px`, height: `${d.size/2}px` }}
+                        className="absolute bg-slate-600 rounded-full blur-[1px] opacity-100"
+                      />
+                    ))}
                   </div>
 
                   {/* Targeting Crosshair for Spray */}
                   {activeTool === 'SPRAY' && (
                     <div
                       className={`absolute pointer-events-none w-14 h-14 border-4 border-dashed border-blue-300 rounded-full flex items-center justify-center transition-opacity ${isInteracting ? 'opacity-100 scale-90' : 'opacity-80 scale-100'} filter drop-shadow-[0_0_8px_rgba(96,165,250,0.8)]`}
-                      style={{ left: `${mousePos.x + 15}%`, top: `${mousePos.y - 10}%`, transform: 'translate(-50%, -50%)' }}
+                      style={{ left: `${mousePos.x + 12}%`, top: `${mousePos.y - 8}%`, transform: 'translate(-50%, -50%)' }}
                     >
                         <div className="w-3 h-3 bg-blue-400 rounded-full border-2 border-white shadow-[0_0_10px_rgba(255,255,255,1)]" />
                         {/* Crosshair Lines */}

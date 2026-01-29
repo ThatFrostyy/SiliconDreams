@@ -745,12 +745,12 @@ export const useGameStore = create(
         const count = 10 + Math.floor(Math.random() * 10);
 
         for (let i = 0; i < count; i++) {
-            dust.push({ id: i, x: Math.random() * 80 + 10, y: Math.random() * 80 + 10, size: 15 + Math.random() * 15, opacity: 0.6 + Math.random() * 0.4 });
+            dust.push({ id: i, x: Math.random() * 60 + 20, y: Math.random() * 60 + 20, size: 15 + Math.random() * 15, opacity: 0.6 + Math.random() * 0.4 });
         }
 
         if (part.modifierId === 'corroded' || part.modifierId === 'gunked_up') {
             for (let i = 0; i < 5; i++) {
-                stains.push({ id: i + 100, x: Math.random() * 70 + 15, y: Math.random() * 70 + 15, size: 20 + Math.random() * 10, sprayed: false });
+                stains.push({ id: i + 100, x: Math.random() * 60 + 20, y: Math.random() * 60 + 20, size: 20 + Math.random() * 10, sprayed: false });
             }
         }
 
@@ -782,19 +782,19 @@ export const useGameStore = create(
         if (activeTool === 'BRUSH') {
             newDust = dust.filter(d => {
                 const dist = Math.sqrt(Math.pow(d.x - x, 2) + Math.pow(d.y - y, 2));
-                if (dist < 6) { changed = true; return false; }
+                if (dist < 8) { changed = true; return false; }
                 return true;
             });
             // Also brush away sprayed stains
             newStains = stains.filter(s => {
                 const dist = Math.sqrt(Math.pow(s.x - x, 2) + Math.pow(s.y - y, 2));
-                if (dist < 6 && s.sprayed) { changed = true; return false; }
+                if (dist < 8 && s.sprayed) { changed = true; return false; }
                 return true;
             });
         } else if (activeTool === 'SPRAY') {
             newStains = stains.map(s => {
                 const dist = Math.sqrt(Math.pow(s.x - x, 2) + Math.pow(s.y - y, 2));
-                if (dist < 8 && !s.sprayed) { changed = true; return { ...s, sprayed: true }; }
+                if (dist < 12 && !s.sprayed) { changed = true; return { ...s, sprayed: true }; }
                 return s;
             });
         }
